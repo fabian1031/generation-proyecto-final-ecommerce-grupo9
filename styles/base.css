@@ -27,7 +27,7 @@
     --border: #D9B9A7;
 
     /* Font */
-    --font: 'Montserrat', sans-serif;
+    --font-primary: 'Montserrat', sans-serif;
 
     /* Sizes */
     --h1: 2.5rem;
@@ -43,38 +43,77 @@
     --bold: 700;
 }
 
-html,
+* {
+    font-family: var(--font-primary);
+}
+
 body {
     width: 100dvw;
     height: 100dvh;
     background-color: var(--gray-light);
+    font-family: var(--font);
 
     .nav-container {
         position: sticky;
         top: 0;
         left: 0;
         height: 10%;
-        /* background-color: antiquewhite; */
+        background-color: rgb(87, 71, 49);
         z-index: 100;
     }
 
     .dinamic-container {
-        /* height: fit-content; */
-        height: 200dvh;
-        min-height: 90%;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
         width: 100%;
-        /* background-color: royalblue; */
-
-        .main-container {
-            width: 100%;
-            height: 90%;
-            /* background-color: rgb(247, 190, 190); */
-        }
 
         .footer-container {
+            align-self: end;
             width: 100%;
             height: 10%;
-            /* background-color: #ff0000; */
+            background-color: #997373;
+
+            .footer-clean {
+                background-color: #d9d9d9;
+                color: #555;
+            }
+
+            .logo {
+                font-family: cursive;
+                font-size: 2rem;
+                color: #2f4f4f;
+            }
+
+            .footer-social {
+                display: flex;
+                /* background-color: red; */
+                .bi {
+                    font-size: 1.5rem;
+                    color: #555;
+                    margin: 0 10px;
+                    transition: color 0.3s ease;
+                }
+            }
+
+
+            .footer-text {
+                font-size: 0.9rem;
+                margin: 15px 0;
+            }
+
+
+            .footer-title {
+                font-weight: 600;
+                font-size: 0.9rem;
+                color: #000;
+                margin-bottom: 10px;
+            }
         }
+    }
+    a {
+        text-decoration: none;
+        color: var(--text-dark);
+        
     }
 }

@@ -1,6 +1,37 @@
-.container {
-    font-display: flex;
+.main-container {
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 90%;
+    /* background-color: rgb(247, 190, 190); */
 }
+
+
+
+
+.placeholder-box {
+  width: 100%;
+  height: 200px;
+  background-color: #cfcfcf;
+  border-radius: 6px;
+}
+
+.team-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.team-card img {
+  height: 100%;
+  object-fit: cover;
+}
+
