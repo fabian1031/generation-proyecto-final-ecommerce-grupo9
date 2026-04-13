@@ -1,0 +1,53 @@
+/* Modern CSS Reset */
+
+/* 1. Usar un box-sizing más intuitivo */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* 2. Eliminar márgenes por defecto */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* 3. Permitir que el porcentaje de altura funcione en el body */
+html, body {
+  height: 100%;
+}
+
+/* 4. Mejorar el renderizado de texto y suavizado */
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 5. Evitar que las imágenes desborden su contenedor */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 6. Eliminar herencia extraña en formularios y botones */
+input, button, textarea, select {
+  font: inherit;
+}
+
+/* 7. Evitar saltos de línea extraños en títulos y párrafos */
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  margin: 0;
+  padding: 0;
+}
+
+/* 8. Quitar estilos de lista por defecto */
+ol, ul {
+  list-style: none;
+}
+
+/* 9. Reset de enlaces */
+a {
+  text-decoration: none;
+  color: inherit;
+}
