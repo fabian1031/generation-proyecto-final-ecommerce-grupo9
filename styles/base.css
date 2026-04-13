@@ -58,8 +58,12 @@ body {
         top: 0;
         left: 0;
         height: 10%;
-        background-color: rgb(87, 71, 49);
+        background-color: var(--gray-light);
         z-index: 100;
+
+        .navbar-toggler {
+            border: none;
+        }
     }
 
     .dinamic-container {
