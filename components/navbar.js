@@ -22,7 +22,7 @@ const navbar = `
         </li>
       </ul>
 
-      <ul class="navbar-nav ms-auto text-center">
+      <ul class="navbar-nav text-center">
 
         <!-- Carrito -->
         <li class="nav-item">
