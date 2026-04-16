@@ -1,13 +1,9 @@
-import { validateAll } from "./validations";
+import { validateAll } from './validations.js';
 
 const contactForm = document.querySelector('#contactForm');
 
-contactForm.addEventListener('submit', contactFormHandler);
-
 const contactFormHandler = async (event) => {
     event.preventDefault();
-
-    console.log('Formulario enviado');
 
     const name = document.querySelector('#nombre').value.trim();
     const email = document.querySelector('#correo').value.trim();
@@ -17,9 +13,8 @@ const contactFormHandler = async (event) => {
     const { valid, errors } = validateAll({ nombre: name, correo: email, feedback: message, celular: cellphone });
 
     if (!valid) {
-        console.warn('Errores de validación:', errors);
-        // acá puedes mostrar los errores en el DOM en lugar del alert
-        showAlert({ type: 'error', message: errors });
+        const errorMessages = Object.values(errors).join('\n');
+        showAlert({ type: 'error', message: errorMessages });
         return;
     }
 
@@ -27,18 +22,21 @@ const contactFormHandler = async (event) => {
         const response = await fetch('https://formspree.io/f/xpqkpydy', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ nombre: name, correo: email, feedback: message, celular: cellphone }),
-            });
+            body: JSON.stringify({ nombre: name, correo: email, mensaje: message, celular: cellphone }),
+        });
 
         if (response.ok) {
-            alert("¡Mensaje enviado!");
-            form.reset();
+            showAlert({ type: 'success', message: '¡Mensaje enviado! Nos pondremos en contacto pronto.' });
+            contactForm.reset();
         } else {
-            alert("Error al enviar.");
+            const data = await response.json();
+            const msg = data?.errors?.[0]?.message || 'Error al enviar el formulario.';
+            showAlert({ type: 'error', message: msg });
         }
     } catch (error) {
-        showAlert({ type: 'error', message: error });
+        showAlert({ type: 'error', message: 'Hubo un problema de red. Intenta de nuevo más tarde.' });
+        console.error(error);
     }
 };
 
-window.contactFormHandler = contactFormHandler;
+contactForm.addEventListener('submit', contactFormHandler);
