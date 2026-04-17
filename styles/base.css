@@ -49,7 +49,7 @@
 }
 
 body {
-    width: 100dvw;
+    width: 100%; /* cambio*/
     height: 100dvh;
     background-color: var(--gray-light);
     font-family: var(--font);
@@ -58,7 +58,7 @@ body {
         display: flex;
         align-items: center;
         position: sticky;
-        width: 100dvw;
+        width: 100%; /*cambio*/
         top: 0;
         left: 0;
         height: 10%;
@@ -67,7 +67,7 @@ body {
         z-index: 100;
 
         .navbar {
-            width: 100dvw;
+            width: 100%; /*cambio*/
         }
 
         .navbar-toggler {
