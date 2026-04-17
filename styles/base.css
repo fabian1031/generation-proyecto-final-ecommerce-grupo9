@@ -49,7 +49,7 @@
 }
 
 body {
-    width: 100dvw; /* cambio*/
+    width: 100%; /* cambio*/
     height: 100dvh;
     background-color: var(--gray-light);
     font-family: var(--font);
@@ -58,7 +58,7 @@ body {
         display: flex;
         align-items: center;
         position: sticky;
-        width: 100dvw; /*cambio*/
+        width: 100%; /*cambio*/
         top: 0;
         left: 0;
         height: 10%;
@@ -67,7 +67,7 @@ body {
         z-index: 100;
 
         .navbar {
-            width: 100dvw; /*cambio*/
+            width: 100%; /*cambio*/
         }
 
         .navbar-toggler {
@@ -162,4 +162,33 @@ body {
     padding-top: 0.5rem;
     margin-top: 0.5rem;
   }
+}
+
+/* Estilos generales para los botones */
+.btn-primary{
+    background-color: var(--primary);
+    transition: all .5s ease;
+    border-color: var(--primary-light);
+}
+ 
+.btn-primary:hover{
+    font-size: 16px;
+    padding: auto;
+    transform: scale(1);  
+    color: var(--primary);
+    border: 1px solid var(--gray-light);    
+    background-color: var(--primary-light);
+}
+ 
+.btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active{
+    font-size: 16px;
+    padding: auto;
+    transform: scale(1);  
+    color: var(--primary);
+    border: 1px solid var(--gray-light);    
+    background-color: var(--primary-light);
+}
+ 
+.form-control:focus{
+    box-shadow: 0 0 0 .25rem var(--primary-light)
 }
