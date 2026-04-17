@@ -49,7 +49,7 @@
 }
 
 body {
-    width: 100%; /* cambio*/
+    width: 100dvw; /* cambio*/
     height: 100dvh;
     background-color: var(--gray-light);
     font-family: var(--font);
@@ -58,7 +58,7 @@ body {
         display: flex;
         align-items: center;
         position: sticky;
-        width: 100%; /*cambio*/
+        width: 100dvw; /*cambio*/
         top: 0;
         left: 0;
         height: 10%;
@@ -67,7 +67,7 @@ body {
         z-index: 100;
 
         .navbar {
-            width: 100%; /*cambio*/
+            width: 100dvw; /*cambio*/
         }
 
         .navbar-toggler {
@@ -129,4 +129,37 @@ body {
         color: var(--text-dark);
         
     }
+}
+
+/* Menú hamburguesa: fondo y contención */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background-color: var(--gray-light);
+    padding: 1rem;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 99;
+  }
+
+  /* Para que el container-fluid sea el punto de referencia */
+  .navbar .container-fluid {
+    position: relative;
+  }
+
+  /* Separar un poco los links en móvil */
+  .navbar-nav .nav-link {
+    padding: 0.5rem 0;
+  }
+
+  /* El segundo ul (carrito/cuenta) con separador visual */
+  .navbar-nav:last-child {
+    border-top: 1px solid var(--border);
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+  }
 }
