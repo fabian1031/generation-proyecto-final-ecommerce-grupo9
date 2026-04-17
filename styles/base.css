@@ -50,7 +50,7 @@
 
 body {
     width: 100%; /* cambio*/
-    height: 100dvh;
+    height: 100vh;
     background-color: var(--gray-light);
     font-family: var(--font);
 
@@ -61,7 +61,7 @@ body {
         width: 100%; /*cambio*/
         top: 0;
         left: 0;
-        height: 10%;
+        height: 70px;
         background-color: var(--gray-light);
         box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
         z-index: 100;
@@ -72,6 +72,11 @@ body {
 
         .navbar-toggler {
             border: none;
+        }
+
+        .navbar-collapse {
+            background-color: var(--gray-light);
+            padding: 10px;
         }
     }
 
@@ -84,7 +89,7 @@ body {
         .footer-container {
             align-self: end;
             width: 100%;
-            height: 10%;
+            height: 120px;
             background-color: #997373;
 
             .footer-clean {
