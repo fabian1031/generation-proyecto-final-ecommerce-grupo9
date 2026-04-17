@@ -82,15 +82,20 @@ body {
         width: 100%;
         height: fit-content;
         min-height: 90dvh;
+
         .main-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             flex-grow: 1;
             height: 100%;
         }
 
         .footer-container {
-            align-self: end;
+            
             width: 100%;
-            height: 10%;
+            height: 100%;
             background-color: #997373;
 
             .footer-clean {

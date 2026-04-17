@@ -12,13 +12,13 @@ const navbar = `
 
       <ul class="navbar-nav mx-auto text-center">
         <li class="nav-item">
-          <a class="nav-link active" href="#">Inicio</a>
+          <a class="nav-link active" href="./index.html">Inicio</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Acerca de nosotros</a>
+          <a class="nav-link" href="./about.html">Acerca de nosotros</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Productos</a>
+          <a class="nav-link" href="./contact.html">Contacto</a>
         </li>
       </ul>
 
@@ -26,7 +26,7 @@ const navbar = `
 
         <!-- Carrito -->
         <li class="nav-item">
-          <a class="nav-link position-relative" href="#">
+          <a class="nav-link position-relative" href="./cart.html">
             <i class="bi bi-cart"></i>
             <span class="cart-badge">2</span>
           </a>
