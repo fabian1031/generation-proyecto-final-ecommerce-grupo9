@@ -49,8 +49,8 @@
 }
 
 body {
-    width: 100dvw; /* cambio*/
-    height: 100dvh;
+    width: 100%; /* cambio*/
+    height: 100vh;
     background-color: var(--gray-light);
     font-family: var(--font);
 
@@ -58,20 +58,25 @@ body {
         display: flex;
         align-items: center;
         position: sticky;
-        width: 100dvw; /*cambio*/
+        width: 100%; /*cambio*/
         top: 0;
         left: 0;
-        height: 10%;
+        height: 70px;
         background-color: var(--gray-light);
         box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
         z-index: 100;
 
         .navbar {
-            width: 100dvw; /*cambio*/
+            width: 100%; /*cambio*/
         }
 
         .navbar-toggler {
             border: none;
+        }
+
+        .navbar-collapse {
+            background-color: var(--gray-light);
+            padding: 10px;
         }
     }
 
@@ -80,11 +85,17 @@ body {
         flex-direction: column;
         flex-grow: 1;
         width: 100%;
+        height: fit-content;
+        min-height: 90dvh;
+        .main-container {
+            flex-grow: 1;
+            height: 100%;
+        }
 
         .footer-container {
             align-self: end;
             width: 100%;
-            height: 10%;
+            height: 120px;
             background-color: #997373;
 
             .footer-clean {
@@ -126,9 +137,27 @@ body {
     }
     a {
         text-decoration: none;
-        color: var(--text-dark);
-        
+        color: var(--text-dark);        
     }
+}
+
+.btn-primary{
+    background-color: var(--primary);
+    transition: all .5s ease;
+    border-color: var(--primary-light);
+}
+
+.btn-primary:hover{
+    font-size: 16px;
+    padding: auto;
+    transform: scale(1);   
+    color: var(--primary);
+    border: 1px solid var(--gray-light);    
+    background-color: var(--primary-light);
+}
+
+.form-control:focus{
+    box-shadow: 0 0 0 .25rem var(--primary-light)
 }
 
 /* Menú hamburguesa: fondo y contención */
@@ -137,7 +166,7 @@ body {
     background-color: var(--gray-light);
     padding: 1rem;
     border-radius: 0 0 8px 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
     position: absolute;
     top: 100%;
     left: 0;
@@ -158,8 +187,37 @@ body {
 
   /* El segundo ul (carrito/cuenta) con separador visual */
   .navbar-nav:last-child {
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--primary-light);
     padding-top: 0.5rem;
     margin-top: 0.5rem;
   }
+}
+
+/* Estilos generales para los botones */
+.btn-primary{
+    background-color: var(--primary);
+    transition: all .5s ease;
+    border-color: var(--primary-light);
+}
+ 
+.btn-primary:hover{
+    font-size: 16px;
+    padding: auto;
+    transform: scale(1);  
+    color: var(--primary);
+    border: 1px solid var(--gray-light);    
+    background-color: var(--primary-light);
+}
+ 
+.btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active{
+    font-size: 16px;
+    padding: auto;
+    transform: scale(1);  
+    color: var(--primary);
+    border: 1px solid var(--gray-light);    
+    background-color: var(--primary-light);
+}
+ 
+.form-control:focus{
+    box-shadow: 0 0 0 .25rem var(--primary-light)
 }
