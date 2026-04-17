@@ -85,6 +85,12 @@ body {
         flex-direction: column;
         flex-grow: 1;
         width: 100%;
+        height: fit-content;
+        min-height: 90dvh;
+        .main-container {
+            flex-grow: 1;
+            height: 100%;
+        }
 
         .footer-container {
             align-self: end;
@@ -131,7 +137,87 @@ body {
     }
     a {
         text-decoration: none;
-        color: var(--text-dark);
-        
+        color: var(--text-dark);        
     }
+}
+
+.btn-primary{
+    background-color: var(--primary);
+    transition: all .5s ease;
+    border-color: var(--primary-light);
+}
+
+.btn-primary:hover{
+    font-size: 16px;
+    padding: auto;
+    transform: scale(1);   
+    color: var(--primary);
+    border: 1px solid var(--gray-light);    
+    background-color: var(--primary-light);
+}
+
+.form-control:focus{
+    box-shadow: 0 0 0 .25rem var(--primary-light)
+}
+
+/* Menú hamburguesa: fondo y contención */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background-color: var(--gray-light);
+    padding: 1rem;
+    border-radius: 0 0 8px 8px;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 99;
+  }
+
+  /* Para que el container-fluid sea el punto de referencia */
+  .navbar .container-fluid {
+    position: relative;
+  }
+
+  /* Separar un poco los links en móvil */
+  .navbar-nav .nav-link {
+    padding: 0.5rem 0;
+  }
+
+  /* El segundo ul (carrito/cuenta) con separador visual */
+  .navbar-nav:last-child {
+    border-top: 1px solid var(--primary-light);
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Estilos generales para los botones */
+.btn-primary{
+    background-color: var(--primary);
+    transition: all .5s ease;
+    border-color: var(--primary-light);
+}
+ 
+.btn-primary:hover{
+    font-size: 16px;
+    padding: auto;
+    transform: scale(1);  
+    color: var(--primary);
+    border: 1px solid var(--gray-light);    
+    background-color: var(--primary-light);
+}
+ 
+.btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active{
+    font-size: 16px;
+    padding: auto;
+    transform: scale(1);  
+    color: var(--primary);
+    border: 1px solid var(--gray-light);    
+    background-color: var(--primary-light);
+}
+ 
+.form-control:focus{
+    box-shadow: 0 0 0 .25rem var(--primary-light)
 }

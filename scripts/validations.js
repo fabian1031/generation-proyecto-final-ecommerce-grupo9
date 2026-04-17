@@ -1,16 +1,4 @@
 /**
- * formValidations.js
- * Validaciones para formulario de contacto / retroalimentación.
- *
- * Uso:
- *   import { validateNombre, validateCorreo, validateCelular, validateFeedback, validateAll } from './formValidations.js';
- *   O en navegador sin bundler: incluye el script y usa window.formValidations.*
- *
- * Cada función recibe el valor del campo (string) y retorna:
- *   { valid: boolean, message: string }
- */
-
-/**
  * Valida un nombre completo.
  * - Obligatorio
  * - Mínimo 2 caracteres
