@@ -114,20 +114,53 @@
       "brand": "NZXT",
       "price": 950000,
       "status": "Nuevo",
-      "stock": 3,
+      "stock": 10,
       "category": "Chasis",
       "description": "Diseño de doble cámara, excelente flujo de aire y vista panorámica.",
       "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
       "isActive": true
     },
     {
+      "id": "11",
       "name": "Memoria Ram XPG 32GB DDR5",
       "price": 2000000,
       "stock": 5,
       "category": "Almacenamiento",
       "description": "",
       "image": "",
-      "id": "W22e-VG7n14",
+      "isActive": true
+    },
+    {
+      "id": "12",
+      "name": "Monitor 27 165hz 1080p",
+      "brand": "Xiaomi",
+      "description": "Monitor Xiaomi 27 165hz 1080P como nuevo",
+      "price": 450000,
+      "stock": 2,
+      "category": "Monitores",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "isActive": true
+    },
+    {
+      "id": "13",
+      "name": "Camara IP TAPO C200",
+      "brand": "TP-LINK",
+      "price": 130000,
+      "stock": 20,
+      "category": "Camaras de seguridad",
+      "description": "Camara refurbished 2k ip con guardado en la nube",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "isActive": true
+    },
+    {
+      "id": "LyHjIxMgQII",
+      "name": "papitas",
+      "brand": "papitas",
+      "price": 10000,
+      "stock": 20,
+      "category": "papitas",
+      "description": "papitas",
+      "image": "papita.img",
       "isActive": false
     }
   ],

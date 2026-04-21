@@ -37,6 +37,22 @@
                         + Agregar
                     </button>
                 </div>
+                    <div class="d-flex gap-2 mb-3">
+                        <button data-filter="all" class="btn btn-outline-dark btn-sm active" onclick="setFilter('all')">
+                            Todos
+                        </button>
+
+                        <button data-filter="active" class="btn btn-outline-success btn-sm"
+                            onclick="setFilter('active')">
+                            Activos
+                        </button>
+
+                        <button data-filter="inactive" class="btn btn-outline-danger btn-sm"
+                            onclick="setFilter('inactive')">
+                            Inactivos
+                        </button>
+                    </div>
+                </div>
                 <div class="list-group" id="productsList"></div>
 
             </div>

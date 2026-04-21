@@ -1,13 +1,12 @@
 import { productService } from "../services/product.service.js";
-import { api } from "../services/api.js";
+
 let allProducts = [];
 let selectedProduct = null;
-
-
+let filterStatus = "all";
 loadProducts();
 
 async function loadProducts() {
-    allProducts = (await productService.getAll()).filter(p => p.isActive)
+    allProducts = await productService.getAll();
     renderProductsList();
 }
 
@@ -15,9 +14,19 @@ function renderProductsList() {
     const container = document.getElementById("productsList");
     container.innerHTML = "";
 
-    allProducts.forEach(p => {
-        const item = document.createElement("button");
+    let filteredProducts = allProducts;
+
+    if (filterStatus === "active") {
+        filteredProducts = allProducts.filter(p => p.isActive !== false)
+    }
+    if (filterStatus === "inactive") {
+        filteredProducts = allProducts.filter(p => p.isActive === false);
+    }
+
+    filteredProducts.forEach(p => {
         const isActive = p.isActive !== false;
+
+        const item = document.createElement("div");
 
         item.className =
             "list-group-item list-group-item-action d-flex justify-content-between align-items-start gap-2";
@@ -28,50 +37,56 @@ function renderProductsList() {
                 <div class="fw-semibold">${p.name}</div>
                 <small class="text-muted">${p.category}</small><br>
                 <small class="text-muted">${p.description || ""}</small>
+                
+                <span class="badge ${isActive ? 'bg-success' : 'bg-danger'}">
+                    ${isActive ? 'Activo' : 'Inactivo'}
+                </span>
             </div>
 
             <div class="text-end flex-shrink-0">
                 <div class="fw-semibold">$${p.price}</div>
                 <small class="text-muted">Stock: ${p.stock}</small>
-            </div>
 
-            <span class="badge ${isActive ? 'bg-success' : 'bg-danger'}">
-                    ${isActive ? 'Activo' : 'Inactivo'}
-                </span>
-            </div>
-
-            <div class="text-end">
-                ${
-                    isActive
-                        ? `<button class="btn btn-sm btn-danger">🗑</button>`
-                        : `<button class="btn btn-sm btn-success">♻️</button>`
-                }
+                <div class="mt-2">
+                    ${
+                        isActive
+                            ? `<button class="btn btn-sm btn-danger action-btn">🗑</button>`
+                            : `<button class="btn btn-sm btn-success action-btn">♻️</button>`
+                    }
+                </div>
             </div>
         `;
 
-        // abrir editor
-        item.addEventListener("click", () => openEditProduct(p));
+        item.addEventListener("click", () => {
+            if (!isActive) return;
+            openEditProduct(p);
+        });
 
-        // DELETE separado
-        item.querySelector(".btn-danger").addEventListener("click", (e) => {
+        const actionBtn = item.querySelector(".action-btn");
+
+        actionBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            deleteProduct(p.id);
+
+            if (isActive) {
+                deleteProduct(p.id);
+            } else {
+                restoreProduct(p.id);
+            }
         });
 
         container.appendChild(item);
     });
 }
+
 function openCreateProduct() {
     selectedProduct = null;
     clearForm();
 
     document.getElementById("offcanvasTitle").textContent = "Crear producto";
 
-    const offcanvas = new bootstrap.Offcanvas(
+    new bootstrap.Offcanvas(
         document.getElementById("offcanvasProducto")
-    );
-
-    offcanvas.show();
+    ).show();
 }
 
 function openEditProduct(product) {
@@ -81,11 +96,9 @@ function openEditProduct(product) {
 
     document.getElementById("offcanvasTitle").textContent = "Editar producto";
 
-    const offcanvas = new bootstrap.Offcanvas(
+    new bootstrap.Offcanvas(
         document.getElementById("offcanvasProducto")
-    );
-
-    offcanvas.show();
+    ).show();
 }
 
 function fillForm(p) {
@@ -99,15 +112,14 @@ function fillForm(p) {
     document.getElementById("p_image").value = p.image || "";
 }
 
-
 function clearForm() {
     fillForm({
         id: "",
         name: "",
         brand: "",
         description: "",
-        price: "",
-        stock: "",
+        price: 0,
+        stock: 0,
         category: "",
         image: ""
     });
@@ -118,10 +130,24 @@ function getFormData() {
         name: document.getElementById("p_name").value,
         brand: document.getElementById("p_brand").value,
         description: document.getElementById("p_description").value,
-        price: Number(document.getElementById("p_price").value),
-        stock: Number(document.getElementById("p_stock").value),
+        price: Number(document.getElementById("p_price").value) || 0,
+        stock: Number(document.getElementById("p_stock").value) || 0,
         category: document.getElementById("p_category").value,
         image: document.getElementById("p_image").value
+    };
+}
+
+function buildProduct(data) {
+    return {
+        id: generateId(),
+        name: data.name || "",
+        brand: data.brand || "",
+        price: data.price || 0,
+        stock: data.stock || 0,
+        category: data.category || "",
+        description: data.description || "",
+        image: data.image || "",
+        isActive: true
     };
 }
 
@@ -132,28 +158,67 @@ async function saveProduct() {
         const updated = await productService.patch(selectedProduct.id, data);
         Object.assign(selectedProduct, updated);
     } else {
-        const created = await productService.create(data);
+        const newProduct = {
+            id: generateId(),
+            name: data.name || "",
+            brand: data.brand || "",
+            price: Number(data.price) || 0,
+            stock: Number(data.stock) || 0,
+            category: data.category || "",
+            description: data.description || "",
+            image: data.image || "",
+            isActive: true
+        };
+
+        console.log("CREANDO:", newProduct); // 👈 DEBUG
+
+        const created = await productService.create(newProduct);
         allProducts.push(created);
     }
 
     renderProductsList();
-
-    bootstrap.Offcanvas.getInstance(
-        document.getElementById("offcanvasProducto")
-    ).hide();
 }
 
 async function deleteProduct(id) {
-    await productService.patch(id, {
-        isActive: false
-    })
+    await productService.patch(id, { isActive: false });
 
     const product = allProducts.find(p => p.id === id);
-    product.isActive = false;
+    if (product) product.isActive = false;
 
     renderProductsList();
 }
 
+async function restoreProduct(id) {
+    await productService.patch(id, { isActive: true });
+
+    const product = allProducts.find(p => p.id === id);
+    if (product) product.isActive = true;
+
+    renderProductsList();
+}
+
+function setFilter(type) {
+    filterStatus = type;
+
+    document.querySelectorAll("[data-filter]").forEach(btn => btn.classList.remove("active"));
+
+    document.querySelector(`[data-filter="${type}"]`)?.classList.add("active");
+
+    renderProductsList();
+}
+
+function generateId() {
+    const numericIds = allProducts
+        .map(p => Number(p.id))
+        .filter(id => !isNaN(id));
+
+    const next = numericIds.length
+        ? Math.max(...numericIds) + 1
+        : 1;
+
+    return String(next);
+}
+
 window.saveProduct = saveProduct;
 window.openCreateProduct = openCreateProduct;
-window.deleteProduct = deleteProduct;
+window.setFilter = setFilter;
