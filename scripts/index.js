@@ -1,6 +1,7 @@
 import { Product } from '../models/Product.js';
 import { productService } from '../services/product.service.js';
 import { formatPrice } from '../services/utils.service.js';
+import { cartService } from '../services/cartSevices.js';
 
 const grid        = document.getElementById('productsGrid');
 const filtersEl   = document.getElementById('categoryFilters');
@@ -91,8 +92,12 @@ function buildCategoryFilters(products) {
  
 // ── Carrito ( conectar con cartService cuando exista) ─────────────────
 function addToCart(product) {
-    // TODO: reemplazar con cartService.add(product)
-    showAlert({ type: 'success', message: `"${product.name}" agregado al carrito.` });
+    cartService.add(product);
+
+    showAlert({
+        type: 'success',
+        message: `"${product.name}" agregado al carrito.`
+    });
 }
  
 // ── Carga de productos ────────────────────────────────────────────────────────

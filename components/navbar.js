@@ -1,3 +1,5 @@
+import { cartService } from "../services/cartSevices.js";
+
 const navbar = `
 <nav class="navbar navbar-expand-lg navbar-light navbar-clean">
   <div class="container-fluid">
@@ -60,6 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector(".nav-container");
   if (container) {
     container.innerHTML = navbar;
+
+    cartService.updateBadge();
   }
 });
 
