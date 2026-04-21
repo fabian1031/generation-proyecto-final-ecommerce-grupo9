@@ -37,13 +37,15 @@ const navbar = `
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-person-circle"></i> Cuenta
           </a>
-
+        
           <ul class="dropdown-menu dropdown-menu-end text-center">
             <li><a class="dropdown-item" href="#">Mi perfil</a></li>
             <li><a class="dropdown-item" href="#">Mis pedidos</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
-          </ul>
+            <li><a class="dropdown-item" href="./admin_dashboard.html">Admin Products</a></li>
+            <li><a class="dropdown-item" href="./admin_users.html">Admin Users</a></li>
+    
         </li>
 
       </ul>

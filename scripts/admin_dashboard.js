@@ -1,119 +1,159 @@
 import { productService } from "../services/api.js";
-import { Product } from "../models/Product.js";
-
+import { api } from "../services/api.js";
 let allProducts = [];
+let selectedProduct = null;
 
-const nameInput = document.getElementById("name");
-const priceInput = document.getElementById("price");
-const stockInput = document.getElementById("stock");
-const categoryInput = document.getElementById("category");
 
 loadProducts();
 
 async function loadProducts() {
-    try {
-        const data = await productService.getAll();
-
-        allProducts = data;
-
-        renderAdminTable();
-
-    } catch (error) {
-        console.error("Error loading products:", error);
-    }
+    allProducts = (await productService.getAll()).filter(p => p.isActive)
+    renderProductsList();
 }
 
-async function addProduct() {
-    const newProduct = {
-        name: nameInput.value,
-        price: Number(priceInput.value),
-        stock: Number(stockInput.value),
-        category: categoryInput.value,
-        description: "",
-        image: ""
-    };
-
-    try {
-        const created = await productService.create(newProduct);
-
-        allProducts.push(created);
-
-        renderAdminTable();
-
-        clearForm();
-
-    } catch (error) {
-        console.error("Error creating product:", error);
-    }
-}
-
-async function updateProduct(product) {
-    nameInput.value = product.name;
-    priceInput.value = product.price;
-    stockInput.value = product.value;
-    categoryInput.value = product.category;
-}
-
-async function deleteProduct(id) {
-    try {
-        await productService.delete(id);
-
-        allProducts = allProducts.filter(p => p.id !== id);
-
-        renderAdminTable();
-
-    } catch (error) {
-        console.error("Error deleting product:", error);
-    }
-}
-
-function renderAdminTable() {
-    const container = document.getElementById("adminTable");
-
+function renderProductsList() {
+    const container = document.getElementById("productsList");
     container.innerHTML = "";
 
     allProducts.forEach(p => {
-        const row = document.createElement("div");
-        row.className = "admin-row border p-2 mb-2";
+        const item = document.createElement("button");
+        const isActive = p.isActive !== false;
 
-        row.innerHTML = `
-            <div class="d-flex gap-3 align-items-center">
+        item.className =
+            "list-group-item list-group-item-action d-flex justify-content-between align-items-start gap-2";
 
-                <strong ondblclick="editField(${p.id}, 'name', this)">
-                    ${p.name}
-                </strong>
+        item.innerHTML = `
+            <div class="text-start">
+                <small class="text-muted">ID: ${p.id}</small><br>
+                <div class="fw-semibold">${p.name}</div>
+                <small class="text-muted">${p.category}</small><br>
+                <small class="text-muted">${p.description || ""}</small>
+            </div>
 
-                <span ondblclick="editField(${p.id}, 'price', this)">
-                    $${p.price}
+            <div class="text-end flex-shrink-0">
+                <div class="fw-semibold">$${p.price}</div>
+                <small class="text-muted">Stock: ${p.stock}</small>
+            </div>
+
+            <span class="badge ${isActive ? 'bg-success' : 'bg-danger'}">
+                    ${isActive ? 'Activo' : 'Inactivo'}
                 </span>
+            </div>
 
-                <span ondblclick="editField(${p.id}, 'stock', this)">
-                    Stock: ${p.stock}
-                </span>
-
-                <small ondblclick="editField(${p.id}, 'category', this)">
-                    ${p.category}
-                </small>
-
-                <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">
-                    🗑
-                </button>
-
+            <div class="text-end">
+                ${
+                    isActive
+                        ? `<button class="btn btn-sm btn-danger">🗑</button>`
+                        : `<button class="btn btn-sm btn-success">♻️</button>`
+                }
             </div>
         `;
 
-        container.appendChild(row);
+        // abrir editor
+        item.addEventListener("click", () => openEditProduct(p));
+
+        // DELETE separado
+        item.querySelector(".btn-danger").addEventListener("click", (e) => {
+            e.stopPropagation();
+            deleteProduct(p.id);
+        });
+
+        container.appendChild(item);
     });
+}
+function openCreateProduct() {
+    selectedProduct = null;
+    clearForm();
+
+    document.getElementById("offcanvasTitle").textContent = "Crear producto";
+
+    const offcanvas = new bootstrap.Offcanvas(
+        document.getElementById("offcanvasProducto")
+    );
+
+    offcanvas.show();
+}
+
+function openEditProduct(product) {
+    selectedProduct = product;
+
+    fillForm(product);
+
+    document.getElementById("offcanvasTitle").textContent = "Editar producto";
+
+    const offcanvas = new bootstrap.Offcanvas(
+        document.getElementById("offcanvasProducto")
+    );
+
+    offcanvas.show();
+}
+
+function fillForm(p) {
+    document.getElementById("p_id").value = p.id || "";
+    document.getElementById("p_name").value = p.name || "";
+    document.getElementById("p_brand").value = p.brand || "";
+    document.getElementById("p_description").value = p.description || "";
+    document.getElementById("p_price").value = p.price || 0;
+    document.getElementById("p_stock").value = p.stock || 0;
+    document.getElementById("p_category").value = p.category || "";
+    document.getElementById("p_image").value = p.image || "";
 }
 
 
 function clearForm() {
-    nameInput.value = "";
-    priceInput.value = "";
-    stockInput.value = "";
-    categoryInput.value = "";
+    fillForm({
+        id: "",
+        name: "",
+        brand: "",
+        description: "",
+        price: "",
+        stock: "",
+        category: "",
+        image: ""
+    });
 }
 
-window.addProduct = addProduct;
-window.editField = editField;
+function getFormData() {
+    return {
+        name: document.getElementById("p_name").value,
+        brand: document.getElementById("p_brand").value,
+        description: document.getElementById("p_description").value,
+        price: Number(document.getElementById("p_price").value),
+        stock: Number(document.getElementById("p_stock").value),
+        category: document.getElementById("p_category").value,
+        image: document.getElementById("p_image").value
+    };
+}
+
+async function saveProduct() {
+    const data = getFormData();
+
+    if (selectedProduct) {
+        const updated = await productService.patch(selectedProduct.id, data);
+        Object.assign(selectedProduct, updated);
+    } else {
+        const created = await productService.create(data);
+        allProducts.push(created);
+    }
+
+    renderProductsList();
+
+    bootstrap.Offcanvas.getInstance(
+        document.getElementById("offcanvasProducto")
+    ).hide();
+}
+
+async function deleteProduct(id) {
+    await productService.patch(id, {
+        isActive: false
+    })
+
+    const product = allProducts.find(p => p.id === id);
+    product.isActive = false;
+
+    renderProductsList();
+}
+
+window.saveProduct = saveProduct;
+window.openCreateProduct = openCreateProduct;
 window.deleteProduct = deleteProduct;
