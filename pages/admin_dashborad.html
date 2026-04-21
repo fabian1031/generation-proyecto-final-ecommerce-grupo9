@@ -30,35 +30,113 @@
              <h2>Product Admin Dashboard</h2>
 
 
-    <div id="adminTable" class="mt-3"></div>
+   <div class="container py-4" style="max-width: 640px;">
 
-    <hr>
-
-    
-    <div class="row g-2">
-
-        <div class="col">
-            <input id="name" class="form-control" placeholder="Nombre">
-        </div>
-
-        <div class="col">
-            <input id="price" type="number" class="form-control" placeholder="Precio">
-        </div>
-
-        <div class="col">
-            <input id="stock" type="number" class="form-control" placeholder="Stock">
-        </div>
-
-        <div class="col">
-            <input id="category" class="form-control" placeholder="Categoría">
-        </div>
-
-        <div class="col">
-            <button class="btn btn-primary w-100" onclick="addProduct()">
-                Agregar
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Productos</h5>
+            <button class="btn btn-dark btn-sm" data-bs-toggle="offcanvas" data-bs-target="#offcanvasProducto">
+                + Agregar
             </button>
         </div>
 
+        <!-- Lista de productos -->
+        <div class="list-group">
+
+            <button
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-start gap-2"
+                data-bs-toggle="offcanvas" data-bs-target="#offcanvasProducto">
+                <div class="text-start">
+                    <div class="fw-semibold">Laptop Zephyrus</div>
+                    <small class="text-muted">Asus ROG · Laptop Gamer</small><br>
+                    <small class="text-muted">Intel Core i9 9900k RTX 4070ti</small>
+                </div>
+                <div class="text-end flex-shrink-0">
+                    <div class="fw-semibold">$45.000.000</div>
+                    <small class="text-muted">Stock: 5</small>
+                </div>
+            </button>
+
+            <button
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-start gap-2"
+                data-bs-toggle="offcanvas" data-bs-target="#offcanvasProducto">
+                <div class="text-start">
+                    <div class="fw-semibold">Laptop Zephyrus</div>
+                    <small class="text-muted">Asus ROG · Laptop Gamer</small><br>
+                    <small class="text-muted">Intel Core i9 9900k RTX 4070ti</small>
+                </div>
+                <div class="text-end flex-shrink-0">
+                    <div class="fw-semibold">$45.000.000</div>
+                    <small class="text-muted">Stock: 5</small>
+                </div>
+            </button>
+
+            <button
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-start gap-2"
+                data-bs-toggle="offcanvas" data-bs-target="#offcanvasProducto">
+                <div class="text-start">
+                    <div class="fw-semibold">Laptop Zephyrus</div>
+                    <small class="text-muted">Asus ROG · Laptop Gamer</small><br>
+                    <small class="text-muted">Intel Core i9 9900k RTX 4070ti</small>
+                </div>
+                <div class="text-end flex-shrink-0">
+                    <div class="fw-semibold">$45.000.000</div>
+                    <small class="text-muted">Stock: 5</small>
+                </div>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Offcanvas -->
+    <div class="offcanvas offcanvas-bottom rounded-top-4 h-100" tabindex="-1" id="offcanvasProducto">
+        <div class="offcanvas-header border-bottom">
+            <h6 class="offcanvas-title">Producto</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body overflow-auto">
+
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" class="form-control" placeholder="Nombre del producto">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Marca</label>
+                <input type="text" class="form-control" placeholder="Marca">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-control" rows="2" placeholder="Descripción"></textarea>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col">
+                    <label class="form-label">Precio ($)</label>
+                    <input type="number" class="form-control" placeholder="0">
+                </div>
+                <div class="col">
+                    <label class="form-label">Stock</label>
+                    <input type="number" class="form-control" placeholder="0">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Categoría</label>
+                <input type="text" class="form-control" placeholder="Ej: Laptop Gamer">
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Ruta de imagen</label>
+                <input type="text" class="form-control" placeholder="../assets/products/img.png">
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary w-50" data-bs-dismiss="offcanvas">Cancelar</button>
+                <button class="btn btn-dark w-50">Guardar</button>
+            </div>
+
+        </div>
     </div>
         </main>
         <footer class="footer-container">
