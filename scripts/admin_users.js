@@ -66,8 +66,7 @@ function renderUsersList() {
 
         actionBTN.addEventListener("click", (e) => {
             e.stopPropagation();
-            deleteUser(u.id)
-
+            
             if(isActive) {
                 deleteUser(u.id);
             } else {
