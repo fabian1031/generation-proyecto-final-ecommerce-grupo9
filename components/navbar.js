@@ -28,7 +28,7 @@ const navbar = `
         <li class="nav-item">
           <a class="nav-link position-relative" href="./cart.html">
             <i class="bi bi-cart"></i>
-            <span class="cart-badge">2</span>
+            <span class="cart-badge"></span>
           </a>
         </li>
 

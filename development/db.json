@@ -186,14 +186,14 @@
       "username": "Elena",
       "lastname": "Díaz",
       "role": "User",
-      "isActive": true
+      "isActive": false
     },
     {
       "id": "9",
       "username": "Mateo",
       "lastname": "Ramírez",
       "role": "User",
-      "isActive": true
+      "isActive": false
     },
     {
       "id": "10",

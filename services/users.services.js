@@ -1,10 +1,9 @@
 import { api } from "./api.js";
 
-
 export const userService = {
     getAll: () => api.get('/users'),
     getById: (id) => api.get(`/users/${id}`),
-    getByCategory: (Rol) => api.get(`/users?category=${Rol}`),
+    getByRole: (role) => api.get(`/users?category=${role}`),
 
     create: (users) => api.post('/users', users),
     update: (id, users) => api.put(`/users/${id}`, users),
