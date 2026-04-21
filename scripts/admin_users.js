@@ -53,6 +53,12 @@ function renderUsersList() {
         actionBTN.addEventListener("click", (e) => {
             e.stopPropagation();
             deleteUser(u.id)
+
+            if(isActive) {
+                deleteUser(u.id);
+            } else {
+                restoreUser(u.id);
+            }
         });
 
         container.appendChild(item);
@@ -130,25 +136,25 @@ async function saveUser() {
 
 async function deleteUser(id) {
     await userService.patch(id, {
-        isAstive: false
+        isActive: false
     });
 
     const user = allUsers.find(u => u.id === id);
-    user.isAstive = false;
+    user.isActive = false;
 
     renderUsersList();
 }
 
-// async function restoreUser(id) {
-//     await userService.patch(id, {
-//         isActive : true
-//     });
+async function restoreUser(id) {
+    await userService.patch(id, {
+        isActive: true
+    });
 
-//     const user = allUsers.find(u => u.id === id);
-//     user.isActive = true;
+    const user = allUsers.find(u => u.id === id);
+    user.isActive = true;
 
-//     renderUsersList();
-// }
+    renderUsersList();
+}
 
 window.saveUser = saveUser;
 window.openCreateUser = openCreateUser;
