@@ -1,34 +1,6 @@
-import { api } from '../services/api.js';
-// import { Product } from './models/Product.js';
-
-export class Product {
-    constructor({ id, name, price, stock, category, description, image }) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.stock = stock;
-        this.category = category;
-        this.description = description;
-        this.image = image;
-    }
-}
-
-export const productService = {
-    getAll: () => api.get('/products'),
-    getById: (id) => api.get(`/products/${id}`),
-    getByCategory: (cat) => api.get(`/products?category=${cat}`),
-};
-
-const mockProducts = [
-    new Product({ id: 1, name: 'Camiseta Básica Verde', price: 45000, stock: 20, category: 'Ropa', description: 'Camiseta de algodón 100% en tono verde oliva, ideal para el día a día.', image: '../assets/products/img.png' }),
-    new Product({ id: 2, name: 'Bolso de Cuero Café', price: 120000, stock: 5, category: 'Accesorios', description: 'Bolso artesanal en cuero genuino color café con detalles cosidos a mano.', image: '../assets/products/img.png' }),
-    new Product({ id: 3, name: 'Zapatillas Urbanas', price: 180000, stock: 12, category: 'Calzado', description: 'Zapatillas livianas con suela de goma y diseño minimalista.', image: '../assets/products/img.png' }),
-    new Product({ id: 4, name: 'Reloj Minimalista', price: 95000, stock: 8, category: 'Accesorios', description: 'Reloj de pulsera con correa de cuero y esfera limpia en blanco y negro.', image: '../assets/products/img.png' }),
-    new Product({ id: 5, name: 'Chaqueta Ligera Beige', price: 210000, stock: 6, category: 'Ropa', description: 'Chaqueta cortavientos en tela técnica color beige, perfecta para climas frescos.', image: '../assets/products/img.png' }),
-    new Product({ id: 6, name: 'Sandalias de Playa', price: 60000, stock: 18, category: 'Calzado', description: 'Sandalias cómodas con tiras ajustables, ideales para la playa o el campo.', image: '../assets/products/img.png' }),
-    new Product({ id: 7, name: 'Cinturón Trenzado', price: 38000, stock: 10, category: 'Accesorios', description: 'Cinturón trenzado a mano en cuero marrón con hebilla dorada.', image: '../assets/products/img.png' }),
-    new Product({ id: 8, name: 'Polo Lino Blanco', price: 75000, stock: 15, category: 'Ropa', description: 'Polo de lino fresco y transpirable en color blanco, corte recto.', image: '../assets/products/img.png' })
-];
+import { Product } from '../models/Product.js';
+import { productService } from '../services/product.service.js';
+import { formatPrice } from '../services/utils.service.js';
 
 const grid        = document.getElementById('productsGrid');
 const filtersEl   = document.getElementById('categoryFilters');
@@ -36,13 +8,7 @@ const emptyState  = document.getElementById('emptyState');
  
 let allProducts   = [];
 let activeCategory = 'all';
- 
-// ── Helpers ───────────────────────────────────────────────────────────────────
- 
-function formatPrice(price) {
-    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(price);
-}
- 
+  
 function createProductCard(product) {
     const col = document.createElement('div');
     col.className = 'col';
@@ -123,7 +89,7 @@ function buildCategoryFilters(products) {
     });
 }
  
-// ── Carrito (stub — conectar con cartService cuando lo tengas) ─────────────────
+// ── Carrito ( conectar con cartService cuando exista) ─────────────────
 function addToCart(product) {
     // TODO: reemplazar con cartService.add(product)
     showAlert({ type: 'success', message: `"${product.name}" agregado al carrito.` });
@@ -132,10 +98,8 @@ function addToCart(product) {
 // ── Carga de productos ────────────────────────────────────────────────────────
 async function loadProducts() {
     try {
-        // TODO: reemplazar mock por → const data = await productService.getAll();
-        //       y mapear: data.map(p => new Product(p))
-        await new Promise(r => setTimeout(r, 800)); // simula latencia
-        allProducts = mockProducts;
+        const data = await productService.getAll();
+        allProducts = data.map(p => new Product(p));
  
         buildCategoryFilters(allProducts);
         renderProducts(allProducts);

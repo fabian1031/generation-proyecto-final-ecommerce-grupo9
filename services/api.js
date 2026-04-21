@@ -32,25 +32,3 @@ export const api = {
     patch:  (endpoint, body)        => request(endpoint, { method: 'PATCH',  body: JSON.stringify(body) }),
     delete: (endpoint)              => request(endpoint, { method: 'DELETE' }),
 };
-
-export const productService = {
-    getAll: () => api.get('/products'),
-    getById: (id) => api.get(`/products/${id}`),
-    getByCategory: (cat) => api.get(`/products?category=${cat}`),
-
-    create: (product) => api.post('/products', product),
-    update: (id, product) => api.put(`/products/${id}`, product),
-    patch: (id, data) => api.patch(`/products/${id}`, data),
-    delete: (id) => api.delete(`/products/${id}`)
-};
-
-export const userService = {
-    getAll: () => api.get('/users'),
-    getById: (id) => api.get(`/users/${id}`),
-    getByCategory: (Rol) => api.get(`/users?category=${Rol}`),
-
-    create: (users) => api.post('/users', users),
-    update: (id, users) => api.put(`/users/${id}`, users),
-    patch: (id, data) => api.patch(`/users/${id}`, data),
-    delete: (id) => api.delete(`/users/${id}`)
-};

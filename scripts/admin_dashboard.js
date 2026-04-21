@@ -1,4 +1,4 @@
-import { productService } from "../services/api.js";
+import { productService } from "../services/product.service.js";
 import { api } from "../services/api.js";
 let allProducts = [];
 let selectedProduct = null;

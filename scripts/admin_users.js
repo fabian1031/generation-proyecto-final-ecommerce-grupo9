@@ -1,4 +1,4 @@
-import { userService } from "../services/api.js";
+import { userService } from "../services/users.services.js";
 let allUsers = [];
 let selectedUser = null;
 
@@ -21,7 +21,10 @@ function renderUsersList() {
             "list-group-item list-group-item-action d-flex justify-content-between align-items-start gap-2";
 
         item.innerHTML = `
-            <div class="text-start">
+        <div class="text-start">
+                <div class="text-muted">
+                    ID:  ${u.id}
+                </div>
                 <div class="fw-semibold">
                     ${u.username} ${u.lastname}
                 </div>
@@ -29,22 +32,17 @@ function renderUsersList() {
                 <small class="text-muted">
                     Rol: ${u.role}
                 </small><br>
-
-                 <div class="fw-semibold">
-                  ID:  ${u.id}
-                </div>
-
+                
                 <span class="badge ${isActive ? 'bg-success' : 'bg-danger'}">
                     ${isActive ? 'Activo' : 'Inactivo'}
                 </span>
             </div>
 
             <div class="text-end">
-                ${
-                    isActive
-                        ? `<button class="btn btn-sm btn-danger">🗑</button>`
-                        : `<button class="btn btn-sm btn-success">♻️</button>`
-                }
+                ${isActive
+                ? `<button class="btn btn-sm btn-danger">🗑</button>`
+                : `<button class="btn btn-sm btn-success">♻️</button>`
+            }
             </div>
         `;
 
@@ -54,12 +52,7 @@ function renderUsersList() {
 
         actionBTN.addEventListener("click", (e) => {
             e.stopPropagation();
-
-            if(isActive) {
-                deleteUser(u.id);
-            } else {
-                restoreUser(u.id);
-            }
+            deleteUser(u.id)
         });
 
         container.appendChild(item);
@@ -137,7 +130,7 @@ async function saveUser() {
 
 async function deleteUser(id) {
     await userService.patch(id, {
-        isAstive : false
+        isAstive: false
     });
 
     const user = allUsers.find(u => u.id === id);
