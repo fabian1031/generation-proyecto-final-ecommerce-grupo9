@@ -1,6 +1,7 @@
 import { userService } from "../services/users.services.js";
 let allUsers = [];
 let selectedUser = null;
+let filterStatus = "all";
 
 loadUsers();
 
@@ -13,7 +14,17 @@ function renderUsersList() {
     const container = document.getElementById("usersList");
     container.innerHTML = "";
 
-    allUsers.forEach(u => {
+    let filteredUsers = allUsers;
+
+    if(filterStatus === "inactive") {
+        filteredUsers = allUsers.filter(u => !u.isActive);
+    }
+
+    if(filterStatus === "active") {
+        filteredUsers = allUsers.filter(u => u.isActive)
+    }
+
+    filteredUsers.forEach(u => {
         const item = document.createElement("button");
         const isActive = u.isActive !== false;
 
@@ -46,7 +57,10 @@ function renderUsersList() {
             </div>
         `;
 
-        item.addEventListener("click", () => openEditUser(u));
+        item.addEventListener("click", () => {
+           if(!isActive) return;
+           openEditUser(u);
+        });
 
         const actionBTN = item.querySelector("button");
 
@@ -156,6 +170,19 @@ async function restoreUser(id) {
     renderUsersList();
 }
 
+function setFilter(type) {
+    filterStatus = type;
+
+    document.querySelectorAll("[data-filter]")
+        .forEach(btn => btn.classList.remove("active"));
+
+    document.querySelector(`[data-filter="${type}"]`)
+        ?.classList.add("active");
+
+    renderUsersList();
+}
+
 window.saveUser = saveUser;
 window.openCreateUser = openCreateUser;
 window.deleteUser = deleteUser;
+window.setFilter = setFilter;

@@ -200,7 +200,7 @@
       "username": "Sofía",
       "lastname": "Castillo",
       "role": "User",
-      "isActive": true
+      "isActive": false
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
