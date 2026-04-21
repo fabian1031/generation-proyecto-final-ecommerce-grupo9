@@ -1,5 +1,6 @@
 import { Product } from '../models/Product.js';
 import { productService } from '../services/product.service.js';
+import { formatPrice } from '../services/utils.service.js';
 
 const grid        = document.getElementById('productsGrid');
 const filtersEl   = document.getElementById('categoryFilters');
@@ -7,13 +8,7 @@ const emptyState  = document.getElementById('emptyState');
  
 let allProducts   = [];
 let activeCategory = 'all';
- 
-// ── Helpers ───────────────────────────────────────────────────────────────────
- 
-function formatPrice(price) {
-    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(price);
-}
- 
+  
 function createProductCard(product) {
     const col = document.createElement('div');
     col.className = 'col';
@@ -94,7 +89,7 @@ function buildCategoryFilters(products) {
     });
 }
  
-// ── Carrito (stub — conectar con cartService cuando lo tengas) ─────────────────
+// ── Carrito ( conectar con cartService cuando exista) ─────────────────
 function addToCart(product) {
     // TODO: reemplazar con cartService.add(product)
     showAlert({ type: 'success', message: `"${product.name}" agregado al carrito.` });
@@ -103,7 +98,6 @@ function addToCart(product) {
 // ── Carga de productos ────────────────────────────────────────────────────────
 async function loadProducts() {
     try {
-
         const data = await productService.getAll();
         allProducts = data.map(p => new Product(p));
  
