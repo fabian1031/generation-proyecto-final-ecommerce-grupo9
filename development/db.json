@@ -120,16 +120,7 @@
       "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
       "isActive": true
     },
-    {
-      "id": "11",
-      "name": "Memoria Ram XPG 32GB DDR5",
-      "price": 2000000,
-      "stock": 5,
-      "category": "Almacenamiento",
-      "description": "",
-      "image": "",
-      "isActive": true
-    },
+    
     {
       "id": "12",
       "name": "Monitor 27 165hz 1080p",
