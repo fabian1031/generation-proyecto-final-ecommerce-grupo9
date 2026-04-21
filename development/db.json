@@ -1,176 +1,186 @@
 {
-    "products": [
-        {
-            "id": 1,
-            "name": "Laptop Zephyrus M16",
-            "brand": "Asus ROG",
-            "price": 8500000,
-            "status": "Usado",
-            "stock": 1,
-            "category": "Laptop Gamer",
-            "description": "Intel Core i9-13900H, RTX 4070, 32GB RAM, Pantalla Nebula HDR.",
-            "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
-        },
-        {
-            "id": 2,
-            "name": "Tarjeta de Video RTX 3060",
-            "brand": "EVGA",
-            "price": 1400000,
-            "status": "Usado",
-            "stock": 3,
-            "category": "GPU",
-            "description": "12GB GDDR6, excelente estado, nunca usada para minería.",
-            "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
-        },
-        {
-            "id": 3,
-            "name": "Procesador Ryzen 7 7800X3D",
-            "brand": "AMD",
-            "price": 2100000,
-            "status": "Nuevo",
-            "stock": 10,
-            "category": "Procesadores",
-            "description": "El mejor procesador para gaming, arquitectura Zen 4, socket AM5.",
-            "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
-        },
-        {
-            "id": 4,
-            "name": "Monitor Odyssey G7",
-            "brand": "Samsung",
-            "price": 2800000,
-            "status": "Nuevo",
-            "stock": 4,
-            "category": "Monitores",
-            "description": "27 pulgadas, curvo 1000R, 240Hz, 1ms, resolución QHD.",
-            "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
-        },
-        {
-            "id": 5,
-            "name": "Teclado Mecánico G915 TKL",
-            "brand": "Logitech G",
-            "price": 750000,
-            "status": "Usado",
-            "stock": 2,
-            "category": "Periféricos",
-            "description": "Teclado inalámbrico de bajo perfil con switches táctiles.",
-            "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
-        },
-        {
-            "id": 6,
-            "name": "Placa Base Z790 Aorus Elite",
-            "brand": "Gigabyte",
-            "price": 1600000,
-            "status": "Nuevo",
-            "stock": 6,
-            "category": "Mainboards",
-            "description": "Socket LGA1700 para Intel 13ra y 14ta gen, soporte DDR5.",
-            "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
-        },
-        {
-            "id": 7,
-            "name": "Memoria RAM Vengeance RGB",
-            "brand": "Corsair",
-            "price": 550000,
-            "status": "Nuevo",
-            "stock": 15,
-            "category": "RAM",
-            "description": "Kit 32GB (2x16GB) DDR5 6000MHz CL36.",
-            "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
-        },
-        {
-            "id": 8,
-            "name": "Fuente de Poder RM850x",
-            "brand": "Corsair",
-            "price": 600000,
-            "status": "Usado",
-            "stock": 5,
-            "category": "Fuentes de Poder",
-            "description": "80 Plus Gold, completamente modular, incluye cables originales.",
-            "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
-        },
-        {
-            "id": 9,
-            "name": "SSD NVMe 980 Pro 1TB",
-            "brand": "Samsung",
-            "price": 480000,
-            "status": "Nuevo",
-            "stock": 20,
-            "category": "Almacenamiento",
-            "description": "PCIe 4.0 NVMe M.2, velocidades de hasta 7000 MB/s.",
-            "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
-        },
-        {
-            "id": 10,
-            "name": "Gabinete H9 Flow",
-            "brand": "NZXT",
-            "price": 950000,
-            "status": "Nuevo",
-            "stock": 3,
-            "category": "Chasis",
-            "description": "Diseño de doble cámara, excelente flujo de aire y vista panorámica.",
-            "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
-        }
-    ],
-    "Users": [
-        {
-            "id": 1,
-            "username": "Pedro",
-            "lastname": "Sanchez",
-            "Rol": "Admin"
-        },
-        {
-            "id": 2,
-            "username": "Maria",
-            "lastname": "Gomez",
-            "Rol": "User"
-        },
-        {
-            "id": 3,
-            "username": "Juan",
-            "lastname": "Pérez",
-            "Rol": "User"
-        },
-        {
-            "id": 4,
-            "username": "Camila",
-            "lastname": "Rodríguez",
-            "Rol": "User"
-        },
-        {
-            "id": 5,
-            "username": "Andrés",
-            "lastname": "López",
-            "Rol": "User"
-        },
-        {
-            "id": 6,
-            "username": "Valentina",
-            "lastname": "Martínez",
-            "Rol": "User"
-        },
-        {
-            "id": 7,
-            "username": "Ricardo",
-            "lastname": "Torres",
-            "Rol": "User"
-        },
-        {
-            "id": 8,
-            "username": "Elena",
-            "lastname": "Díaz",
-            "Rol": "User"
-        },
-        {
-            "id": 9,
-            "username": "Mateo",
-            "lastname": "Ramírez",
-            "Rol": "User"
-        },
-        {
-            "id": 10,
-            "username": "Sofía",
-            "lastname": "Castillo",
-            "Rol": "User"
-        }
-    ]
+  "products": [
+    {
+      "id": "1",
+      "name": "Laptop Zephyrus M16",
+      "brand": "Asus ROG",
+      "price": 8500000,
+      "status": "Usado",
+      "stock": 1,
+      "category": "Laptop Gamer",
+      "description": "Intel Core i9-13900H, RTX 4070, 32GB RAM, Pantalla Nebula HDR.",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
+    },
+    {
+      "id": "2",
+      "name": "Tarjeta de Video RTX 3060",
+      "brand": "EVGA",
+      "price": 1400000,
+      "status": "Usado",
+      "stock": 3,
+      "category": "GPU",
+      "description": "12GB GDDR6, excelente estado, nunca usada para minería.",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
+    },
+    {
+      "id": "3",
+      "name": "Procesador Ryzen 7 7800X3D",
+      "brand": "AMD",
+      "price": 2100000,
+      "status": "Nuevo",
+      "stock": 10,
+      "category": "Procesadores",
+      "description": "El mejor procesador para gaming, arquitectura Zen 4, socket AM5.",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
+    },
+    {
+      "id": "4",
+      "name": "Monitor Odyssey G7",
+      "brand": "Samsung",
+      "price": 2800000,
+      "status": "Nuevo",
+      "stock": 4,
+      "category": "Monitores",
+      "description": "27 pulgadas, curvo 1000R, 240Hz, 1ms, resolución QHD.",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
+    },
+    {
+      "id": "5",
+      "name": "Teclado Mecánico G915 TKL",
+      "brand": "Logitech G",
+      "price": 750000,
+      "status": "Usado",
+      "stock": 2,
+      "category": "Periféricos",
+      "description": "Teclado inalámbrico de bajo perfil con switches táctiles.",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
+    },
+    {
+      "id": "6",
+      "name": "Placa Base Z790 Aorus Elite",
+      "brand": "Gigabyte",
+      "price": 1600000,
+      "status": "Nuevo",
+      "stock": 6,
+      "category": "Mainboards",
+      "description": "Socket LGA1700 para Intel 13ra y 14ta gen, soporte DDR5.",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
+    },
+    {
+      "id": "7",
+      "name": "Memoria RAM Vengeance RGB",
+      "brand": "Corsair",
+      "price": 550000,
+      "status": "Nuevo",
+      "stock": 15,
+      "category": "RAM",
+      "description": "Kit 32GB (2x16GB) DDR5 6000MHz CL36.",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
+    },
+    {
+      "id": "8",
+      "name": "Fuente de Poder RM850x",
+      "brand": "Corsair",
+      "price": 600000,
+      "status": "Usado",
+      "stock": 5,
+      "category": "Fuentes de Poder",
+      "description": "80 Plus Gold, completamente modular, incluye cables originales.",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
+    },
+    {
+      "id": "9",
+      "name": "SSD NVMe 980 Pro 1TB",
+      "brand": "Samsung",
+      "price": 480000,
+      "status": "Nuevo",
+      "stock": 20,
+      "category": "Almacenamiento",
+      "description": "PCIe 4.0 NVMe M.2, velocidades de hasta 7000 MB/s.",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
+    },
+    {
+      "id": "10",
+      "name": "Gabinete H9 Flow",
+      "brand": "NZXT",
+      "price": 950000,
+      "status": "Nuevo",
+      "stock": 3,
+      "category": "Chasis",
+      "description": "Diseño de doble cámara, excelente flujo de aire y vista panorámica.",
+      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png"
+    },
+    {
+      "name": "Memoria Ram XPG 32GB DDR5",
+      "price": 2000000,
+      "stock": 5,
+      "category": "Almacenamiento",
+      "description": "",
+      "image": "",
+      "id": "W22e-VG7n14"
+    }
+  ],
+  "Users": [
+    {
+      "id": "1",
+      "username": "Pedro",
+      "lastname": "Sanchez",
+      "Rol": "Admin"
+    },
+    {
+      "id": "2",
+      "username": "Maria",
+      "lastname": "Gomez",
+      "Rol": "User"
+    },
+    {
+      "id": "3",
+      "username": "Juan",
+      "lastname": "Pérez",
+      "Rol": "User"
+    },
+    {
+      "id": "4",
+      "username": "Camila",
+      "lastname": "Rodríguez",
+      "Rol": "User"
+    },
+    {
+      "id": "5",
+      "username": "Andrés",
+      "lastname": "López",
+      "Rol": "User"
+    },
+    {
+      "id": "6",
+      "username": "Valentina",
+      "lastname": "Martínez",
+      "Rol": "User"
+    },
+    {
+      "id": "7",
+      "username": "Ricardo",
+      "lastname": "Torres",
+      "Rol": "User"
+    },
+    {
+      "id": "8",
+      "username": "Elena",
+      "lastname": "Díaz",
+      "Rol": "User"
+    },
+    {
+      "id": "9",
+      "username": "Mateo",
+      "lastname": "Ramírez",
+      "Rol": "User"
+    },
+    {
+      "id": "10",
+      "username": "Sofía",
+      "lastname": "Castillo",
+      "Rol": "User"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
