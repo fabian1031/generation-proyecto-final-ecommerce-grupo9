@@ -1,0 +1,44 @@
+{
+    "products": [
+        {
+            "id": 1,
+            "name": "Laptop Zephyrus",
+            "brand": "Asus rog",
+            "price": 45000000,
+            "stock": 5,
+            "category": "laptop Gamer",
+            "description": "Laptop Gamer Intel Core i 9 9900k RTX 4070ti",
+            "image": "../assets/products/img.png"
+        },
+        {
+            "id": 1,
+            "name": "Laptop Zephyrus",
+            "brand": "Asus rog",
+            "price": 45000000,
+            "stock": 5,
+            "category": "laptop Gamer",
+            "description": "Laptop Gamer Intel Core i 9 9900k RTX 4070ti",
+            "image": "../assets/products/img.png"
+        },
+         {
+            "id": 1,
+            "name": "Laptop Zephyrus",
+            "brand": "Asus rog",
+            "price": 45000000,
+            "stock": 5,
+            "category": "laptop Gamer",
+            "description": "Laptop Gamer Intel Core i 9 9900k RTX 4070ti",
+            "image": "../assets/products/img.png"
+        }
+    ],
+
+        "Usuarios": [
+            {
+             "id": 1,
+             "username": "Juancho",
+             "lastname": "Polo",
+             "Rol":     "Admin"       
+            }
+        ]
+    
+}

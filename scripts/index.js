@@ -81,6 +81,7 @@ function createProductCard(product) {
 }
  
 function renderProducts(products) {
+    
     // Quitar skeletons si existen
     grid.querySelectorAll('.skeleton-card-col').forEach(el => el.remove());
  
