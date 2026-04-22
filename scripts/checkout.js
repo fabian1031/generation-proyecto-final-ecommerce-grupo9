@@ -87,10 +87,6 @@ document.getElementById('confirmPurchase').addEventListener('click', async () =>
         direccion: document.getElementById('direccion').value
     };
 
-    console.log(fields);
-
-
-
 
     const result = validateCheckout(fields);
 
