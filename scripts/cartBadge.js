@@ -93,6 +93,7 @@ function renderCart() {
 
     renderSummary();
 }
+
 //renderizamos aqui
 function renderSummary() {
     const totalItems = cartService.getTotalItems();
@@ -104,5 +105,20 @@ function renderSummary() {
     document.querySelector('#summary-iva').textContent = formatPrice(iva);
     document.querySelector('#summary-total').textContent = formatPrice(totalPrice + iva);
 }
+
+document.getElementById('goCheckout').addEventListener('click', () => {
+    const cart = cartService.getCart();
+
+    if (cart.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Carrito vacío',
+            text: 'Agrega productos antes de continuar'
+        });
+        return;
+    }
+
+    window.location.href = './checkout.html';
+});
 
 document.addEventListener('DOMContentLoaded', renderCart);
