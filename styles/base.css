@@ -165,6 +165,29 @@ body {
     box-shadow: 0 0 0 .25rem var(--primary-light)
 }
 
+
+/* Error input validations */
+
+/* contenedor del mensaje */
+.invalid-feedback {
+  display: block;              /* siempre ocupa espacio */
+  min-height: 18px;            /* reserva espacio */
+  font-size: 0.75rem;
+  visibility: hidden;          /* oculto pero ocupa espacio */
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* cuando hay error */
+.is-invalid ~ .invalid-feedback,
+.form-control.is-invalid + .invalid-feedback,
+.form-select.is-invalid + .invalid-feedback {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+
 /* Menú hamburguesa: fondo y contención */
 @media (max-width: 991.98px) {
   .navbar-collapse {

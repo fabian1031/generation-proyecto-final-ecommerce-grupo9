@@ -91,33 +91,72 @@ export function validateFeedback(value) {
   return { valid: true, message: 'Gracias por tu comentario.' };
 }
 
-/**
- * Valida todos los campos de una sola vez.
- * @param {{ nombre: string, correo: string, celular: string, feedback: string }} fields
- * @returns {{ valid: boolean, errors: { nombre, correo, celular, feedback } }}
- *
- * Ejemplo:
- *   const result = validateAll({ nombre: 'Ana', correo: 'ana@mail.com', celular: '3001234567', feedback: 'Todo bien.' });
- *   if (!result.valid) console.log(result.errors);
- */
-export function validateAll(fields) {
-  const results = {
-    nombre:   validateNombre(fields.nombre),
-    correo:   validateCorreo(fields.correo),
-    celular:  validateCelular(fields.celular),
-    feedback: validateFeedback(fields.feedback),
-  };
+export const validatePassword = (value) => {
+    const val = (value || '').trim();
 
-  const errors = {};
-  let valid = true;
-
-  for (const [key, result] of Object.entries(results)) {
-    if (!result.valid) {
-      valid = false;
-      errors[key] = result.message;
+    if (!val) {
+        return { valid: false, message: 'La contraseña es obligatoria.' };
     }
+
+    if (val.length < 6) {
+        return { valid: false, message: 'Debe tener al menos 6 caracteres.' };
+    }
+
+    return { valid: true, message: 'OK' };
+};
+
+// -----------------------
+// Validaciones adicionales
+// -----------------------
+
+export const validateConfirmPassword = (value, allValues) => {
+  if (!value) {
+    return { valid: false, message: 'Confirma tu contraseña.' };
   }
 
-  return { valid, errors };
-}
+  if (value !== allValues.password) {
+    return { valid: false, message: 'Las contraseñas no coinciden.' };
+  }
+
+  return { valid: true, message: 'OK' };
+};
+
+export const simpleRequired = (message) => (value) => ({
+  valid: !!value,
+  message
+});
+
+export const validateCedula = (value) => ({
+  valid: /^[A-Za-z0-9\-]{5,20}$/.test(value),
+  message: 'Documento inválido.'
+});
+
+export const validateDireccion = (value) => ({
+  valid: value.trim().length > 5,
+  message: 'Dirección muy corta.'
+});
+
+// -----------------------
+// Mapa centralizado 🔥
+// -----------------------
+export const registerValidators = {
+  nombre: validateNombre,
+  apellidos: validateNombre,
+  correo: validateCorreo,
+  celular: validateCelular,
+  password: validatePassword,
+  confirmPassword: validateConfirmPassword,
+
+  tipoDocumento: simpleRequired('Selecciona un tipo.'),
+  cedula: validateCedula,
+  fechaNacimiento: simpleRequired('Ingresa tu fecha.'),
+  genero: simpleRequired('Selecciona una opción.'),
+  ciudad: simpleRequired('Selecciona tu ciudad.'),
+  direccion: validateDireccion,
+  terminos: (v, _, input) => ({
+    valid: input.checked,
+    message: 'Debes aceptar los términos.'
+  })
+};
+
 
