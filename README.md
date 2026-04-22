@@ -19,4 +19,4 @@ npx json-server ./development/db.json
 - Camilo Castellanos
 - Hernan Vasquez
 - Cristian Ceballos
-- Fabian
+- Fabian Beltran
