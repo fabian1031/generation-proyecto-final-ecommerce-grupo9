@@ -121,3 +121,42 @@ export function validateAll(fields) {
   return { valid, errors };
 }
 
+//validaciones a los campos que capturamos en checkout
+
+export function validateCheckout(fields) {
+
+  const results = {
+    nombre: validateNombre(fields.nombre),
+    apellidos: validateNombre(fields.apellidos),
+    correo: validateCorreo(fields.correo),
+    celular: validateCelular(fields.celular),
+    direccion: validateDireccion(fields.direccion)
+  };
+
+  const errors = {};
+  let valid = true;
+
+  for (const [key, result] of Object.entries(results)) {
+    if (!result.valid) {
+      valid = false;
+      errors[key] = result.message;
+    }
+  }
+
+  return { valid, errors };
+}
+
+//añadimos la validacion de direcciones.
+export function validateDireccion(value) {
+  const val = (value || '').trim();
+
+  if (!val) {
+    return { valid: false, message: 'La dirección es obligatoria.' };
+  }
+
+  if (val.length < 5) {
+    return { valid: false, message: 'La dirección es demasiado corta.' };
+  }
+
+  return { valid: true, message: 'Dirección válida.' };
+}
