@@ -184,18 +184,3 @@ export function validateCheckout(fields) {
 
   return { valid, errors };
 }
-
-//añadimos la validacion de direcciones.
-export function validateDireccion(value) {
-  const val = (value || '').trim();
-
-  if (!val) {
-    return { valid: false, message: 'La dirección es obligatoria.' };
-  }
-
-  if (val.length < 5) {
-    return { valid: false, message: 'La dirección es demasiado corta.' };
-  }
-
-  return { valid: true, message: 'Dirección válida.' };
-}
