@@ -137,7 +137,7 @@ export const validateDireccion = (value) => ({
 });
 
 // -----------------------
-// Mapa centralizado 🔥
+// Mapa centralizado
 // -----------------------
 export const registerValidators = {
   nombre: validateNombre,
@@ -184,3 +184,33 @@ export function validateCheckout(fields) {
 
   return { valid, errors };
 }
+
+//validamos el formulario de contacto
+
+export function validateForm(fields, schema) {
+  const errors = {};
+  let valid = true;
+
+  for (const key in schema) {
+    const validator = schema[key];
+
+    const result = validator(fields[key], fields);
+
+    if (!result.valid) {
+      valid = false;
+      errors[key] = result.message;
+    }
+  }
+
+  return { valid, errors };
+}
+
+//exportamos el esquema de contacto.
+
+export const contactValidators = {
+  nombre: validateNombre,
+  correo: validateCorreo,
+  celular: validateCelular,
+  feedback: validateFeedback
+};
+

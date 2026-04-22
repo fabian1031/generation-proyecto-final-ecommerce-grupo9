@@ -1,9 +1,4 @@
-import {
-    validateNombre,
-    validateCorreo,
-    validateCelular,
-    validateFeedback
-} from './validations.js';
+import { validateForm, contactValidators, validateNombre, validateCorreo, validateCelular, validateFeedback } from './validations.js';
 
 const contactForm = document.querySelector('#contactForm');
 const nombreInput = document.querySelector('#nombre');
@@ -34,12 +29,12 @@ const contactFormHandler = async (event) => {
     const cellphone = celularInput.value.trim();
     const message = mensajeInput.value.trim();
 
-    const { valid, errors } = validateAll({
+    const { valid, errors } = validateForm({
         nombre: name,
         correo: email,
         celular: cellphone,
         feedback: message
-    });
+    }, contactValidators);
 
     // Activar estilos de Bootstrap
     form.classList.add('was-validated');
