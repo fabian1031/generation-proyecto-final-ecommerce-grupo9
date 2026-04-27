@@ -25,6 +25,7 @@ function renderCart() {
                         <div>
                             <p class="small text-muted mb-1">${item.brand}</p>
                             <p class="fw-semibold mb-2">${item.name}</p>
+                            <p class="small text-muted mb-1">${item.description}</p>
                         </div>
 
                         <div class="d-flex justify-content-between mt-3">
