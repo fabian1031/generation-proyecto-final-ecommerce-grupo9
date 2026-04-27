@@ -9,7 +9,7 @@
       "stock": 3,
       "category": "Laptop Gamer",
       "description": "Intel Core i9-13900H, RTX 4070, 32GB RAM, Pantalla Nebula HDR.",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/19012059/pexels-photo-19012059.jpeg",
       "isActive": true
     },
     {
@@ -21,7 +21,7 @@
       "stock": 3,
       "category": "GPU",
       "description": "12GB GDDR6, excelente estado, nunca usada para minería.",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/32728404/pexels-photo-32728404.jpeg",
       "isActive": true
     },
     {
@@ -33,7 +33,7 @@
       "stock": 10,
       "category": "Procesadores",
       "description": "El mejor procesador para gaming, arquitectura Zen 4, socket AM5.",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/33798628/pexels-photo-33798628.jpeg",
       "isActive": true
     },
     {
@@ -45,7 +45,7 @@
       "stock": 4,
       "category": "Monitores",
       "description": "27 pulgadas, curvo 1000R, 240Hz, 1ms, resolución QHD.",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/12252924/pexels-photo-12252924.jpeg",
       "isActive": true
     },
     {
@@ -57,7 +57,7 @@
       "stock": 2,
       "category": "Periféricos",
       "description": "Teclado inalámbrico de bajo perfil con switches táctiles.",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/28842075/pexels-photo-28842075.jpeg",
       "isActive": true
     },
     {
@@ -69,7 +69,7 @@
       "stock": 6,
       "category": "Mainboards",
       "description": "Socket LGA1700 para Intel 13ra y 14ta gen, soporte DDR5.",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/7596370/pexels-photo-7596370.jpeg",
       "isActive": true
     },
     {
@@ -81,7 +81,7 @@
       "stock": 15,
       "category": "RAM",
       "description": "Kit 32GB (2x16GB) DDR5 6000MHz CL36.",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/34338596/pexels-photo-34338596.jpeg",
       "isActive": true
     },
     {
@@ -93,7 +93,7 @@
       "stock": 5,
       "category": "Fuentes de Poder",
       "description": "80 Plus Gold, completamente modular, incluye cables originales.",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/35147159/pexels-photo-35147159.jpeg",
       "isActive": true
     },
     {
@@ -105,7 +105,7 @@
       "stock": 20,
       "category": "Almacenamiento",
       "description": "PCIe 4.0 NVMe M.2, velocidades de hasta 7000 MB/s.",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/28666524/pexels-photo-28666524.jpeg",
       "isActive": true
     },
     {
@@ -117,10 +117,9 @@
       "stock": 10,
       "category": "Chasis",
       "description": "Diseño de doble cámara, excelente flujo de aire y vista panorámica.",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/36614464/pexels-photo-36614464.jpeg",
       "isActive": true
     },
-    
     {
       "id": "12",
       "name": "Monitor 27 165hz 1080p",
@@ -129,7 +128,7 @@
       "price": 450000,
       "stock": 2,
       "category": "Monitores",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/2585916/pexels-photo-2585916.jpeg",
       "isActive": true
     },
     {
@@ -140,19 +139,30 @@
       "stock": 20,
       "category": "Camaras de seguridad",
       "description": "Camara refurbished 2k ip con guardado en la nube",
-      "image": "https://raw.githubusercontent.com/antonshell/placeholder-service/master/resources/test_images/img.png",
+      "image": "https://images.pexels.com/photos/13072973/pexels-photo-13072973.jpeg",
       "isActive": true
     },
     {
       "id": "LyHjIxMgQII",
-      "name": "papitas",
-      "brand": "papitas",
+      "name": "mouse",
+      "brand": "mouse",
       "price": 10000,
       "stock": 20,
-      "category": "papitas",
-      "description": "papitas",
-      "image": "papita.img",
+      "category": "mouse",
+      "description": "mouse",
+      "image": "https://images.pexels.com/photos/20509993/pexels-photo-20509993.jpeg",
       "isActive": false
+    },
+    {
+      "id": "M5iguNoUe8U",
+      "name": "procesador i7 7700k",
+      "brand": "intel",
+      "price": 1300000,
+      "stock": 1,
+      "category": "procesadores",
+      "description": "procesador ",
+      "image": "https://images.pexels.com/photos/34353877/pexels-photo-34353877.jpeg",
+      "isActive": true
     }
   ],
   "users": [

@@ -1,41 +1,83 @@
 const footer = `
-<footer class="footer-clean py-5">
+<footer class=" text-white pt-5 pb-4">
   <div class="container">
-    <div class="row align-items-start">
+    <div class="row g-4">
 
-      <div class="col-md-6 mb-4">
-        <h2 class="logo">coroto</h2>
-
-        <p class="footer-text">
-          Lo que uno desecha,<br>
-          otro lo necesita
+      <!-- Marca -->
+      <div class="col-12 col-lg-4">
+        <a class="d-flex align-items-center gap-2 text-decoration-none mb-3" href="#">
+          <span class="fw-bold fs-4 text-white">Coroto</span>
+        </a>
+        <p class="text-white mb-1">
+          <span class="fw-semibold" style="color: var(--beige);">"Lo que uno desecha, otro lo necesita"</span>
         </p>
-
-        <div class="footer-social">
-          <a href="#"><i class="bi bi-facebook"></i></a>
-          <a href="#"><i class="bi bi-instagram"></i></a>
-          <a href="#"><i class="bi bi-twitter-x"></i></a>
+        <p class="text-white small mb-4">
+          Dándole una segunda oportunidad a la tecnología y el hogar en Colombia.
+        </p>
+        <div class="d-flex gap-2">
+          <a href="#" class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Facebook">
+            <i class="bi bi-facebook"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Instagram">
+            <i class="bi bi-instagram"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Twitter X">
+            <i class="bi bi-twitter-x"></i>
+          </a>
         </div>
       </div>
 
-    
-      <div class="col-md-6">
-        <div class="row">
+      <!-- Nosotros -->
+      <div class="col-6 col-sm-4 col-lg-2 offset-lg-1">
+        <h6 class="text-uppercase small fw-bold mb-3" style="color: var(--beige); letter-spacing: 1px;">Nosotros</h6>
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><a href="./about.html" class="text-white text-decoration-none small d-flex align-items-center gap-2 hover-beige"><i class="bi bi-people" style="color: var(--beige);"></i>Quiénes Somos</a></li>
+          <li class="mb-2"><a href="./contact.html" class="text-white text-decoration-none small d-flex align-items-center gap-2 hover-beige"><i class="bi bi-chat-dots" style="color: var(--beige);"></i>Contacto</a></li>
+          <li class="mb-2"><a href="#" class="text-white text-decoration-none small d-flex align-items-center gap-2 hover-beige"><i class="bi bi-tree" style="color: var(--beige);"></i>Sostenibilidad</a></li>
+        </ul>
+      </div>
 
-          <div class="col-6">
-            <h6 class="footer-title">Nosotros</h6>
-            <p><a href="#">Contacto</a></p>
-          </div>
+      <!-- Legal -->
+      <div class="col-6 col-sm-4 col-lg-2">
+        <h6 class="text-uppercase small fw-bold mb-3" style="color: var(--beige); letter-spacing: 1px;">Legal</h6>
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><a href="#" class="text-white text-decoration-none small d-flex align-items-center gap-2 hover-beige"><i class="bi bi-file-text" style="color: var(--beige);"></i>Términos</a></li>
+          <li class="mb-2"><a href="#" class="text-white text-decoration-none small d-flex align-items-center gap-2 hover-beige"><i class="bi bi-shield-check" style="color: var(--beige);"></i>Privacidad</a></li>
+          <li class="mb-2"><a href="#" class="text-white text-decoration-none small d-flex align-items-center gap-2 hover-beige"><i class="bi bi-arrow-return-left" style="color: var(--beige);"></i>Devoluciones</a></li>
+        </ul>
+      </div>
 
-          <div class="col-6">
-            <h6 class="footer-title">Enlaces de interés</h6>
-            <p><a href="#">Términos y condiciones</a></p>
-          </div>
-
-        </div>
+      <!-- Ubicación -->
+      <div class="col-12 col-sm-4 col-lg-3">
+        <h6 class="text-uppercase small fw-bold mb-3" style="color: var(--beige); letter-spacing: 1px;">Ubicación</h6>
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2 d-flex align-items-center gap-2 text-white small">
+            <i class="bi bi-geo-alt-fill" style="color: var(--beige);"></i>
+            <span>Medellín, Antioquia</span>
+          </li>
+          <li class="mb-2 d-flex align-items-center gap-2 text-white small">
+            <i class="bi bi-envelope-at-fill" style="color: var(--beige);"></i>
+            <span>contacto@coroto.com</span>
+          </li>
+          <li class="mb-2 d-flex align-items-center gap-2 text-white small">
+            <i class="bi bi-whatsapp" style="color: var(--beige);"></i>
+            <span>+57 (300) 000-0000</span>
+          </li>
+        </ul>
       </div>
 
     </div>
+
+    <hr class="border-secondary opacity-25 mt-5 mb-4">
+
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <small class="text-white">
+          © 2026 <span class="fw-semibold" style="color: var(--beige);">Coroto</span>. Todos los derechos reservados.
+        </small>
+      </div>
+    </div>
+
   </div>
 </footer>
 `;

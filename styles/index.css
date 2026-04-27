@@ -210,3 +210,303 @@
 .empty-state p {
     font-size: 1rem;
 }
+/* ══════════════════════════════════════════════════════════════
+   HERO SECTION — coroto
+   Requiere las variables de base.css
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Contenedor principal ─────────────────────────────────────── */
+.hero-section {
+  background-color: var(--primary);
+  min-height: 380px;
+}
+
+/* ── Patrón de puntos ─────────────────────────────────────────── */
+.hero-dots-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(155, 191, 181, 0.18) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Línea diagonal decorativa ────────────────────────────────── */
+.hero-diagonal-line {
+  position: absolute;
+  top: 0;
+  right: 50%;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(217, 185, 167, 0.25), transparent);
+  transform: skewX(-8deg);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Columnas (z-index sobre decoraciones) ────────────────────── */
+.hero-left,
+.hero-right {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Eyebrow ──────────────────────────────────────────────────── */
+.hero-eyebrow {
+  background: rgba(217, 185, 167, 0.15);
+  border: 1px solid rgba(217, 185, 167, 0.35);
+  border-radius: 50px;
+  padding: 5px 14px 5px 8px;
+  width: fit-content;
+}
+
+.eyebrow-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+  flex-shrink: 0;
+  animation: hero-pulse 2s infinite;
+}
+
+@keyframes hero-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25); }
+  50%       { box-shadow: 0 0 0 7px rgba(74, 222, 128, 0.08); }
+}
+
+.eyebrow-text {
+  font-size: 0.7rem;
+  font-weight: var(--semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--beige);
+}
+
+/* ── Título ───────────────────────────────────────────────────── */
+.hero-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-weight: var(--bold);
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.hero-title-accent {
+  color: var(--beige);
+}
+
+/* ── Subtítulo ────────────────────────────────────────────────── */
+.hero-subtitle {
+  font-size: 0.9rem;
+  font-weight: var(--light);
+  color: var(--primary-light);
+  line-height: 1.75;
+  max-width: 380px;
+}
+
+/* ── Botones ──────────────────────────────────────────────────── */
+.btn-hero-main {
+  background-color: var(--beige);
+  color: var(--brown);
+  font-weight: var(--semibold);
+  font-size: 0.85rem;
+  padding: 11px 26px;
+  border-radius: 50px;
+  border: none;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-hero-main:hover {
+  background-color: var(--white);
+  color: var(--brown);
+  transform: translateY(-2px);
+}
+
+.btn-hero-sec {
+  background: transparent;
+  color: var(--primary-light);
+  font-size: 0.85rem;
+  font-weight: var(--semibold);
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color 0.2s ease;
+}
+
+.btn-hero-sec:hover {
+  color: var(--white);
+}
+
+/* ── Trust row ────────────────────────────────────────────────── */
+.hero-trust-row {
+  border-top: 1px solid rgba(155, 191, 181, 0.2);
+}
+
+.trust-num {
+  font-size: 1.1rem;
+  font-weight: var(--bold);
+  color: var(--white);
+}
+
+.trust-label {
+  font-size: 0.65rem;
+  font-weight: var(--semibold);
+  color: var(--primary-light);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Stack de tarjetas ────────────────────────────────────────── */
+.cards-stack {
+  width: 240px;
+  height: 290px;
+}
+
+/* ── Tarjeta base ─────────────────────────────────────────────── */
+.product-card-hero {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 16px;
+  width: 210px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+}
+
+.card-back {
+  top: 0;
+  left: 30px;
+  transform: rotate(6deg);
+  opacity: 0.72;
+  z-index: 0;
+}
+
+.card-front {
+  top: 36px;
+  left: 0;
+  transform: rotate(-2deg);
+  z-index: 2;
+}
+
+/* ── Imagen de la tarjeta ─────────────────────────────────────── */
+.pcard-img {
+  width: 100%;
+  height: 90px;
+  border-radius: 8px;
+  background-color: var(--gray-light);
+  overflow: hidden;
+}
+
+.pcard-icon {
+  font-size: 2.8rem;
+  color: var(--primary);
+  opacity: 0.6;
+}
+
+/* ── Ícono del badge flotante ─────────────────────────────────── */
+.vf-check-icon {
+  font-size: 1.1rem;
+  color: #166534;
+}
+
+/* ── Textos de la tarjeta ─────────────────────────────────────── */
+.pcard-cat {
+  font-size: 0.62rem;
+  font-weight: var(--semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--primary);
+}
+
+.pcard-name {
+  font-size: 0.82rem;
+  font-weight: var(--bold);
+  color: var(--text-dark);
+  margin: 3px 0 8px;
+}
+
+.pcard-price {
+  font-size: 1rem;
+  font-weight: var(--bold);
+  color: var(--brown);
+}
+
+.pcard-badge {
+  font-size: 0.6rem;
+  font-weight: var(--bold);
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 50px;
+  padding: 3px 9px;
+  letter-spacing: 0.04em;
+}
+
+/* ── Badge flotante de verificación ──────────────────────────── */
+.verified-float {
+  bottom: 10px;
+  right: -20px;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 3;
+}
+
+.vf-icon {
+  width: 32px;
+  height: 32px;
+  background: #dcfce7;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.vf-title {
+  font-size: 0.72rem;
+  font-weight: var(--bold);
+  color: var(--text-dark);
+}
+
+.vf-sub {
+  font-size: 0.62rem;
+  color: var(--text-medium);
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 991.98px) {
+  .hero-right {
+    padding-top: 0;
+    padding-bottom: 3rem;
+  }
+
+  .hero-diagonal-line {
+    display: none;
+  }
+
+  .hero-subtitle {
+    max-width: 100%;
+  }
+
+  .verified-float {
+    right: 0;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .hero-left {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+
+  .cards-stack {
+    width: 200px;
+    height: 260px;
+  }
+
+  .product-card-hero {
+    width: 180px;
+  }
+
+  .trust-num {
+    font-size: 0.95rem;
+  }
+}

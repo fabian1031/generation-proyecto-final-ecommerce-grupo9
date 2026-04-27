@@ -1,5 +1,5 @@
 :root {
-    
+
 
     /* Colors */
     --primary: #32594b;
@@ -21,7 +21,7 @@
     --white: #FFFFFF;
 
     /* Background */
-    --bg-primary: #32594b;
+    --bg-primary: #ffffff;
     --bg-light: #9BBFB5;
 
     /* Border */
@@ -49,36 +49,12 @@
 }
 
 body {
-    width: 100%; /* cambio*/
+    width: 100%;
+    /* cambio*/
     height: 100vh;
     background-color: var(--gray-light);
     font-family: var(--font);
 
-    .nav-container {
-        display: flex;
-        align-items: center;
-        position: sticky;
-        width: 100%; /*cambio*/
-        top: 0;
-        left: 0;
-        height: 10dvh;
-        background-color: var(--gray-light);
-        box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
-        z-index: 100;
-
-        .navbar {
-            width: 100%; /*cambio*/
-        }
-
-        .navbar-toggler {
-            border: none;
-        }
-
-        .navbar-collapse {
-            background-color: var(--gray-light);
-            padding: 10px;
-        }
-    }
 
     .dinamic-container {
         display: flex;
@@ -97,132 +73,304 @@ body {
             height: 100%;
         }
 
-        .footer-container {
-            
-            width: 100%;
-            height: 100%;
-            background-color: #997373;
-
-            .footer-clean {
-                background-color: #d9d9d9;
-                color: #555;
-            }
-
-            .logo {
-                font-family: cursive;
-                font-size: 2rem;
-                color: #2f4f4f;
-            }
-
-            .footer-social {
-                display: flex;
-                /* background-color: red; */
-                .bi {
-                    font-size: 1.5rem;
-                    color: #555;
-                    margin: 0 10px;
-                    transition: color 0.3s ease;
-                }
-            }
-
-
-            .footer-text {
-                font-size: 0.9rem;
-                margin: 15px 0;
-            }
-
-
-            .footer-title {
-                font-weight: 600;
-                font-size: 0.9rem;
-                color: #000;
-                margin-bottom: 10px;
-            }
-        }
     }
+
     a {
         text-decoration: none;
-        color: var(--text-dark);        
+        color: var(--text-dark);
     }
 }
 
-.btn-primary{
+.nav-brand-text {
+    color: var(--primary);
+    letter-spacing: -0.5px;
+    font-size: 1.6rem;
+}
+
+.nav-icon-btn {
+    width: 46px;
+    height: 46px;
+    background-color: var(--gray-light);
+    color: var(--text-dark);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.nav-icon-btn:hover {
+    background-color: var(--primary-light);
+    color: var(--white);
+}
+
+.nav-icon-btn-primary {
+    width: 46px;
+    height: 46px;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.nav-icon-btn-primary:hover {
+    background-color: var(--bg-light);
+}
+
+.nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    z-index: 10;
+    font-size: 0.6rem;
+    background-color: var(--error);
+    color: var(--white);
+}
+
+.nav-link-item {
+    font-size: 1rem;
+    letter-spacing: 0.6px;
+    color: var(--text-dark);
+}
+
+.nav-link-item:hover {
+    color: var(--primary) !important;
+}
+
+.nav-link-item .bi {
+    color: var(--primary);
+}
+
+.nav-dropdown {
+    min-width: 220px;
+    border: none;
+    border-color: var(--border);
+}
+
+.nav-dropdown-header {
+    letter-spacing: 1px;
+    color: var(--text-medium);
+}
+
+.nav-dropdown-item {
+    font-size: 0.95rem;
+    color: var(--text-dark);
+}
+
+.nav-dropdown-item .bi {
+    color: var(--primary);
+}
+
+.nav-dropdown-item:hover {
+    background-color: var(--bg-light);
+}
+
+.nav-dropdown-divider {
+    border-color: var(--border);
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+}
+
+.nav-danger-item {
+    font-size: 0.95rem;
+    color: var(--error);
+    font-weight: var(--semibold);
+}
+
+.nav-danger-item:hover {
+    background-color: var(--bg-light);
+    color: var(--error);
+}
+
+/* Offcanvas */
+.offcanvas-brand-text {
+    color: var(--primary);
+    font-size: 1.3rem;
+}
+
+
+.offcanvas-profile {
+    background-color: var(--gray-light);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+}
+
+.offcanvas-avatar {
+    width: 46px;
+    height: 46px;
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.offcanvas-username {
+    font-size: 1rem;
+    color: var(--text-dark);
+}
+
+.offcanvas-email {
+    font-size: 0.8rem;
+    color: var(--text-medium);
+}
+
+.offcanvas-section-label {
+    font-size: 0.65rem;
+    letter-spacing: 1.2px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    font-weight: var(--bold);
+}
+
+.offcanvas-nav-link {
+    font-size: 1rem;
+    color: var(--text-dark);
+    font-weight: var(--semibold);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.offcanvas-nav-link:hover {
+    background-color: var(--primary-light);
+    color: var(--white);
+}
+
+.offcanvas-nav-link:hover .bi {
+    color: var(--white);
+}
+
+.offcanvas-nav-link .bi {
+    color: var(--primary);
+}
+
+.offcanvas-logout {
+    border: 1px solid var(--error);
+    color: var(--error);
+    font-size: 1rem;
+    font-weight: var(--semibold);
+    border-radius: 0.5rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: transparent;
+    transition: background-color 0.2s ease;
+}
+
+.offcanvas-logout:hover {
+    background-color: var(--error);
+    color: var(--white);
+}
+
+.btn-primary {
     background-color: var(--primary);
     transition: all .5s ease;
     border-color: var(--primary-light);
 }
 
-.btn-primary:hover{
+.btn-primary:hover {
     font-size: 16px;
     padding: auto;
-    transform: scale(1);   
+    transform: scale(1);
     color: var(--primary);
-    border: 1px solid var(--gray-light);    
+    border: 1px solid var(--gray-light);
     background-color: var(--primary-light);
 }
 
-.form-control:focus{
+.form-control:focus {
     box-shadow: 0 0 0 .25rem var(--primary-light)
 }
 
-/* Menú hamburguesa: fondo y contención */
-@media (max-width: 991.98px) {
-  .navbar-collapse {
-    background-color: var(--gray-light);
-    padding: 1rem;
-    border-radius: 0 0 8px 8px;
-    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    width: 100%;
-    z-index: 99;
-  }
 
-  /* Para que el container-fluid sea el punto de referencia */
-  .navbar .container-fluid {
-    position: relative;
-  }
+/* Error input validations */
 
-  /* Separar un poco los links en móvil */
-  .navbar-nav .nav-link {
-    padding: 0.5rem 0;
-  }
-
-  /* El segundo ul (carrito/cuenta) con separador visual */
-  .navbar-nav:last-child {
-    border-top: 1px solid var(--primary-light);
-    padding-top: 0.5rem;
-    margin-top: 0.5rem;
-  }
+/* contenedor del mensaje */
+.invalid-feedback {
+    display: block;
+    /* siempre ocupa espacio */
+    min-height: 18px;
+    /* reserva espacio */
+    font-size: 0.75rem;
+    visibility: hidden;
+    /* oculto pero ocupa espacio */
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
+
+/* cuando hay error */
+.is-invalid~.invalid-feedback,
+.form-control.is-invalid+.invalid-feedback,
+.form-select.is-invalid+.invalid-feedback {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+
 
 /* Estilos generales para los botones */
-.btn-primary{
+.btn-primary {
     background-color: var(--primary);
     transition: all .5s ease;
     border-color: var(--primary-light);
 }
- 
-.btn-primary:hover{
+
+.btn-primary:hover {
     font-size: 16px;
     padding: auto;
-    transform: scale(1);  
+    transform: scale(1);
     color: var(--primary);
-    border: 1px solid var(--gray-light);    
+    border: 1px solid var(--gray-light);
     background-color: var(--primary-light);
 }
- 
-.btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active{
+
+.btn-check:checked+.btn,
+.btn.active,
+.btn.show,
+.btn:first-child:active,
+:not(.btn-check)+.btn:active {
     font-size: 16px;
     padding: auto;
-    transform: scale(1);  
+    transform: scale(1);
     color: var(--primary);
-    border: 1px solid var(--gray-light);    
+    border: 1px solid var(--gray-light);
     background-color: var(--primary-light);
 }
- 
-.form-control:focus{
+
+.form-control:focus {
     box-shadow: 0 0 0 .25rem var(--primary-light)
 }
+
+.dropdown-item:hover {
+    background-color: var(--bg-light);
+
+}
+
+.btn-outline-dark:hover {
+    background-color: var(--bg-primary);
+    border-color: var(--gray-light) !important;
+    color: var();
+}
+
+/* Solo para los hovers de los links, Bootstrap no tiene hover-color utilities */
+.hover-beige:hover {
+    color: var(--beige) !important;
+    transition: color 0.2s ease;
+}
+
+/* El fondo del footer usa tu variable */
+footer {
+    background-color: var(--primary) !important;
+    color: var(--gray-light);
+}
+
