@@ -2,9 +2,9 @@ import { Product } from '../models/Product.js';
 import { productService } from '../services/product.service.js';
 import { formatPrice } from '../services/utils.service.js';
 import { cartService } from '../services/cartSevices.js';
-import { authGuard } from './base.js';
+//import { authGuard } from './base.js';
 
-authGuard();
+//authGuard();
 
 const grid        = document.getElementById('productsGrid');
 const filtersEl   = document.getElementById('categoryFilters');

@@ -167,6 +167,7 @@ const navbar = `
 </div>
 `;
 
+
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector(".nav-container");
   if (!container) return;
@@ -174,37 +175,36 @@ document.addEventListener("DOMContentLoaded", () => {
   container.innerHTML = navbar;
 
   const user = getUser();
-
-  // badge carrito
   cartService?.updateBadge?.();
 
-  // logout handlers
+  const desktopDropdown = document.querySelector(".dropdown");
   const logoutDesktop = document.querySelector(".nav-danger-item");
   const logoutMobile = document.querySelector(".offcanvas-logout");
+  const profile = document.querySelector(".offcanvas-profile");
 
-  const logout = (e) => {
+  const doLogout = (e) => {
     e.preventDefault();
     localStorage.removeItem("authUser");
-    window.location.href = "/pages/login.html";
+    window.location.reload();
   };
 
-  logoutDesktop?.addEventListener("click", logout);
-  logoutMobile?.addEventListener("click", logout);
-
-  // si no hay user
+  // ========== NO LOGUEADO ==========
   if (!user) {
+    if (desktopDropdown) desktopDropdown.style.display = "none";
+    if (profile) profile.style.display = "none";
+    if (logoutMobile) logoutMobile.style.display = "none";
     document.querySelectorAll(".admin-section").forEach(el => el.style.display = "none");
     return;
   }
 
-  // mostrar datos usuario
+  // ========== LOGUEADO ==========
   document.querySelector(".offcanvas-username").textContent = user.username;
   document.querySelector(".offcanvas-email").textContent = user.email;
 
-  // ocultar admin si no es admin
+  logoutDesktop?.addEventListener("click", doLogout);
+  logoutMobile?.addEventListener("click", doLogout);
+
   if (user.role !== "Admin") {
-    document.querySelectorAll(".admin-section").forEach(el => {
-      el.style.display = "none";
-    });
+    document.querySelectorAll(".admin-section").forEach(el => el.style.display = "none");
   }
 });

@@ -10,7 +10,7 @@
     });
  };
 
- export const authGuard = () => {
+ const authGuard = () => {
     const user = JSON.parse(localStorage.getItem('authUser'));
 
     if (!user) {
