@@ -235,6 +235,38 @@
       "lastname": "Castillo",
       "role": "User",
       "isActive": false
+    },
+    {
+      "id": "LyVsmJCf-rs",
+      "username": "Polanco",
+      "lastname": "Vasquez",
+      "email": "Polanco@test.com",
+      "password": "Polanco19@",
+      "role": "Admin",
+      "isActive": true,
+      "documentType": "CC",
+      "documentNumber": "11111111",
+      "phone": "3026598741",
+      "birthDate": "2026-04-03",
+      "gender": "masculino",
+      "city": "BOG",
+      "address": "cra 1a #15-65"
+    },
+    {
+      "username": "Alfonso",
+      "lastname": "Castellanos",
+      "email": "Alfonso@test.com",
+      "password": "Alfonso123@",
+      "role": "User",
+      "isActive": true,
+      "documentType": "CC",
+      "documentNumber": "222222",
+      "phone": "3065987412",
+      "birthDate": "2026-04-03",
+      "gender": "masculino",
+      "city": "ME",
+      "address": "cra 5#10-50",
+      "id": "Uppm5RHBmsA"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
