@@ -1,101 +1,153 @@
 import { registerValidators } from './validations.js';
 import { debounce } from '../services/utils.service.js';
+import { userService } from '../services/users.services.js';
 
-const form = document.getElementById('registroForm');
-const inputs = form.querySelectorAll('input, select');
+document.addEventListener('DOMContentLoaded', () => {
 
+    const form = document.getElementById('registroForm');
+    const inputs = form.querySelectorAll('input, select');
 
-// Toggle password
+    // -------------------------
+    // TOGGLE PASSWORD
+    // -------------------------
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const input = document.getElementById(this.dataset.target);
+            const icon = this.querySelector('i');
 
-document.querySelectorAll('.toggle-password').forEach(btn => {
-    btn.addEventListener('click', function () {
-        const input = document.getElementById(this.dataset.target);
-        const icon = this.querySelector('i');
-
-        input.type = input.type === 'password' ? 'text' : 'password';
-        icon.classList.toggle('bi-eye-fill');
-        icon.classList.toggle('bi-eye-slash-fill');
+            input.type = input.type === 'password' ? 'text' : 'password';
+            icon.classList.toggle('bi-eye-fill');
+            icon.classList.toggle('bi-eye-slash-fill');
+        });
     });
-});
 
+    // -------------------------
+    // VALIDACIÓN VISUAL (NO TOCAR)
+    // -------------------------
+    const setFieldState = (input, isValid, message = '') => {
+        const feedback = input.parentElement.querySelector('.invalid-feedback');
 
-// Helper visual
+        input.classList.remove('is-valid', 'is-invalid');
 
-const setFieldState = (input, isValid, message = '') => {
-    const feedback = input.parentElement.querySelector('.invalid-feedback');
+        if (!input.value && input.type !== 'checkbox' && input.tagName !== 'SELECT') return;
 
-    input.classList.remove('is-valid', 'is-invalid');
+        if (isValid) {
+            input.classList.add('is-valid');
+        } else {
+            input.classList.add('is-invalid');
+            if (feedback) feedback.textContent = message;
+        }
+    };
 
-    if (!input.value && input.type !== 'checkbox' && input.tagName !== 'SELECT') return;
+    // -------------------------
+    // FORM VALUES
+    // -------------------------
+    const getFormValues = () => {
+        const data = {};
+        inputs.forEach(input => {
+            data[input.id] =
+                input.type === 'checkbox'
+                    ? input.checked
+                    : input.value.trim();
+        });
+        return data;
+    };
 
-    if (isValid) {
-        input.classList.add('is-valid');
-    } else {
-        input.classList.add('is-invalid');
-        if (feedback) feedback.textContent = message;
-    }
-};
+    // -------------------------
+    // VALIDATE FIELD
+    // -------------------------
+    const validateField = (input) => {
+        const validator = registerValidators[input.id];
+        if (!validator) return;
 
+        const values = getFormValues();
+        const value = values[input.id];
 
-// Obtener valores del form
+        const result = validator(value, values, input);
 
-const getFormValues = () => {
-    const data = {};
+        setFieldState(input, result.valid, result.message);
+    };
+
+    // -------------------------
+    // EVENTS
+    // -------------------------
     inputs.forEach(input => {
-        data[input.id] = input.type === 'checkbox' ? input.checked : input.value;
+        input.addEventListener('input', debounce(() => validateField(input), 300));
+        input.addEventListener('change', () => validateField(input));
+        input.addEventListener('blur', () => validateField(input));
     });
-    return data;
-};
 
+    // -------------------------
+    // SUBMIT (MEJORADO UX)
+    // -------------------------
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-// Validar campo
+        let isValid = true;
 
-const validateField = (input) => {
-    const validator = registerValidators[input.id];
-    if (!validator) return;
+        inputs.forEach(input => {
+            validateField(input);
 
-    const values = getFormValues();
-    const value = values[input.id];
+            if (input.classList.contains('is-invalid') || !input.checkValidity()) {
+                isValid = false;
+            }
+        });
 
-    const result = validator(value, values, input);
+        form.classList.add('was-validated');
 
-    setFieldState(input, result.valid, result.message);
-};
+        if (!isValid) {
+            return Swal.fire({
+                icon: 'warning',
+                title: 'Formulario incompleto',
+                text: 'Revisa los campos marcados en rojo'
+            });
+        }
 
+        const data = getFormValues();
 
-// Eventos
+        const newUser = {
+            username: data.nombre,
+            lastname: data.apellidos,
+            email: data.correo,
+            password: data.password,
+            role: "User",
+            isActive: true,
+            documentType: data.tipoDocumento,
+            documentNumber: data.cedula,
+            phone: data.celular,
+            birthDate: data.fechaNacimiento,
+            gender: data.genero,
+            city: data.ciudad,
+            address: data.direccion
+        };1
 
-inputs.forEach(input => {
-    input.addEventListener('input', debounce(() => validateField(input)));
-    input.addEventListener('change', () => validateField(input));
-    input.addEventListener('blur', () => validateField(input));
-});
+        try {
+            await userService.create(newUser);
 
+            await Swal.fire({
+                icon: 'success',
+                title: 'Registro exitoso 🎉',
+                text: 'Tu cuenta fue creada correctamente',
+                timer: 1500,
+                showConfirmButton: false
+            });
 
-// Submit
+            form.reset();
+            form.classList.remove('was-validated');
 
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
+            inputs.forEach(i => i.classList.remove('is-valid', 'is-invalid'));
 
-    let isValid = true;
+            window.location.href = '/pages/login.html';
 
-    inputs.forEach(input => {
-        validateField(input);
+        } catch (error) {
+            console.error('Error creando usuario:', error);
 
-        if (input.classList.contains('is-invalid') || !input.checkValidity()) {
-            isValid = false;
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al registrar',
+                text: 'No se pudo crear el usuario'
+            });
         }
     });
 
-    form.classList.add('was-validated');
-
-    if (!isValid) return;
-
-    console.log('Registro válido 🚀');
-
-    alert('Registro exitoso');
-
-    form.reset();
-    form.classList.remove('was-validated');
-    inputs.forEach(i => i.classList.remove('is-valid', 'is-invalid'));
 });

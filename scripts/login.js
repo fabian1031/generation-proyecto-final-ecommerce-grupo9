@@ -1,4 +1,5 @@
 import { validateCorreo, validatePassword } from './validations.js';
+import { userService } from '../services/users.services.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -9,9 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const buttonShowPassword = document.getElementById('showPassword');
     const icon = document.getElementById('icon');
 
-
-    // Toggle password
-
+    // TOGGLE PASSWORD
     buttonShowPassword.addEventListener('click', () => {
         const isPassword = passwordInput.type === 'password';
 
@@ -20,9 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.classList.toggle('bi-eye-slash');
     });
 
-
-    // Helper visual
-
+    // VALIDACIÓN VISUAL
     const setFieldState = (input, isValid, message = '') => {
         const feedback = input.parentElement.querySelector('.invalid-feedback');
 
@@ -38,16 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-
-    // Validación individual
-
     const validateField = (input) => {
         const value = input.value.trim();
-
-        if (!value) {
-            input.classList.remove('is-valid', 'is-invalid');
-            return;
-        }
+        if (!value) return;
 
         let result;
 
@@ -62,35 +52,76 @@ document.addEventListener('DOMContentLoaded', () => {
         setFieldState(input, result.valid, result.message);
     };
 
-
-    // Eventos en tiempo real
-
     [emailInput, passwordInput].forEach(input => {
         input.addEventListener('input', () => validateField(input));
         input.addEventListener('blur', () => validateField(input));
     });
 
-
-    // Submit
-
-    form.addEventListener('submit', (e) => {
+    // SUBMIT LOGIN
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const emailResult = validateCorreo(emailInput.value);
-        const passResult = validatePassword(passwordInput.value);
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
 
-        form.classList.add('was-validated');
+        const emailResult = validateCorreo(email);
+        const passResult = validatePassword(password);
 
         setFieldState(emailInput, emailResult.valid, emailResult.message);
         setFieldState(passwordInput, passResult.valid, passResult.message);
 
         if (!emailResult.valid || !passResult.valid) return;
 
-        // Aquí iría tu lógica real de login
-        console.log('Login válido 🚀');
+        try {
+            const users = await userService.getByEmail(email);
+            const user = users[0];
 
-        // Ejemplo visual
-        alert('Login exitoso (simulado)');
+            if (!user) {
+                return Swal.fire({
+                    icon: 'error',
+                    title: 'Usuario no encontrado',
+                    text: 'Verifica el correo ingresado'
+                });
+            }
+
+            if (user.password !== password) {
+                return Swal.fire({
+                    icon: 'error',
+                    title: 'Contraseña incorrecta',
+                    text: 'Intenta nuevamente'
+                });
+            }
+
+            if (!user.isActive) {
+                return Swal.fire({
+                    icon: 'warning',
+                    title: 'Usuario inactivo',
+                    text: 'Contacta al administrador'
+                });
+            }
+
+            // SESIÓN
+            localStorage.setItem('authUser', JSON.stringify(user));
+
+            await Swal.fire({
+                icon: 'success',
+                title: `Bienvenido ${user.username}`,
+                text: 'Inicio de sesión exitoso',
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+            window.location.href = '/pages/index.html';
+
+        } catch (error) {
+            console.error('Error en login:', error);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo iniciar sesión'
+            });
+        }
     });
 
 });
