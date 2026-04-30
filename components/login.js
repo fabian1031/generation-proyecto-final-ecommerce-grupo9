@@ -1,41 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/reset.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
-    <link rel="stylesheet" href="../styles/base.css">
-    <link rel="stylesheet" href="../styles/login.css">
-    <title>Inicio de sesión</title>
-</head>
-
-<body>
-    <!-- Nav -->
-    <nav class="nav-container">
-    </nav>
-
-    <!-- Content -->
+const login = `
     <div class="dinamic-container login-container">
         <main class="main-container">
 
             <div class="container">
-                <div class="row mt-5 mb-5">
-
-                    <div class="col-12 col-md-6 d-none d-md-flex justify-content-center align-items-center">
-                        <img src="../assets/pages/login.png" class="img-fluid" alt="imagen-login">
-                    </div>
-
+                <div class="row d-flex justify-content-center">
                     <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
                         <div class="w-100">
                             <h4 class="text-center mb-4 fw-semibold">Iniciar sesión</h4>
@@ -99,15 +67,11 @@
         </footer>
 
     </div>
+`;
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../scripts/base.js"></script>
-    <script type="module" src="../components/navbar.js"></script>
-    <script src="../components/footer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
-    <script type="module" src="../scripts/login.js"></script>
-</body>
-
-</html>
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.querySelector(".checkout-container");
+  if (container) {
+    container.innerHTML = login;
+  }
+});
