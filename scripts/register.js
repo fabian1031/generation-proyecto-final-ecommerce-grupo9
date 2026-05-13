@@ -7,9 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registroForm');
     const inputs = form.querySelectorAll('input, select');
 
-    // -------------------------
-    // TOGGLE PASSWORD
-    // -------------------------
     document.querySelectorAll('.toggle-password').forEach(btn => {
         btn.addEventListener('click', function () {
             const input = document.getElementById(this.dataset.target);
@@ -21,9 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // -------------------------
-    // VALIDACIÓN VISUAL (NO TOCAR)
-    // -------------------------
+    
     const setFieldState = (input, isValid, message = '') => {
         const feedback = input.parentElement.querySelector('.invalid-feedback');
 
@@ -39,9 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // -------------------------
-    // FORM VALUES
-    // -------------------------
     const getFormValues = () => {
         const data = {};
         inputs.forEach(input => {
@@ -53,9 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return data;
     };
 
-    // -------------------------
-    // VALIDATE FIELD
-    // -------------------------
     const validateField = (input) => {
         const validator = registerValidators[input.id];
         if (!validator) return;
@@ -68,18 +57,13 @@ document.addEventListener('DOMContentLoaded', () => {
         setFieldState(input, result.valid, result.message);
     };
 
-    // -------------------------
-    // EVENTS
-    // -------------------------
     inputs.forEach(input => {
         input.addEventListener('input', debounce(() => validateField(input), 300));
         input.addEventListener('change', () => validateField(input));
         input.addEventListener('blur', () => validateField(input));
     });
 
-    // -------------------------
-    // SUBMIT (MEJORADO UX)
-    // -------------------------
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 

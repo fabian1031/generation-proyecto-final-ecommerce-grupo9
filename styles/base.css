@@ -48,6 +48,10 @@
     font-family: var(--font-primary);
 }
 
+html, body{
+    height: 100%;
+}
+
 body {
     width: 100%;
     /* cambio*/

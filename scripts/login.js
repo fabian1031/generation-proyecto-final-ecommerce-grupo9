@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const buttonShowPassword = document.getElementById('showPassword');
     const icon = document.getElementById('icon');
 
-    // TOGGLE PASSWORD
     buttonShowPassword.addEventListener('click', () => {
         const isPassword = passwordInput.type === 'password';
 
@@ -19,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.classList.toggle('bi-eye-slash');
     });
 
-    // VALIDACIÓN VISUAL
     const setFieldState = (input, isValid, message = '') => {
         const feedback = input.parentElement.querySelector('.invalid-feedback');
 
@@ -57,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('blur', () => validateField(input));
     });
 
-    // SUBMIT LOGIN
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -100,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // SESIÓN
+      
             localStorage.setItem('authUser', JSON.stringify(user));
 
             await Swal.fire({

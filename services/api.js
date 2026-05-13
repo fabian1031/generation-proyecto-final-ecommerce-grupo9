@@ -17,13 +17,13 @@ async function request(endpoint, options = {}) {
         throw new Error(error?.message || `Error ${response.status}: ${response.statusText}`);
     }
 
-    // 204 No Content no tiene body
+
     if (response.status === 204) return null;
 
     return response.json();
 }
 
-// Métodos HTTP
+
 
 export const api = {
     get:    (endpoint)              => request(endpoint, { method: 'GET' }),

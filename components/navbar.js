@@ -188,7 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.reload();
   };
 
-  // ========== NO LOGUEADO ==========
   if (!user) {
     if (desktopDropdown) desktopDropdown.style.display = "none";
     if (profile) profile.style.display = "none";

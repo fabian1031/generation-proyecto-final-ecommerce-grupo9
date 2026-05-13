@@ -2,7 +2,21 @@ import { cartService } from '../services/cartSevices.js';
 import { formatPrice } from '../services/utils.service.js';
 import { validateCheckout } from './validations.js';
 
-const itemsContainer = document.getElementById('checkoutItems');
+import { authService } from '../services/auth.service.js';
+import { initLogin } from '../components/login.component.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const user = authService.getUser();
+
+    renderCheckout();
+    bindCheckoutEvents();
+
+    if (user) {
+        fillCheckoutForm(user);
+    } else {
+        renderLoginCTA();
+    }
+});
 
 function renderCheckout() {
     const cart = cartService.getCart();
@@ -12,6 +26,7 @@ function renderCheckout() {
         return;
     }
 
+    const itemsContainer = document.getElementById('checkoutItems');
     itemsContainer.innerHTML = '';
 
     cart.forEach(item => {
@@ -42,8 +57,126 @@ function renderCheckout() {
     document.getElementById('checkoutTotal').textContent =
         formatPrice(total + iva);
 }
-function applyValidationErrors(errors) {
 
+
+function fillCheckoutForm(user) {
+    const map = {
+        nombre: user.name || '',
+        apellidos: user.lastname || '',
+        correo: user.email || ''
+    };
+
+    Object.entries(map).forEach(([key, value]) => {
+        const input = document.getElementById(key);
+        if (input) input.value = value;
+    });
+}
+
+function renderLoginCTA() {
+    const mount = document.querySelector('.checkout-container');
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+        <div class="login-cta">
+            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                <span class="small text-muted">
+                    Inicia sesión para autocompletar tus datos
+                </span>
+
+                <button class="btn btn-outline-primary btn-sm" id="openLogin">
+                    Iniciar sesión
+                </button>
+            </div>
+        </div>
+    `;
+
+    mount.appendChild(wrapper);
+
+    document.getElementById('openLogin').addEventListener('click', openLoginModal);
+}
+
+function openLoginModal() {
+    const mount = document.createElement('div');
+    mount.id = 'loginModalMount';
+    document.body.appendChild(mount);
+
+    mount.innerHTML = `
+        <div class="modal-backdrop-custom">
+            <div class="modal-box">
+                <button id="closeLogin" class="btn-close float-end"></button>
+                <h5 class="mb-3">Iniciar sesión</h5>
+                <div id="loginFormMount"></div>
+            </div>
+        </div>
+    `;
+
+    const loginMount = document.getElementById('loginFormMount');
+
+    initLogin(loginMount, (user) => {
+        fillCheckoutForm(user);
+        mount.remove();
+    });
+
+    document.getElementById('closeLogin').addEventListener('click', () => {
+        mount.remove();
+    });
+}
+
+function bindCheckoutEvents() {
+    const button = document.getElementById('confirmPurchase');
+
+    if (!button) return;
+
+    button.addEventListener('click', async () => {
+
+        const fields = {
+            nombre: document.getElementById('nombre').value,
+            apellidos: document.getElementById('apellidos').value,
+            celular: document.getElementById('celular').value,
+            correo: document.getElementById('correo').value,
+            direccion: document.getElementById('direccion').value
+        };
+
+        const result = validateCheckout(fields);
+
+        if (!result.valid) {
+            applyValidationErrors(result.errors);
+            applyValidStates(fields, result.errors);
+            return;
+        }
+
+        const confirm = await Swal.fire({
+            title: '¿Confirmar compra?',
+            text: 'Se procesará tu pedido',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, comprar'
+        });
+
+        if (!confirm.isConfirmed) return;
+
+        await Swal.fire({
+            title: 'Procesando...',
+            timer: 1500,
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        cartService.clear();
+
+        await Swal.fire({
+            icon: 'success',
+            title: 'Compra realizada',
+            text: 'Gracias por tu compra'
+        });
+
+        window.location.href = './index.html';
+    });
+}
+
+
+
+function applyValidationErrors(errors) {
     document.querySelectorAll('.form-control').forEach(input => {
         input.classList.remove('is-invalid', 'is-valid');
     });
@@ -76,60 +209,3 @@ function applyValidStates(fields, errors) {
         }
     }
 }
-
-document.getElementById('confirmPurchase').addEventListener('click', async () => {
-
-    const fields = {
-        nombre: document.getElementById('nombre').value,
-        apellidos: document.getElementById('apellidos').value,
-        celular: document.getElementById('celular').value,
-        correo: document.getElementById('correo').value,
-        direccion: document.getElementById('direccion').value
-    };
-
-
-    const result = validateCheckout(fields);
-
-    if (!result.valid) {
-        applyValidationErrors(result.errors);
-        applyValidStates(fields, result.errors);
-
-        const firstError = Object.keys(result.errors)[0];
-        document.getElementById(firstError)?.focus();
-
-        return;
-    }
-
-    const confirm = await Swal.fire({
-        title: '¿Confirmar compra?',
-        text: 'Se procesará tu pedido',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, comprar'
-    });
-
-    if (!confirm.isConfirmed) return;
-
-    await Swal.fire({
-        title: 'Procesando...',
-        timer: 1500,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-    });
-
-    cartService.clear();
-
-    await Swal.fire({
-        icon: 'success',
-        title: 'Compra realizada',
-        text: 'Gracias por tu compra'
-    });
-
-    window.location.href = './index.html';
-
-
-});
-
-
-
-renderCheckout();
