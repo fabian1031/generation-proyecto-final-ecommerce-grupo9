@@ -12,7 +12,7 @@ const navbar = `
       <span class="fw-bold d-none d-md-inline nav-brand-text">Coroto</span>
     </a>
 
-    <!-- Acciones mobile -->
+    <!-- MOBILE -->
     <div class="d-flex d-lg-none align-items-center gap-2 ms-auto">
       <div class="position-relative" style="width:46px;height:46px;">
         <a href="./cart.html" class="nav-icon-btn">
@@ -20,36 +20,39 @@ const navbar = `
         </a>
         <span id="cart-count-mobile" class="position-absolute badge rounded-pill nav-badge">0</span>
       </div>
+
       <button class="navbar-toggler border-0 shadow-none ps-1" type="button"
-        data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav" aria-controls="offcanvasNav">
+        data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav">
         <span class="navbar-toggler-icon"></span>
       </button>
     </div>
 
-    <!-- Nav desktop -->
+    <!-- NAV DESKTOP -->
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav mx-auto gap-1">
         <li class="nav-item">
-          <a class="nav-link px-3 fw-semibold text-uppercase d-flex align-items-center gap-2 rounded-3 nav-link-item"
+          <a class="nav-link px-3 fw-semibold text-uppercase d-flex align-items-center gap-2 rounded-3"
             href="./index.html">
             <i class="bi bi-house-door fs-5"></i>Inicio
           </a>
         </li>
+
         <li class="nav-item">
-          <a class="nav-link px-3 fw-semibold text-uppercase d-flex align-items-center gap-2 rounded-3 nav-link-item"
+          <a class="nav-link px-3 fw-semibold text-uppercase d-flex align-items-center gap-2 rounded-3"
             href="./about.html">
             <i class="bi bi-people fs-5"></i>Nosotros
           </a>
         </li>
+
         <li class="nav-item">
-          <a class="nav-link px-3 fw-semibold text-uppercase d-flex align-items-center gap-2 rounded-3 nav-link-item"
+          <a class="nav-link px-3 fw-semibold text-uppercase d-flex align-items-center gap-2 rounded-3"
             href="./contact.html">
             <i class="bi bi-chat-dots fs-5"></i>Contacto
           </a>
         </li>
       </ul>
 
-      <!-- Acciones desktop -->
+      <!-- ACTIONS -->
       <div class="d-none d-lg-flex align-items-center gap-3">
 
         <div class="position-relative" style="width:46px;height:46px;">
@@ -59,58 +62,38 @@ const navbar = `
           <span id="cart-count" class="position-absolute badge rounded-pill nav-badge">0</span>
         </div>
 
+        <!-- USER -->
         <div class="dropdown">
-          <button class="nav-icon-btn-primary" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="nav-icon-btn-primary" data-bs-toggle="dropdown">
             <i class="bi bi-person-circle fs-4"></i>
           </button>
 
-          <ul class="dropdown-menu dropdown-menu-end shadow-lg mt-2 rounded-4 py-3 nav-dropdown">
+          <ul class="dropdown-menu dropdown-menu-end shadow-lg mt-2 rounded-4 py-3">
 
-            <li>
-              <h6 class="dropdown-header fw-bold small text-uppercase text-center nav-dropdown-header">
-                Mi Perfil
-              </h6>
+            <li class="px-3 pb-2">
+              <p class="mb-0 fw-bold offcanvas-username">Usuario</p>
+              <p class="mb-0 text-muted small" id="welcome-msg"></p>
             </li>
 
-            <li>
-              <a class="dropdown-item py-2 px-4 d-flex align-items-center gap-3 nav-dropdown-item" href="#">
-                <i class="bi bi-person fs-5"></i>Ver Perfil
-              </a>
-            </li>
-
-            <li>
-              <a class="dropdown-item py-2 px-4 d-flex align-items-center gap-3 nav-dropdown-item" href="#">
-                <i class="bi bi-receipt fs-5"></i>Mis Pedidos
-              </a>
-            </li>
-
-            <li><hr class="dropdown-divider nav-dropdown-divider my-2"></li>
+            <li><hr class="dropdown-divider"></li>
 
             <li class="admin-section">
-              <h6 class="dropdown-header fw-bold small text-uppercase text-center nav-dropdown-header">
-                Administración
-              </h6>
-            </li>
-
-            <li class="admin-section">
-              <a class="dropdown-item py-2 px-4 d-flex align-items-center gap-3 nav-dropdown-item"
-                href="./admin_dashboard.html">
-                <i class="bi bi-kanban fs-5"></i>Panel Productos
+              <a class="dropdown-item" href="./admin_dashboard.html">
+                <i class="bi bi-kanban"></i> Panel Productos
               </a>
             </li>
 
             <li class="admin-section">
-              <a class="dropdown-item py-2 px-4 d-flex align-items-center gap-3 nav-dropdown-item"
-                href="./admin_users.html">
-                <i class="bi bi-people-fill fs-5"></i>Gestión Usuarios
+              <a class="dropdown-item" href="./admin_users.html">
+                <i class="bi bi-people-fill"></i> Gestión Usuarios
               </a>
             </li>
 
-            <li><hr class="dropdown-divider nav-dropdown-divider my-2"></li>
+            <li><hr class="dropdown-divider"></li>
 
             <li>
-              <a class="dropdown-item py-2 px-4 d-flex align-items-center gap-3 nav-danger-item" href="#">
-                <i class="bi bi-box-arrow-right fs-5"></i>Cerrar Sesión
+              <a class="dropdown-item nav-danger-item" href="#">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
               </a>
             </li>
 
@@ -122,42 +105,30 @@ const navbar = `
   </div>
 </nav>
 
-<!-- Offcanvas Mobile -->
+<!-- OFFCANVAS -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav" style="max-width:300px;">
-  <div class="offcanvas-header offcanvas-border px-4 py-3">
+  <div class="offcanvas-header px-4 py-3">
     <div class="d-flex align-items-center gap-2">
       <img src="../assets/pages/login.png" width="80" alt="logo">
-      <span class="fw-bold offcanvas-brand-text">Coroto</span>
+      <span class="fw-bold">Coroto</span>
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
   </div>
 
-  <div class="offcanvas-body px-4 pt-3 d-flex flex-column">
+  <div class="offcanvas-body px-4 d-flex flex-column">
 
-    <div class="d-flex align-items-center gap-3 mb-4 offcanvas-profile">
-      <div class="offcanvas-avatar">
-        <i class="bi bi-person-fill fs-5"></i>
-      </div>
-      <div>
-        <p class="mb-0 fw-semibold offcanvas-username">Usuario</p>
-        <p class="mb-0 offcanvas-email">usuario@correo.com</p>
-      </div>
+    <div class="offcanvas-profile mb-4">
+      <p class="mb-0 fw-semibold offcanvas-username">Usuario</p>
+      <p class="mb-0 text-muted small" id="welcome-msg-mobile"></p>
     </div>
 
-    <p class="mb-2 offcanvas-section-label">Menú</p>
-    <ul class="nav flex-column gap-1 mb-4">
-      <li><a class="nav-link offcanvas-nav-link" href="./index.html"><i class="bi bi-house-door"></i> Inicio</a></li>
-      <li><a class="nav-link offcanvas-nav-link" href="./about.html"><i class="bi bi-people"></i> Nosotros</a></li>
-      <li><a class="nav-link offcanvas-nav-link" href="./contact.html"><i class="bi bi-chat-dots"></i> Contacto</a></li>
+    <ul class="nav flex-column gap-1">
+      <li><a class="nav-link" href="./index.html">Inicio</a></li>
+      <li><a class="nav-link" href="./about.html">Nosotros</a></li>
+      <li><a class="nav-link" href="./contact.html">Contacto</a></li>
     </ul>
 
-    <p class="mb-2 offcanvas-section-label admin-section">Administración</p>
-    <ul class="nav flex-column gap-1 mb-4 admin-section">
-      <li><a class="nav-link offcanvas-nav-link" href="./admin_dashboard.html"><i class="bi bi-kanban"></i> Panel Productos</a></li>
-      <li><a class="nav-link offcanvas-nav-link" href="./admin_users.html"><i class="bi bi-people-fill"></i> Gestión Usuarios</a></li>
-    </ul>
-
-    <div class="mt-auto pb-2">
+    <div class="mt-auto">
       <a href="#" class="offcanvas-logout">
         <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
       </a>
@@ -167,7 +138,6 @@ const navbar = `
 </div>
 `;
 
-
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector(".nav-container");
   if (!container) return;
@@ -175,12 +145,28 @@ document.addEventListener("DOMContentLoaded", () => {
   container.innerHTML = navbar;
 
   const user = getUser();
-  cartService?.updateBadge?.();
 
-  const desktopDropdown = document.querySelector(".dropdown");
+  requestAnimationFrame(() => {
+    cartService.updateBadge();
+
+    const usernameEls = document.querySelectorAll(".offcanvas-username");
+    const welcome = document.getElementById("welcome-msg");
+    const welcomeMobile = document.getElementById("welcome-msg-mobile");
+
+    if (user) {
+      usernameEls.forEach(el => el.textContent = user.username || "Usuario");
+
+      const msg = `Bienvenido, ${user.username}`;
+
+      if (welcome) welcome.textContent = msg;
+      if (welcomeMobile) welcomeMobile.textContent = msg;
+    } else {
+      usernameEls.forEach(el => el.textContent = "Invitado");
+    }
+  });
+
   const logoutDesktop = document.querySelector(".nav-danger-item");
   const logoutMobile = document.querySelector(".offcanvas-logout");
-  const profile = document.querySelector(".offcanvas-profile");
 
   const doLogout = (e) => {
     e.preventDefault();
@@ -188,22 +174,18 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.reload();
   };
 
-  if (!user) {
-    if (desktopDropdown) desktopDropdown.style.display = "none";
-    if (profile) profile.style.display = "none";
-    if (logoutMobile) logoutMobile.style.display = "none";
-    document.querySelectorAll(".admin-section").forEach(el => el.style.display = "none");
-    return;
-  }
-
-  // ========== LOGUEADO ==========
-  document.querySelector(".offcanvas-username").textContent = user.username;
-  document.querySelector(".offcanvas-email").textContent = user.email;
-
   logoutDesktop?.addEventListener("click", doLogout);
   logoutMobile?.addEventListener("click", doLogout);
 
-  if (user.role !== "Admin") {
-    document.querySelectorAll(".admin-section").forEach(el => el.style.display = "none");
+  if (user && user.role !== "Admin") {
+    document.querySelectorAll(".admin-section").forEach(el => {
+      el.style.display = "none";
+    });
+  }
+
+  if (!user) {
+    document.querySelectorAll(".admin-section").forEach(el => {
+      el.style.display = "none";
+    });
   }
 });

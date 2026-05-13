@@ -1,7 +1,6 @@
 const STORAGE_KEY = 'cart';
 
 export const cartService = {
-    //funciones para el carrito, crud
     getCart() {
         return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
     },
@@ -18,10 +17,7 @@ export const cartService = {
         if (existing) {
             existing.quantity += 1;
         } else {
-            cart.push({
-                ...product,
-                quantity: 1
-            });
+            cart.push({ ...product, quantity: 1 });
         }
 
         this.saveCart(cart);
@@ -50,18 +46,34 @@ export const cartService = {
     },
 
     getTotalItems() {
-        return this.getCart().reduce((acc, item) => acc + item.quantity, 0);
+        return this.getCart()
+            .reduce((acc, item) => acc + item.quantity, 0);
     },
 
     getTotalPrice() {
-        return this.getCart().reduce((acc, item) => acc + item.price * item.quantity, 0);
+        return this.getCart()
+            .reduce((acc, item) => acc + item.price * item.quantity, 0);
     },
-    //funcion que nos permite actualizar la cantidad en el icono del navbar
-    updateBadge() {
-        const badge = document.querySelector('.cart-badge');
-        if (!badge) return;
 
+    updateBadge() {
         const total = this.getTotalItems();
-        badge.textContent = total > 0 ? total : '';
+
+        const desktop = document.getElementById('cart-count');
+        const mobile = document.getElementById('cart-count-mobile');
+
+        const update = (el) => {
+            if (!el) return;
+
+            if (total > 0) {
+                el.textContent = total;
+                el.style.display = 'inline-block';
+            } else {
+                el.textContent = '';
+                el.style.display = 'none';
+            }
+        };
+
+        update(desktop);
+        update(mobile);
     }
 };
