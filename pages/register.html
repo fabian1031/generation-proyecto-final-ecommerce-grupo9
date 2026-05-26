@@ -82,7 +82,7 @@
                                     <label for="nombre" class="form-label">Nombre</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                        <input type="text" class="form-control" id="nombre" name="nombre" required />
+                                        <input type="text" class="form-control text-capitalize" id="nombre" name="nombre" required />
                                         <div class="invalid-feedback">
                                             Por favor ingresa tu nombre.
                                         </div>
@@ -92,7 +92,7 @@
                                     <label for="apellidos" class="form-label">Apellidos</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                        <input type="text" class="form-control" id="apellidos" name="apellidos"
+                                        <input type="text" class="form-control text-capitalize" id="apellidos" name="apellidos"
                                             required />
                                         <div class="invalid-feedback">
                                             Por favor ingresa tus apellidos.
@@ -160,80 +160,7 @@
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <!-- 5. Fecha de nacimiento -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-calendar-event-fill"></i></span>
-                                        <input type="date" class="form-control" id="fechaNacimiento"
-                                            name="fechaNacimiento" required />
-                                        <div class="invalid-feedback">
-                                            Por favor ingresa tu fecha de nacimiento.
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 6. Género -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="genero" class="form-label">Género</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-gender-ambiguous"></i></span>
-                                        <select class="form-select" id="genero" name="genero" required>
-                                            <option value="" selected disabled>
-                                                Selecciona...
-                                            </option>
-                                            <option value="femenino">Femenino</option>
-                                            <option value="masculino">Masculino</option>
-                                            <option value="otro">Otro</option>
-                                            <option value="prefiero-no-decir">
-                                                Prefiero no decir
-                                            </option>
-                                        </select>
-                                        <div class="invalid-feedback">
-                                            Por favor selecciona una opción.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <!-- 7. Ciudad -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="ciudad" class="form-label">Ciudad</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-globe-americas"></i></span>
-                                        <select class="form-select" id="ciudad" name="ciudad" required>
-                                            <option value="" selected disabled>
-                                                Selecciona...
-                                            </option>
-                                            <option value="BOG">Bogotá</option>
-                                            <option value="ME">Medellín</option>
-                                            <option value="CA">Cartagena</option>
-                                            <option value="MA">Manizales</option>
-                                            <option value="BOY">Boyacá</option>
-                                        </select>
-                                        <div class="invalid-feedback">
-                                            Por favor selecciona tu ciudad.
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 8. Dirección -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="direccion" class="form-label">Dirección</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
-                                        <input type="text" class="form-control" id="direccion" name="direccion"
-                                            required />
-                                        <div class="invalid-feedback">
-                                            Por favor ingresa tu dirección.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 9. Contraseña y Confirmar contraseña -->
+                            <!-- Contraseña y Confirmar contraseña -->
                             <div class="row mb-3">
                                 <div class="col-lg-6">
                                     <label for="password" class="form-label">Contraseña</label>

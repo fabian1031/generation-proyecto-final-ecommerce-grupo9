@@ -149,10 +149,6 @@ export const registerValidators = {
 
   tipoDocumento: simpleRequired('Selecciona un tipo.'),
   cedula: validateCedula,
-  fechaNacimiento: simpleRequired('Ingresa tu fecha.'),
-  genero: simpleRequired('Selecciona una opción.'),
-  ciudad: simpleRequired('Selecciona tu ciudad.'),
-  direccion: validateDireccion,
   terminos: (v, _, input) => ({
     valid: input.checked,
     message: 'Debes aceptar los términos.'
@@ -169,7 +165,9 @@ export function validateCheckout(fields) {
     apellidos: validateNombre(fields.apellidos),
     correo: validateCorreo(fields.correo),
     celular: validateCelular(fields.celular),
-    direccion: validateDireccion(fields.direccion)
+    direccion: validateDireccion(fields.direccion),
+    departamento: simpleRequired('Selecciona un departamento.')(fields.departamento),
+    ciudad: simpleRequired('Selecciona una ciudad.')(fields.ciudad)
   };
 
   const errors = {};

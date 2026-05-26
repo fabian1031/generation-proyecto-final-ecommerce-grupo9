@@ -267,6 +267,42 @@
       "city": "ME",
       "address": "cra 5#10-50",
       "id": "Uppm5RHBmsA"
+    },
+    {
+      "username": "usuario",
+      "lastname": "nuevo",
+      "email": "nuevo@gmail.com",
+      "password": "Colombia2026*",
+      "role": "User",
+      "isActive": true,
+      "documentType": "CC",
+      "documentNumber": "1007581003",
+      "phone": "3245894268",
+      "id": "3dJDEbDoB-g"
+    },
+    {
+      "username": "usuario",
+      "lastname": "nuevo",
+      "email": "otro@gmail.com",
+      "password": "Colombia2026*",
+      "role": "Admin",
+      "isActive": true,
+      "documentType": "CC",
+      "documentNumber": "1007543211",
+      "phone": "1234567890",
+      "id": "4kTOr2bjWMs"
+    },
+    {
+      "username": "cristian",
+      "lastname": "ceballlos",
+      "email": "ceballosmarincristiancamilo@gmail.com",
+      "password": "Colombia2026*",
+      "role": "User",
+      "isActive": true,
+      "documentType": "CC",
+      "documentNumber": "1007581003",
+      "phone": "3245894268",
+      "id": "IDLpF2SQmRc"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

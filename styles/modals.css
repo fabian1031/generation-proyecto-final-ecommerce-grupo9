@@ -1,7 +1,7 @@
 #loginOverlay {
     position: fixed;
     inset: 0;
-    z-index: 9999;
+    z-index: 1050;
 }
 
 .login-backdrop {
@@ -19,4 +19,80 @@
     max-width: 420px;
     padding: 20px;
     border-radius: 12px;
+}
+
+.modal-backdrop-custom {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-box {
+    background: white;
+    width: 100%;
+    max-width: 420px;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.swal2-container {
+    z-index: 1100 !important;
+}
+
+#openLogin {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.75rem;
+    line-height: 1.5;
+    transition: opacity 0.2s ease;
+}
+
+#openLogin:hover,
+#openLogin:focus,
+#openLogin:active {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.75rem;
+    transform: none;
+    color: var(--white);
+    background-color: var(--primary);
+    border-color: var(--primary-light);
+    opacity: 0.9;
+}
+
+.app-loader {
+    max-width: 360px;
+    text-align: center;
+}
+
+.app-loader__spinner {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1.25rem;
+    border: 3px solid var(--primary-light);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: app-loader-spin 0.8s linear infinite;
+}
+
+.app-loader__title {
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.app-loader__note {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-medium);
+}
+
+@keyframes app-loader-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

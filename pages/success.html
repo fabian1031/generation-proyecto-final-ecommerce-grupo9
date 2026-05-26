@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../styles/base.css">
+
+    <title>Compra exitosa | Coroto</title>
+</head>
+
+<body>
+
+    <nav class="nav-container"></nav>
+
+    <div class="dinamic-container">
+        <main class="main-container">
+            <div class="container py-4 py-lg-5">
+
+                <div id="successContent">
+                    <div class="text-center mb-4 mb-lg-5">
+                        <i class="bi bi-check-circle-fill fs-1" style="color: var(--primary);"></i>
+                        <h1 class="h3 fw-bold mt-3 mb-2">¡Gracias por tu compra!</h1>
+                        <p class="text-muted mb-0">
+                            Tu pedido quedó registrado. Te enviaremos la confirmación a tu correo.
+                        </p>
+                    </div>
+
+                    <div class="row g-4 mx-2">
+                        <div class="col-12 col-md-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <h6 class="text-uppercase fw-bold mb-3">Resumen del pedido</h6>
+                                    <div id="successItems"></div>
+
+                                    <hr class="my-3">
+
+                                    <div class="d-flex justify-content-between small mb-2">
+                                        <span>Subtotal</span>
+                                        <span id="successSubtotal">—</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between small mb-3">
+                                        <span>IVA (19%)</span>
+                                        <span id="successIva">—</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>Total</span>
+                                        <span id="successTotalDetail">—</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <h6 class="text-uppercase fw-bold mb-3">Datos del cliente</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li class="mb-3">
+                                            <span class="text-muted d-block mb-1">Nombre</span>
+                                            <span class="fw-semibold text-capitalize" id="successCustomer">—</span>
+                                        </li>
+                                        <li class="mb-3">
+                                            <span class="text-muted d-block mb-1">Email</span>
+                                            <span class="fw-semibold" id="successEmail">—</span>
+                                        </li>
+                                        <li class="mb-3">
+                                            <span class="text-muted d-block mb-1">Teléfono</span>
+                                            <span class="fw-semibold" id="successPhone">—</span>
+                                        </li>
+                                        <li>
+                                            <span class="text-muted d-block mb-1">Dirección</span>
+                                            <span class="fw-semibold text-capitalize" id="successAddress">—</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <h6 class="text-uppercase fw-bold mb-3">Información del pago</h6>
+                                    <ul class="list-unstyled small mb-0">
+                                        <li class="mb-3">
+                                            <span class="text-muted d-block mb-1">Pedido</span>
+                                            <span class="fw-semibold" id="successOrderId">—</span>
+                                        </li>
+                                        <li class="mb-3">
+                                            <span class="text-muted d-block mb-1">Transacción</span>
+                                            <span class="fw-semibold" id="successTransaction">—</span>
+                                        </li>
+                                        <li class="mb-3">
+                                            <span class="text-muted d-block mb-1">Fecha y hora</span>
+                                            <span class="fw-semibold" id="successDate">—</span>
+                                        </li>
+                                        <li>
+                                            <span class="text-muted d-block mb-1">Método</span>
+                                            <span class="fw-semibold">OpenPay PSE</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4 mt-lg-5">
+                        <p class="small text-muted mb-3">
+                            Guarda este comprobante. Una vez confirmado el pago en el banco, procesaremos tu envío.
+                        </p>
+                        <a href="index.html" class="btn btn-primary px-4">Seguir comprando</a>
+                    </div>
+                </div>
+
+                <div id="successError" class="text-center py-5 d-none">
+                    <i class="bi bi-exclamation-circle fs-1" style="color: var(--primary);"></i>
+                    <h2 class="h4 fw-bold mt-3">No encontramos tu pedido</h2>
+                    <p class="text-muted mb-4">Completa una compra o revisa el enlace de confirmación de pago.</p>
+                    <a href="index.html" class="btn btn-primary px-4">Volver a la tienda</a>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="footer-container"></footer>
+    </div>
+
+    <script src="../scripts/base.js"></script>
+    <script type="module" src="../components/navbar.js"></script>
+    <script src="../components/footer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <script type="module" src="../scripts/success.js"></script>
+
+</body>
+
+</html>

@@ -20,3 +20,4 @@ npx json-server ./development/db.json
 - Hernan Vasquez
 - Cristian Ceballos
 - Fabian Beltran
+- Mario Alberto Buen dia

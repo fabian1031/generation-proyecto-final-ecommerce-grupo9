@@ -28,7 +28,7 @@
     <div class="dinamic-container">
         <main class="main-container">
 
-            <div class="container py-5">
+            <div class="container p-5">
 
                 <div class="row g-5">
 
@@ -42,34 +42,51 @@
                             <div class="row g-3">
 
                                 <div class="col-md-6">
-                                    <label>Nombres</label>
-                                    <input id="nombre" type="text" class="form-control" required>
+                                    <label for="nombre" class="form-label text-capitalize">Nombres</label>
+                                    <input id="nombre" type="text" class="form-control text-capitalize" required>
                                     <div class="invalid-feedback"></div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label>Apellidos</label>
-                                    <input id="apellidos" type="text" class="form-control" required>
+                                    <label for="apellidos" class="form-label text-capitalize">Apellidos</label>
+                                    <input id="apellidos" type="text" class="form-control text-capitalize" required>
                                     <div class="invalid-feedback"></div>
                                 </div>
 
-                                <div class="col-12">
-                                    <label>Celular</label>
+                                <div class="col-6">
+                                    <label for="celular" class="form-label text-capitalize">Celular</label>
                                     <input id="celular" type="text" class="form-control" required>
                                     <div class="invalid-feedback"></div>
                                 </div>
 
-                                <div class="col-12">
-                                    <label>Email</label>
+                                <div class="col-6">
+                                    <label for="correo" class="form-label text-capitalize">Email</label>
                                     <input id="correo" type="email" class="form-control" required>
                                     <div class="invalid-feedback"></div>
                                 </div>
 
-                                <div class="col-12">
-                                    <label>Dirección</label>
-                                    <input id="direccion" type="text" class="form-control" required>
+
+                                <div class="col-md-6">
+                                    <label for="departamento" class="form-label text-capitalize">Departamento</label>
+                                    <select id="departamento" class="form-select" required>
+                                        <option value="">Seleccione...</option>
+                                    </select>
                                     <div class="invalid-feedback"></div>
                                 </div>
+
+                                <div class="col-md-6">
+                                    <label for="ciudad" class="form-label text-capitalize">Ciudad</label>
+                                    <select id="ciudad" class="form-select" required disabled>
+                                        <option value="">Seleccione departamento primero...</option>
+                                    </select>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="direccion" class="form-label text-capitalize">Dirección</label>
+                                    <input id="direccion" type="text" class="form-control" required>
+                                    <div class="invalid-feedback"></div>
+                                </div>                                
 
                             </div>
 
@@ -136,6 +153,9 @@
     <script src="../scripts/base.js"></script>
     <script type="module" src="../components/navbar.js"></script>
     <script src="../components/footer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
 
     <script type="module" src="../scripts/checkout.js"></script>
 

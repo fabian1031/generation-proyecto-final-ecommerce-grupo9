@@ -98,12 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
             isActive: true,
             documentType: data.tipoDocumento,
             documentNumber: data.cedula,
-            phone: data.celular,
-            birthDate: data.fechaNacimiento,
-            gender: data.genero,
-            city: data.ciudad,
-            address: data.direccion
-        };1
+            phone: data.celular
+        };
 
         try {
             await userService.create(newUser);

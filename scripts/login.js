@@ -70,6 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!emailResult.valid || !passResult.valid) return;
 
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
         try {
             const users = await userService.getByEmail(email);
             const user = users[0];
@@ -105,11 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon: 'success',
                 title: `Bienvenido ${user.username}`,
                 text: 'Inicio de sesión exitoso',
-                timer: 1500,
-                showConfirmButton: false
+                confirmButtonText: 'Continuar',
+                allowOutsideClick: false
             });
 
-            window.location.href = '/pages/index.html';
+            window.location.href = './index.html';
 
         } catch (error) {
             console.error('Error en login:', error);
@@ -119,6 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: 'Error',
                 text: 'No se pudo iniciar sesión'
             });
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
         }
     });
 

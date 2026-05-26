@@ -9,7 +9,9 @@ export function initLogin(container, onSuccess) {
     <form id="loginForm" class="m-3">
       <input id="email" type="email" placeholder="Email" class="form-control mb-2" />
       <input id="password" type="password" placeholder="Password" class="form-control mb-2" />
-      <button class="btn btn-primary w-100">Ingresar</button>
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary">Ingresar</button>
+      </div>
     </form>
   `;
 
@@ -23,23 +25,45 @@ export function initLogin(container, onSuccess) {
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
-    const users = await userService.getByEmail(email);
-    const user = users[0];
+    const submitBtn = form.querySelector("button[type='submit']");
+    if (submitBtn) submitBtn.disabled = true;
 
-    if (!user || user.password !== password) {
-      alert("Credenciales inválidas");
-      return;
-    }
+    try {
+      const users = await userService.getByEmail(email);
+      const user = users[0];
 
-    if (!user.isActive) {
-      alert("Usuario inactivo");
-      return;
-    }
+      if (!user || user.password !== password) {
+        await Swal.fire({
+          icon: "error",
+          title: "Credenciales inválidas",
+          text: "Verifica tu correo y contraseña"
+        });
+        return;
+      }
 
-    authService.login(user);
+      if (!user.isActive) {
+        await Swal.fire({
+          icon: "warning",
+          title: "Usuario inactivo",
+          text: "Contacta al administrador"
+        });
+        return;
+      }
 
-    if (onSuccess) {
-      onSuccess(user);
+      authService.login(user);
+
+      if (onSuccess) {
+        await onSuccess(user);
+      }
+    } catch (error) {
+      console.error("Error en login:", error);
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo iniciar sesión"
+      });
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 }

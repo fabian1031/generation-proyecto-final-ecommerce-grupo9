@@ -289,20 +289,6 @@ body {
 .offcanvas-login:hover {
   background-color: #e7f1ff;
 }
-.btn-primary {
-    background-color: var(--primary);
-    transition: all .5s ease;
-    border-color: var(--primary-light);
-}
-
-.btn-primary:hover {
-    font-size: 16px;
-    padding: auto;
-    transform: scale(1);
-    color: var(--primary);
-    border: 1px solid var(--gray-light);
-    background-color: var(--primary-light);
-}
 
 .form-control:focus {
     box-shadow: 0 0 0 .25rem var(--primary-light)
@@ -337,9 +323,23 @@ body {
 
 /* Estilos generales para los botones */
 .btn-primary {
+    --bs-btn-color: var(--white);
+    --bs-btn-bg: var(--primary);
+    --bs-btn-border-color: var(--primary-light);
+    --bs-btn-hover-color: var(--primary);
+    --bs-btn-hover-bg: var(--primary-light);
+    --bs-btn-hover-border-color: var(--gray-light);
+    --bs-btn-active-color: var(--primary);
+    --bs-btn-active-bg: var(--primary-light);
+    --bs-btn-active-border-color: var(--gray-light);
+    --bs-btn-disabled-color: var(--white);
+    --bs-btn-disabled-bg: var(--primary-light);
+    --bs-btn-disabled-border-color: var(--primary-light);
+    --bs-btn-focus-shadow-rgb: 155, 191, 181;
     background-color: var(--primary);
-    transition: all .5s ease;
     border-color: var(--primary-light);
+    color: var(--white);
+    transition: all .5s ease;
 }
 
 .btn-primary:hover {
@@ -362,6 +362,22 @@ body {
     color: var(--primary);
     border: 1px solid var(--gray-light);
     background-color: var(--primary-light);
+}
+
+.btn-primary:focus,
+.btn-primary:focus-visible,
+.btn-primary:active {
+    color: var(--primary);
+    background-color: var(--primary-light);
+    border-color: var(--gray-light);
+}
+
+.btn-primary.disabled,
+.btn-primary:disabled {
+    color: var(--white);
+    background-color: var(--primary-light);
+    border-color: var(--primary-light);
+    opacity: 0.85;
 }
 
 .form-control:focus {

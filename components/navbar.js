@@ -1,18 +1,15 @@
 import { cartService } from "../services/cartSevices.js";
-
-const getUser = () => JSON.parse(localStorage.getItem("authUser"));
+import { authService } from "../services/auth.service.js";
 
 const navbar = `
 <nav class="navbar navbar-expand-lg sticky-top bg-white offcanvas-border">
   <div class="container mt-3">
 
-    <!-- Logo -->
     <a class="navbar-brand d-flex align-items-center gap-2" href="./index.html">
       <img src="../assets/pages/login.png" class="img-fluid" alt="logo-nav" width="100">
       <span class="fw-bold d-none d-md-inline nav-brand-text">Coroto</span>
     </a>
 
-    <!-- MOBILE -->
     <div class="d-flex d-lg-none align-items-center gap-2 ms-auto">
       <div class="position-relative" style="width:46px;height:46px;">
         <a href="./cart.html" class="nav-icon-btn">
@@ -27,7 +24,6 @@ const navbar = `
       </button>
     </div>
 
-    <!-- NAV DESKTOP -->
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav mx-auto gap-1">
         <li class="nav-item">
@@ -52,7 +48,6 @@ const navbar = `
         </li>
       </ul>
 
-      <!-- ACTIONS -->
       <div class="d-none d-lg-flex align-items-center gap-3">
 
         <div class="position-relative" style="width:46px;height:46px;">
@@ -62,7 +57,6 @@ const navbar = `
           <span id="cart-count" class="position-absolute badge rounded-pill nav-badge">0</span>
         </div>
 
-        <!-- USER -->
         <div class="dropdown">
           <button class="nav-icon-btn-primary" data-bs-toggle="dropdown">
             <i class="bi bi-person-circle fs-4"></i>
@@ -78,22 +72,36 @@ const navbar = `
             <li><hr class="dropdown-divider"></li>
 
             <li class="admin-section">
-              <a class="dropdown-item" href="./admin_dashboard.html">
-                <i class="bi bi-kanban"></i> Panel Productos
+              <a class="dropdown-item nav-dropdown-item" href="./admin_dashboard.html">
+                <i class="bi bi-kanban"></i> Gestión Productos
               </a>
             </li>
 
             <li class="admin-section">
-              <a class="dropdown-item" href="./admin_users.html">
+              <a class="dropdown-item nav-dropdown-item" href="./admin_users.html">
                 <i class="bi bi-people-fill"></i> Gestión Usuarios
               </a>
             </li>
 
-            <li><hr class="dropdown-divider"></li>
+            <li class="admin-section">
+              <a class="dropdown-item nav-dropdown-item" href="./gestion_pedidos.html">
+                <i class="bi bi-clipboard-check"></i> Gestión Pedidos
+              </a>
+            </li>
+
+            <li class="user-section"><hr class="dropdown-divider"></li>
+
+            <li class="user-section">
+              <a class="dropdown-item nav-dropdown-item" href="./user_dashboard.html">
+                <i class="bi bi-bag-check"></i> Mis Pedidos
+              </a>
+            </li>
+
+            <li class="role-divider"><hr class="dropdown-divider"></li>
 
             <li>
-              <a class="dropdown-item nav-danger-item" href="#">
-                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+              <a class="dropdown-item nav-dropdown-item" href="./login.html" id="navAuthAction">
+                <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
               </a>
             </li>
 
@@ -105,7 +113,6 @@ const navbar = `
   </div>
 </nav>
 
-<!-- OFFCANVAS -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav" style="max-width:300px;">
   <div class="offcanvas-header px-4 py-3">
     <div class="d-flex align-items-center gap-2">
@@ -122,15 +129,60 @@ const navbar = `
       <p class="mb-0 text-muted small" id="welcome-msg-mobile"></p>
     </div>
 
-    <ul class="nav flex-column gap-1">
-      <li><a class="nav-link" href="./index.html">Inicio</a></li>
-      <li><a class="nav-link" href="./about.html">Nosotros</a></li>
-      <li><a class="nav-link" href="./contact.html">Contacto</a></li>
+    <p class="offcanvas-section-label mb-2">Menú</p>
+    <ul class="nav flex-column gap-1 mb-4">
+      <li>
+        <a class="offcanvas-nav-link d-flex align-items-center gap-2" href="./index.html">
+          <i class="bi bi-house-door"></i> Inicio
+        </a>
+      </li>
+      <li>
+        <a class="offcanvas-nav-link d-flex align-items-center gap-2" href="./about.html">
+          <i class="bi bi-people"></i> Nosotros
+        </a>
+      </li>
+      <li>
+        <a class="offcanvas-nav-link d-flex align-items-center gap-2" href="./contact.html">
+          <i class="bi bi-chat-dots"></i> Contacto
+        </a>
+      </li>
     </ul>
 
+    <div class="admin-section mb-4">
+      <p class="offcanvas-section-label mb-2">Administración</p>
+      <ul class="nav flex-column gap-1">
+        <li>
+          <a class="offcanvas-nav-link d-flex align-items-center gap-2" href="./admin_dashboard.html">
+            <i class="bi bi-kanban"></i> Gestión Productos
+          </a>
+        </li>
+        <li>
+          <a class="offcanvas-nav-link d-flex align-items-center gap-2" href="./admin_users.html">
+            <i class="bi bi-people-fill"></i> Gestión Usuarios
+          </a>
+        </li>
+        <li>
+          <a class="offcanvas-nav-link d-flex align-items-center gap-2" href="./gestion_pedidos.html">
+            <i class="bi bi-clipboard-check"></i> Gestión Pedidos
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="user-section mb-4">
+      <p class="offcanvas-section-label mb-2">Mi cuenta</p>
+      <ul class="nav flex-column gap-1">
+        <li>
+          <a class="offcanvas-nav-link d-flex align-items-center gap-2" href="./user_dashboard.html">
+            <i class="bi bi-bag-check"></i> Mis Pedidos
+          </a>
+        </li>
+      </ul>
+    </div>
+
     <div class="mt-auto">
-      <a href="#" class="offcanvas-logout">
-        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+      <a href="./login.html" class="offcanvas-login" id="offcanvasAuthAction">
+        <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
       </a>
     </div>
 
@@ -138,13 +190,67 @@ const navbar = `
 </div>
 `;
 
+function setAuthAction(isLoggedIn) {
+  const desktop = document.getElementById("navAuthAction");
+  const mobile = document.getElementById("offcanvasAuthAction");
+
+  if (isLoggedIn) {
+    if (desktop) {
+      desktop.href = "#";
+      desktop.className = "dropdown-item nav-danger-item";
+      desktop.innerHTML = '<i class="bi bi-box-arrow-right"></i> Cerrar sesión';
+    }
+
+    if (mobile) {
+      mobile.href = "#";
+      mobile.className = "offcanvas-logout";
+      mobile.innerHTML = '<i class="bi bi-box-arrow-right"></i> Cerrar sesión';
+    }
+
+    return;
+  }
+
+  if (desktop) {
+    desktop.href = "./login.html";
+    desktop.className = "dropdown-item nav-dropdown-item";
+    desktop.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Iniciar sesión';
+  }
+
+  if (mobile) {
+    mobile.href = "./login.html";
+    mobile.className = "offcanvas-login";
+    mobile.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Iniciar sesión';
+  }
+}
+
+function setupRoleMenus(user, isLoggedIn) {
+  const isAdmin = isLoggedIn && user?.role === "Admin";
+  const isUser = isLoggedIn && !isAdmin;
+
+  document.querySelectorAll(".admin-section").forEach(el => {
+    el.style.display = isAdmin ? "" : "none";
+  });
+
+  document.querySelectorAll(".user-section").forEach(el => {
+    el.style.display = isUser ? "" : "none";
+  });
+
+  document.querySelectorAll(".role-divider").forEach(el => {
+    el.style.display = isLoggedIn ? "" : "none";
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector(".nav-container");
   if (!container) return;
 
   container.innerHTML = navbar;
 
-  const user = getUser();
+  const user = authService.getUser();
+  const isLoggedIn = authService.isAuthenticated();
+
+  setAuthAction(isLoggedIn);
+  setupRoleMenus(user, isLoggedIn);
 
   requestAnimationFrame(() => {
     cartService.updateBadge();
@@ -162,30 +268,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (welcomeMobile) welcomeMobile.textContent = msg;
     } else {
       usernameEls.forEach(el => el.textContent = "Invitado");
+      if (welcome) welcome.textContent = "Inicia sesión para continuar";
+      if (welcomeMobile) welcomeMobile.textContent = "Inicia sesión para continuar";
     }
   });
 
-  const logoutDesktop = document.querySelector(".nav-danger-item");
-  const logoutMobile = document.querySelector(".offcanvas-logout");
+  const handleAuthAction = (e) => {
+    if (!authService.isAuthenticated()) return;
 
-  const doLogout = (e) => {
     e.preventDefault();
-    localStorage.removeItem("authUser");
-    window.location.reload();
+    authService.logout();
+    window.location.href = "./login.html";
   };
 
-  logoutDesktop?.addEventListener("click", doLogout);
-  logoutMobile?.addEventListener("click", doLogout);
-
-  if (user && user.role !== "Admin") {
-    document.querySelectorAll(".admin-section").forEach(el => {
-      el.style.display = "none";
-    });
-  }
-
-  if (!user) {
-    document.querySelectorAll(".admin-section").forEach(el => {
-      el.style.display = "none";
-    });
-  }
+  document.getElementById("navAuthAction")?.addEventListener("click", handleAuthAction);
+  document.getElementById("offcanvasAuthAction")?.addEventListener("click", handleAuthAction);
 });

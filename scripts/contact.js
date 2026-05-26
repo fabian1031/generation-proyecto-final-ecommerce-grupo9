@@ -1,10 +1,13 @@
 import { validateForm, contactValidators, validateNombre, validateCorreo, validateCelular, validateFeedback } from './validations.js';
+import { sendContactMessage } from '../services/email.service.js';
+import { showLoader, hideLoader } from '../components/loader.component.js';
 
 const contactForm = document.querySelector('#contactForm');
 const nombreInput = document.querySelector('#nombre');
 const correoInput = document.querySelector('#correo');
 const celularInput = document.querySelector('#celular');
 const mensajeInput = document.querySelector('#mensaje');
+const submitButton = contactForm?.querySelector('button[type="submit"]');
 
 const setFieldState = (input, isValid, message = '') => {
     const feedback = input.parentElement.querySelector('.invalid-feedback');
@@ -36,10 +39,8 @@ const contactFormHandler = async (event) => {
         feedback: message
     }, contactValidators);
 
-    // Activar estilos de Bootstrap
     form.classList.add('was-validated');
 
-    // Pintar cada campo
     setFieldState(nombreInput, !errors.nombre, errors.nombre);
     setFieldState(correoInput, !errors.correo, errors.correo);
     setFieldState(celularInput, !errors.celular, errors.celular);
@@ -47,47 +48,37 @@ const contactFormHandler = async (event) => {
 
     if (!valid) return;
 
-    // --- envío ---
+    if (submitButton) submitButton.disabled = true;
+    showLoader('Enviando tu mensaje...', 'Por favor espera un momento.');
+
     try {
-        const response = await fetch('https://formspree.io/f/xpqkpydy', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                nombre: name,
-                correo: email,
-                mensaje: message,
-                celular: cellphone
-            }),
+        await sendContactMessage({
+            name,
+            email,
+            cellphone,
+            message,
         });
 
-        if (response.ok) {
-            showAlert({
-                type: 'success',
-                message: '¡Mensaje enviado! Nos pondremos en contacto pronto.'
-            });
+        showAlert({
+            type: 'success',
+            message: '¡Mensaje enviado! Nos pondremos en contacto pronto.'
+        });
 
-            form.reset();
-            form.classList.remove('was-validated');
+        form.reset();
+        form.classList.remove('was-validated');
 
-            // limpiar estados visuales
-            [nombreInput, correoInput, celularInput, mensajeInput]
-                .forEach(input => input.classList.remove('is-valid', 'is-invalid'));
-
-        } else {
-            const data = await response.json();
-            const msg = data?.errors?.[0]?.message || 'Error al enviar el formulario.';
-            showAlert({ type: 'error', message: msg });
-        }
+        [nombreInput, correoInput, celularInput, mensajeInput]
+            .forEach(input => input.classList.remove('is-valid', 'is-invalid'));
 
     } catch (error) {
         showAlert({
             type: 'error',
-            message: 'Hubo un problema de red. Intenta de nuevo más tarde.'
+            message: error.message || 'Hubo un problema de red. Intenta de nuevo más tarde.'
         });
         console.error(error);
+    } finally {
+        hideLoader();
+        if (submitButton) submitButton.disabled = false;
     }
 };
 
@@ -122,7 +113,6 @@ const validateField = (input) => {
         validateField(input);
     });
 
-    // opcional: cuando pierde foco
     input.addEventListener('blur', () => {
         validateField(input);
     });
