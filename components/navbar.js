@@ -35,7 +35,7 @@ const navbar = `
 
         <li class="nav-item">
           <a class="nav-link px-3 fw-semibold text-uppercase d-flex align-items-center gap-2 rounded-3"
-            href="../pages/about.html">
+            href="./pages/about.html">
             <i class="bi bi-people fs-5"></i>Nosotros
           </a>
         </li>
