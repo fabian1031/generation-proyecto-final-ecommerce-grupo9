@@ -5,7 +5,7 @@ const navbar = `
 <nav class="navbar navbar-expand-lg sticky-top bg-white offcanvas-border">
   <div class="container mt-3">
 
-    <a class="navbar-brand d-flex align-items-center gap-2" href="../../index.html">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="./index.html">
       <img src="./assets/pages/login.png" class="img-fluid" alt="logo-nav" width="100">
       <span class="fw-bold d-none d-md-inline nav-brand-text">Coroto</span>
     </a>
