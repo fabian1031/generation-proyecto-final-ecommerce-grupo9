@@ -303,6 +303,18 @@
       "documentNumber": "1007581003",
       "phone": "3245894268",
       "id": "IDLpF2SQmRc"
+    },
+    {
+      "username": "Cristian Camilo",
+      "lastname": "Ceballos Marin",
+      "email": "CEBALLOSMARINCRISTIANCAMILO@GMAIL.COM",
+      "password": "Colombia2026*",
+      "role": "User",
+      "isActive": true,
+      "documentType": "CC",
+      "documentNumber": "1007581003",
+      "phone": "3245894268",
+      "id": "thUqITAiX24"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

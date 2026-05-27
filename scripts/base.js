@@ -14,6 +14,7 @@
     const user = JSON.parse(localStorage.getItem('authUser'));
 
     if (!user) {
-        window.location.replace('/pages/login.html');
+        const inPages = window.location.pathname.includes('/pages/');
+        window.location.replace(inPages ? './login.html' : './pages/login.html');
     }
 };
