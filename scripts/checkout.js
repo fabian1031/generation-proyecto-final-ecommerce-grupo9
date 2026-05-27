@@ -186,7 +186,7 @@ function bindCheckoutEvents() {
 
         try {
             const [res] = await Promise.all([
-                fetch('https://coroto.online/payment/payment.php', {
+                fetch('https://payment.coroto.online/payment.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
