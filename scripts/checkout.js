@@ -7,6 +7,8 @@ import { initLogin } from '../components/login.component.js';
 import { showLoader, updateLoader, hideLoader } from '../components/loader.component.js';
 import { initUbicacion } from '../services/departamentos-ciudades.js';
 
+const PAYMENT_URL = 'https://payment.coroto.online/payment.php';
+
 document.addEventListener('DOMContentLoaded', () => {
     const user = authService.getUser();
 
@@ -186,7 +188,7 @@ function bindCheckoutEvents() {
 
         try {
             const [res] = await Promise.all([
-                fetch('https://payment.coroto.online/payment.php', {
+                fetch(PAYMENT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -207,7 +209,7 @@ function bindCheckoutEvents() {
 
             updateLoader('Te estamos redirigiendo a la pasarela de pagos...');
 
-            const payment = await res.json();
+            const payment = await parsePaymentResponse(res);
 
             if (payment.status === 'ok' && payment.url_pse) {
                 sessionStorage.setItem('corotoOrder', JSON.stringify({
@@ -288,4 +290,27 @@ function applyValidStates(fields, errors) {
 
 function wait(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function parsePaymentResponse(res) {
+    const raw = await res.text();
+
+    try {
+        return JSON.parse(raw);
+    } catch {
+        const preview = raw.trim().slice(0, 120);
+
+        if (raw.includes('<!DOCTYPE') || raw.includes('<html')) {
+            throw new Error(
+                `El servidor de pagos respondió con HTML (HTTP ${res.status}). ` +
+                'Revisa que payment.php y vendor/ estén desplegados en payment.coroto.online.',
+            );
+        }
+
+        throw new Error(
+            preview
+                ? `Respuesta inválida del servidor (HTTP ${res.status}): ${preview}`
+                : `El servidor de pagos no devolvió JSON (HTTP ${res.status}).`,
+        );
+    }
 }
