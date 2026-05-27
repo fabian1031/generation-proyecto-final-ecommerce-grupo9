@@ -6,13 +6,13 @@ const navbar = `
   <div class="container mt-3">
 
     <a class="navbar-brand d-flex align-items-center gap-2" href="../../index.html">
-      <img src="../assets/pages/login.png" class="img-fluid" alt="logo-nav" width="100">
+      <img src="./assets/pages/login.png" class="img-fluid" alt="logo-nav" width="100">
       <span class="fw-bold d-none d-md-inline nav-brand-text">Coroto</span>
     </a>
 
     <div class="d-flex d-lg-none align-items-center gap-2 ms-auto">
       <div class="position-relative" style="width:46px;height:46px;">
-        <a href="../pages/cart.html" class="nav-icon-btn">
+        <a href="./pages/cart.html" class="nav-icon-btn">
           <i class="bi bi-bag fs-5"></i>
         </a>
         <span id="cart-count-mobile" class="position-absolute badge rounded-pill nav-badge">0</span>
@@ -28,21 +28,21 @@ const navbar = `
       <ul class="navbar-nav mx-auto gap-1">
         <li class="nav-item">
           <a class="nav-link px-3 fw-semibold text-uppercase d-flex align-items-center gap-2 rounded-3"
-            href="../../index.html">
+            href="./index.html">
             <i class="bi bi-house-door fs-5"></i>Inicio
           </a>
         </li>
 
         <li class="nav-item">
           <a class="nav-link px-3 fw-semibold text-uppercase d-flex align-items-center gap-2 rounded-3"
-            href="../pages/about.html">
+            href="./pages/about.html">
             <i class="bi bi-people fs-5"></i>Nosotros
           </a>
         </li>
 
         <li class="nav-item">
           <a class="nav-link px-3 fw-semibold text-uppercase d-flex align-items-center gap-2 rounded-3"
-            href="../pages/contact.html">
+            href="./pages/contact.html">
             <i class="bi bi-chat-dots fs-5"></i>Contacto
           </a>
         </li>
@@ -51,7 +51,7 @@ const navbar = `
       <div class="d-none d-lg-flex align-items-center gap-3">
 
         <div class="position-relative" style="width:46px;height:46px;">
-          <a href="../pages/cart.html" class="nav-icon-btn">
+          <a href="./pages/cart.html" class="nav-icon-btn">
             <i class="bi bi-bag fs-5"></i>
           </a>
           <span id="cart-count" class="position-absolute badge rounded-pill nav-badge">0</span>
