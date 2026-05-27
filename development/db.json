@@ -315,6 +315,18 @@
       "documentNumber": "1007581003",
       "phone": "3245894268",
       "id": "thUqITAiX24"
+    },
+    {
+      "username": "qweeqwqwe",
+      "lastname": "qweqewqwe",
+      "email": "CEBALLOSMARINCRISTIANCAMILO@GMAIL.COM",
+      "password": "Colombia2026*",
+      "role": "User",
+      "isActive": true,
+      "documentType": "CC",
+      "documentNumber": "122313234",
+      "phone": "213234234234",
+      "id": "RuZYkjMG5EY"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
