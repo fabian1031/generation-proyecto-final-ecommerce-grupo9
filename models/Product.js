@@ -1,5 +1,17 @@
 export class Product {
-    constructor({ id, name, brand ,price, status, stock, category, description, image, isActive }) {
+    constructor(data = {}) {
+        const {
+            id,
+            name,
+            brand,
+            price,
+            status,
+            stock,
+            category,
+            description,
+            image,
+            isActive,
+        } = data ?? {};
         this.id = id;
         this.name = name;
         this.brand = brand;

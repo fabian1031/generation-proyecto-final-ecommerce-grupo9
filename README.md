@@ -14,6 +14,21 @@ npx json-server ./development/db.json
 
 ```
 
+### Asistente de compras (chatbot)
+
+El asistente flotante usa Gemini vía PHP. Necesitas **dos procesos** en desarrollo:
+
+```bash
+# 1) API de productos (json-server)
+npx json-server ./development/db.json
+
+# 2) Api key de Gemini
+.env.example 
+```
+
+
+El asistente recomienda productos según presupuesto y, si el usuario confirma, agrega artículos al carrito en `localStorage`.
+
 ### Integrantes
 
 - Camilo Castellanos

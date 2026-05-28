@@ -1,5 +1,6 @@
 import { cartService } from "../services/cartSevices.js";
 import { authService } from "../services/auth.service.js";
+import { initCorotoChat } from "./chat/index.js";
 
 const inPages = window.location.pathname.includes("/pages/");
 const root = inPages ? "../" : "./";
@@ -255,6 +256,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setAuthAction(isLoggedIn);
   setupRoleMenus(user, isLoggedIn);
+
+  initCorotoChat();
 
   requestAnimationFrame(() => {
     cartService.updateBadge();
