@@ -22,7 +22,7 @@ export function createChatWidgetMarkup() {
                 <div class="ai-chat-header__brand">
                     <div class="ai-chat-header__orb" aria-hidden="true">IA</div>
                     <div>
-                        <h2 id="coroto-chat-title" class="ai-chat-header__title">Cort-IA</h2>
+                        <h2 id="coroto-chat-title" class="ai-chat-header__title">CoroTIA</h2>
                         <p class="ai-chat-header__sub">
                             <span class="ai-chat-status" aria-hidden="true"></span>
                             En línea · te ayudo con tu presupuesto

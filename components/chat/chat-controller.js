@@ -36,7 +36,7 @@ export class CorotoChatController {
         await this.#loadCatalog();
         this.#bindEvents();
         this.#appendBotMessage(
-            'Hola, soy Cort-IA el asistente inteligente de Coroto.\n\nCuéntame tu presupuesto o qué pieza buscas (GPU, CPU, laptop…) y te recomiendo opciones del catálogo.\n\nSi te gusta algo, te lo agrego al carrito cuando confirmes.'
+            'Hola, soy CorTIA el asistente inteligente de Coroto.\n\nCuéntame tu presupuesto o qué pieza buscas (GPU, CPU, laptop…) y te recomiendo opciones del catálogo.\n\nSi te gusta algo, te lo agrego al carrito cuando confirmes.'
         );
         this.chipsEl?.classList.add('ai-chat-chips--visible');
     }
@@ -187,7 +187,7 @@ export class CorotoChatController {
             }
         } catch (err) {
             typing.remove();
-            console.error('[Cort-IA]', err);
+            console.error('[CoroTIA]', err);
             const raw = err instanceof Error ? err.message : '';
             const friendly =
                 !raw || /undefined|null|properties/i.test(raw)
