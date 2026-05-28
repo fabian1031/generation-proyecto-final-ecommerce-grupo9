@@ -4,8 +4,13 @@ import { formatPrice, getPagesPath } from '../../services/utils.service.js';
 import { Product } from '../../models/Product.js';
 import { sendChatMessage } from './chat-api.service.js';
 import { parseAssistantReply, stripAssistantFormatting } from './chat-parser.js';
+import {
+    findProductIdForCartConfirmation,
+    isCartConfirmation,
+} from './chat-cart-fastpath.js';
 
-const MIN_MS_BETWEEN_REQUESTS = 2500;
+/** Solo entre llamadas a Gemini (no aplica al agregar al carrito rápido). */
+const MIN_MS_BETWEEN_GEMINI = 1200;
 
 export class CorotoChatController {
     #history = [];
@@ -142,20 +147,25 @@ export class CorotoChatController {
         const text = this.input.value.trim();
         if (!text) return;
 
-        const now = Date.now();
-        const waitMs = MIN_MS_BETWEEN_REQUESTS - (now - this.#lastRequestAt);
-        if (waitMs > 0) {
-            this.#appendBotMessage(
-                `Un momento — espera ${Math.ceil(waitMs / 1000)} s antes del siguiente mensaje (límite del plan gratuito de Gemini).`
-            );
-            return;
-        }
-
-        this.#lastRequestAt = now;
         this.input.value = '';
         this.#appendUserMessage(text);
         this.#history.push({ role: 'user', content: text });
 
+        if (isCartConfirmation(text)) {
+            const productId = findProductIdForCartConfirmation(this.#history, this.#productsById);
+            if (productId) {
+                await this.#completeCartAdd([{ id: productId, qty: 1 }], { fastPath: true });
+                return;
+            }
+        }
+
+        const now = Date.now();
+        const waitMs = MIN_MS_BETWEEN_GEMINI - (now - this.#lastRequestAt);
+        if (waitMs > 0) {
+            await new Promise((r) => setTimeout(r, waitMs));
+        }
+
+        this.#lastRequestAt = Date.now();
         const typing = this.#showTyping();
         this.#setLoading(true);
 
@@ -167,16 +177,8 @@ export class CorotoChatController {
             let displayText = cleanText || stripAssistantFormatting(rawReply);
 
             if (cartActions.length > 0) {
-                const { added, failed } = await this.#processCartActions(cartActions);
-
-                if (added.length > 0) {
-                    displayText = this.#buildCartConfirmation(added);
-                    await this.#notifyCartAdded(added);
-                } else if (failed.length > 0) {
-                    displayText =
-                        displayText ||
-                        'No pude agregar ese producto (sin stock o no disponible). ¿Te sugiero otra opción?';
-                }
+                await this.#completeCartAdd(cartActions, { fastPath: false, fallbackText: displayText });
+                return;
             }
 
             if (displayText) {
@@ -189,13 +191,55 @@ export class CorotoChatController {
             const raw = err instanceof Error ? err.message : '';
             const friendly =
                 !raw || /undefined|null|properties/i.test(raw)
-                    ? 'No pude completar la acción. Verifica que json-server esté activo e intenta de nuevo.'
+                    ? 'No pude completar la acción. Reinicia PHP (para leer .env) y verifica que json-server esté activo.'
                     : raw;
             this.#appendBotMessage(friendly);
             this.#history.pop();
         } finally {
             this.#setLoading(false);
             this.input.focus();
+        }
+    }
+
+    /**
+     * Agrega al carrito, muestra mensaje en el chat y luego el modal (sin bloquear el chat).
+     */
+    async #completeCartAdd(actions, { fastPath = false, fallbackText = '' } = {}) {
+        const typing = fastPath ? this.#showTyping() : null;
+        if (fastPath) this.#setLoading(true);
+
+        try {
+            const { added, failed } = await this.#processCartActions(actions);
+            typing?.remove();
+
+            let displayText = fallbackText;
+
+            if (added.length > 0) {
+                displayText = this.#buildCartConfirmation(added);
+                this.#appendBotMessage(displayText);
+                this.#history.push({ role: 'assistant', content: displayText });
+                this.#notifyCartAdded(added);
+            } else if (failed.length > 0) {
+                displayText =
+                    displayText ||
+                    'No pude agregar ese producto (sin stock o no disponible). ¿Te sugiero otra opción?';
+                this.#appendBotMessage(displayText);
+                this.#history.push({ role: 'assistant', content: displayText });
+            } else if (fastPath) {
+                this.#appendBotMessage(
+                    '¿Cuál producto agrego? Dime el nombre o pídeme una recomendación primero.'
+                );
+                this.#history.push({
+                    role: 'assistant',
+                    content: '¿Cuál producto agrego? Dime el nombre o pídeme una recomendación primero.',
+                });
+            }
+        } finally {
+            if (fastPath) {
+                typing?.remove();
+                this.#setLoading(false);
+                this.input.focus();
+            }
         }
     }
 
@@ -241,27 +285,23 @@ export class CorotoChatController {
         return `Listo, agregué al carrito:\n${lines.join('\n')}\n\nRevisa tu carrito cuando quieras para finalizar la compra.`;
     }
 
-    async #notifyCartAdded(added) {
+    #notifyCartAdded(added) {
         const first = added[0]?.product;
         if (!first?.name || typeof Swal === 'undefined') return;
 
-        try {
-            const pages = getPagesPath();
-            const result = await Swal.fire({
-                icon: 'success',
-                title: 'Producto en el carrito',
-                text: '¿Quieres ir al carrito ahora?',
-                showCancelButton: true,
-                confirmButtonText: 'Ver carrito',
-                cancelButtonText: 'Seguir comprando',
-            });
-
+        const pages = getPagesPath();
+        Swal.fire({
+            icon: 'success',
+            title: 'Producto en el carrito',
+            text: '¿Quieres ir al carrito ahora?',
+            showCancelButton: true,
+            confirmButtonText: 'Ver carrito',
+            cancelButtonText: 'Seguir comprando',
+        }).then((result) => {
             if (result?.isConfirmed) {
                 window.location.href = `${pages}cart.html`;
             }
-        } catch {
-            /* el mensaje en el chat ya confirma la acción */
-        }
+        });
     }
 
     async #resolveProduct(id) {

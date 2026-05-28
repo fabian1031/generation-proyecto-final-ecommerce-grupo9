@@ -8,8 +8,10 @@ require_once __DIR__ . '/../config/catalog.php';
 
 loadEnv(__DIR__ . '/../.env');
 
-/** Un solo modelo = 1 petición por mensaje */
-const GEMINI_MODEL = 'gemini-3.1-flash-lite';
+const GEMINI_MODELS = [
+    'gemini-3.1-flash-lite',
+    'gemini-flash-lite-latest',
+];
 
 function systemPrompt(array $products): string
 {
@@ -197,24 +199,39 @@ function friendlyApiError(string $lastError, int $lastStatus): string
     return 'El asistente no está disponible en este momento. Intenta de nuevo en unos minutos.';
 }
 
-$url = sprintf(
-    'https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s',
-    rawurlencode(GEMINI_MODEL),
-    rawurlencode($apiKey)
-);
+$lastError = '';
+$lastStatus = 0;
 
-[$status, $body, $transportError] = postJson($url, $payload);
-$data = json_decode($body, true);
-$apiError = is_array($data) ? (string) ($data['error']['message'] ?? '') : '';
-$lastError = $transportError ?: $apiError ?: 'HTTP ' . $status;
-$lastStatus = $status;
+foreach (GEMINI_MODELS as $model) {
+    $url = sprintf(
+        'https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s',
+        rawurlencode($model),
+        rawurlencode($apiKey)
+    );
 
-if ($status >= 200 && $status < 300 && isset($data['candidates'][0]['content']['parts'])) {
-    $reply = '';
-    foreach ($data['candidates'][0]['content']['parts'] as $part) {
-        $reply .= (string) ($part['text'] ?? '');
+    [$status, $body, $transportError] = postJson($url, $payload);
+    $data = json_decode($body, true);
+    $apiError = is_array($data) ? (string) ($data['error']['message'] ?? '') : '';
+    $lastError = $transportError ?: $apiError ?: 'HTTP ' . $status;
+    $lastStatus = $status;
+
+    if ($status >= 200 && $status < 300 && isset($data['candidates'][0]['content']['parts'])) {
+        $reply = '';
+        foreach ($data['candidates'][0]['content']['parts'] as $part) {
+            $reply .= (string) ($part['text'] ?? '');
+        }
+        jsonResponse(['reply' => trim($reply) ?: 'Sin respuesta.']);
     }
-    jsonResponse(['reply' => trim($reply) ?: 'Sin respuesta.']);
+
+    $retry = $status === 404
+        || $status === 429
+        || preg_match('/quota|exceeded|resource_exhausted|rate.?limit|not found/i', $apiError);
+
+    if ($retry) {
+        continue;
+    }
+
+    break;
 }
 
 jsonResponse(['error' => friendlyApiError($lastError, $lastStatus)], 502);
