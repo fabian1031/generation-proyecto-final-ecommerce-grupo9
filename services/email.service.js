@@ -68,6 +68,7 @@ function htmlPedido(order) {
     const direccion = titulo(`${order.customer.direccion}, ${order.customer.ciudad}, ${order.customer.departamento}`);
     const pedidoId = order.order_id || order.id_pedido;
     const fecha = new Date(order.createdAt).toLocaleString('es-CO');
+    const metodoPago = order.metodo_pago === 'card' ? 'Tarjeta (OpenPay)' : 'PSE (OpenPay)';
 
     const productos = order.items.map((item) => `
         <p style="margin:0 0 8px;font-size:14px;">
@@ -93,7 +94,7 @@ function htmlPedido(order) {
             ${fila('Pedido', pedidoId)}
             ${fila('Transacción', order.id_transaccion || '—')}
             ${fila('Fecha', fecha)}
-            ${fila('Método', 'OpenPay PSE')}
+            ${fila('Método', metodoPago)}
         `)}
     `;
 
@@ -102,7 +103,7 @@ function htmlPedido(order) {
         '¡Gracias por tu compra!',
         'Tu pedido quedó registrado.',
         cuerpo,
-        'Procesaremos tu envío cuando el banco confirme el pago.',
+        'Procesaremos tu envío cuando confirmemos el pago.',
     );
 }
 

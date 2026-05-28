@@ -7,157 +7,267 @@
 
     <link rel="stylesheet" href="../styles/reset.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
     <link rel="stylesheet" href="../styles/base.css">
     <link rel="stylesheet" href="../styles/modals.css">
+    <link rel="stylesheet" href="../styles/checkout.css">
 
-    <title>Checkout</title>
+    <title>Checkout | Coroto</title>
 </head>
 
 <body>
 
-    <!-- Nav -->
     <nav class="nav-container"></nav>
 
-    <!-- CONTENT -->
     <div class="dinamic-container">
         <main class="main-container">
+            <div class="container py-4 py-lg-5">
 
-            <div class="container p-5">
+                <header class="mb-4">
+                    <h1 class="h3 checkout-page-title mb-1">
+                        <i class="bi bi-bag-check me-2"></i>Finalizar compra
+                    </h1>
+                    <p class="text-muted mb-0">Completa tus datos y elige cómo pagar</p>
+                </header>
 
-                <div class="row g-5">
+                <div class="row g-4">
 
-            
                     <div class="col-lg-7">
 
                         <div class="checkout-container mb-3"></div>
 
-                        <form id="checkoutForm">
+                        <form id="checkoutForm" novalidate>
 
-                            <div class="row g-3">
-
-                                <div class="col-md-6">
-                                    <label for="nombre" class="form-label text-capitalize">Nombres</label>
-                                    <input id="nombre" type="text" class="form-control text-capitalize" required>
-                                    <div class="invalid-feedback"></div>
+                            <section class="checkout-section">
+                                <h2 class="checkout-section-title">
+                                    <i class="bi bi-person-vcard"></i> Datos personales
+                                </h2>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="nombre" class="form-label">Nombres</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input id="nombre" type="text" class="form-control text-capitalize"
+                                                placeholder="Tu nombre" required>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="apellidos" class="form-label">Apellidos</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input id="apellidos" type="text" class="form-control text-capitalize"
+                                                placeholder="Tus apellidos" required>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="celular" class="form-label">Celular</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                                            <input id="celular" type="tel" class="form-control"
+                                                placeholder="3001234567" required>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="correo" class="form-label">Correo electrónico</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                            <input id="correo" type="email" class="form-control"
+                                                placeholder="correo@ejemplo.com" required>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
                                 </div>
+                            </section>
 
-                                <div class="col-md-6">
-                                    <label for="apellidos" class="form-label text-capitalize">Apellidos</label>
-                                    <input id="apellidos" type="text" class="form-control text-capitalize" required>
-                                    <div class="invalid-feedback"></div>
+                            <section class="checkout-section">
+                                <h2 class="checkout-section-title">
+                                    <i class="bi bi-geo-alt"></i> Ubicación de envío
+                                </h2>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="departamento" class="form-label">Departamento</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-map"></i></span>
+                                            <select id="departamento" class="form-select" required>
+                                                <option value="">Seleccione...</option>
+                                            </select>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="ciudad" class="form-label">Ciudad</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                            <select id="ciudad" class="form-select" required disabled>
+                                                <option value="">Primero el departamento...</option>
+                                            </select>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="direccion" class="form-label">Dirección</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-house"></i></span>
+                                            <input id="direccion" type="text" class="form-control"
+                                                placeholder="Calle, número, barrio" required>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
                                 </div>
+                            </section>
 
-                                <div class="col-6">
-                                    <label for="celular" class="form-label text-capitalize">Celular</label>
-                                    <input id="celular" type="text" class="form-control" required>
-                                    <div class="invalid-feedback"></div>
+                            <section class="checkout-section mb-0">
+                                <h2 class="checkout-section-title">
+                                    <i class="bi bi-credit-card-2-front"></i> Método de pago
+                                </h2>
+                                <div class="row g-2 payment-option">
+                                    <div class="col-sm-6">
+                                        <input class="btn-check" type="radio" name="metodoPago" id="metodoPse"
+                                            value="pse" checked>
+                                        <label class="btn w-100 py-3" for="metodoPse">
+                                            <i class="bi bi-bank2 d-block fs-4 mb-1"></i>
+                                            PSE
+                                            <span class="d-block small opacity-75">Transferencia bancaria</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input class="btn-check" type="radio" name="metodoPago" id="metodoCard"
+                                            value="card">
+                                        <label class="btn w-100 py-3" for="metodoCard">
+                                            <i class="bi bi-credit-card d-block fs-4 mb-1"></i>
+                                            Tarjeta
+                                            <span class="d-block small opacity-75">Crédito o débito</span>
+                                        </label>
+                                    </div>
                                 </div>
-
-                                <div class="col-6">
-                                    <label for="correo" class="form-label text-capitalize">Email</label>
-                                    <input id="correo" type="email" class="form-control" required>
-                                    <div class="invalid-feedback"></div>
-                                </div>
-
-
-                                <div class="col-md-6">
-                                    <label for="departamento" class="form-label text-capitalize">Departamento</label>
-                                    <select id="departamento" class="form-select" required>
-                                        <option value="">Seleccione...</option>
-                                    </select>
-                                    <div class="invalid-feedback"></div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="ciudad" class="form-label text-capitalize">Ciudad</label>
-                                    <select id="ciudad" class="form-select" required disabled>
-                                        <option value="">Seleccione departamento primero...</option>
-                                    </select>
-                                    <div class="invalid-feedback"></div>
-                                </div>
-
-                                <div class="col-12">
-                                    <label for="direccion" class="form-label text-capitalize">Dirección</label>
-                                    <input id="direccion" type="text" class="form-control" required>
-                                    <div class="invalid-feedback"></div>
-                                </div>                                
-
-                            </div>
+                                <p class="small text-muted mt-2 mb-0">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Tarjeta: máximo $5.000.000 por transacción. PSE: sin ese límite.
+                                </p>
+                            </section>
 
                         </form>
 
-                    </div>
-
-              
-                    <div class="col-lg-5">
-
-                        <div class="card shadow-sm border-0">
-
-                            <div class="card-body">
-
-                                <h5 class="mb-3">Productos</h5>
-
-                                <div id="checkoutItems"></div>
-
-                                <hr>
-
-                                <div class="d-flex justify-content-between small">
-                                    <span id="checkoutProducts"></span>
-                                    <span id="checkoutSubtotal"></span>
-                                </div>
-
-                                <div class="d-flex justify-content-between small">
-                                    <span>IVA (19%)</span>
-                                    <span id="checkoutIva"></span>
-                                </div>
-
-                                <hr>
-
-                                <div class="d-flex justify-content-between fw-bold">
-                                    <span>Total</span>
-                                    <span id="checkoutTotal"></span>
-                                </div>
-
-                                <div class="mt-4">
-                                    <button id="confirmPurchase" class="btn btn-primary w-100 py-2">
-                                        Confirmar Compra
-                                    </button>
-                                </div>
-
-                            </div>
-
+                        <div id="cardPaymentSection" class="d-none">
+                            <section class="checkout-section checkout-card-section mb-0">
+                                <h2 class="checkout-section-title">
+                                    <i class="bi bi-shield-lock"></i> Datos de la tarjeta
+                                </h2>
+                                <form id="openpayCardForm" class="checkout-card-form" autocomplete="off">
+                                    <input type="hidden" id="device_session_id" name="device_session_id" value="">
+                                    <div class="row g-4">
+                                        <div class="col-12">
+                                            <label for="cardHolder" class="form-label">Titular</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                                <input id="cardHolder" type="text" class="form-control"
+                                                    placeholder="Como en la tarjeta" data-openpay-card="holder_name"
+                                                    autocomplete="off">
+                                            </div>
+                                            <div class="invalid-feedback"></div>
+                                        </div>
+                                        <div class="col-12">
+                                            <label for="cardNumber" class="form-label">Número de tarjeta</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
+                                                <input id="cardNumber" type="text" class="form-control"
+                                                    placeholder="0000 0000 0000 0000" data-openpay-card="card_number"
+                                                    inputmode="numeric" autocomplete="cc-number" maxlength="19"
+                                                    spellcheck="false">
+                                            </div>
+                                            <div class="invalid-feedback"></div>
+                                        </div>
+                                        <div class="col-6 col-md-4">
+                                            <label for="cardExpMonth" class="form-label">Mes</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                                                <input id="cardExpMonth" type="text" class="form-control"
+                                                    placeholder="MM" maxlength="2" data-openpay-card="expiration_month"
+                                                    inputmode="numeric" autocomplete="off">
+                                            </div>
+                                            <div class="invalid-feedback"></div>
+                                        </div>
+                                        <div class="col-6 col-md-4">
+                                            <label for="cardExpYear" class="form-label">Año</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                                                <input id="cardExpYear" type="text" class="form-control"
+                                                    placeholder="AA" maxlength="2" data-openpay-card="expiration_year"
+                                                    inputmode="numeric" autocomplete="off">
+                                            </div>
+                                            <div class="invalid-feedback"></div>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <label for="cardCvv" class="form-label">CVV</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                                <input id="cardCvv" type="text" class="form-control" placeholder="123"
+                                                    maxlength="4" data-openpay-card="cvv2" inputmode="numeric"
+                                                    autocomplete="off">
+                                            </div>
+                                            <div class="invalid-feedback"></div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <p class="small text-muted mb-0 checkout-card-note">
+                                    <i class="bi bi-shield-check me-1"></i>
+                                    Pago seguro con OpenPay Colombia. No guardamos datos de tu tarjeta.
+                                </p>
+                            </section>
                         </div>
 
                     </div>
 
+                    <div class="col-lg-5">
+                        <aside class="card checkout-summary shadow-sm border-0">
+                            <div class="card-body p-4">
+                                <h2 class="h5 mb-3">
+                                    <i class="bi bi-receipt me-2 text-success"></i>Resumen
+                                </h2>
+                                <div id="checkoutItems" class="mb-3"></div>
+                                <hr>
+                                <div class="d-flex justify-content-between small mb-2">
+                                    <span id="checkoutProducts" class="text-muted"></span>
+                                    <span id="checkoutSubtotal"></span>
+                                </div>
+                                <div class="d-flex justify-content-between small mb-3">
+                                    <span class="text-muted">IVA (19%)</span>
+                                    <span id="checkoutIva"></span>
+                                </div>
+                                <div class="d-flex justify-content-between fs-5 fw-bold text-success">
+                                    <span>Total</span>
+                                    <span id="checkoutTotal"></span>
+                                </div>
+                                <button type="button" id="confirmPurchase"
+                                    class="btn btn-primary w-100 py-3 mt-4">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span id="confirmPurchaseLabel">Confirmar compra</span>
+                                </button>
+                            </div>
+                        </aside>
+                    </div>
+
                 </div>
-
             </div>
-
         </main>
-
-       
         <footer class="footer-container"></footer>
-
     </div>
 
-    <!-- SCRIPTS -->
+    <script src="https://openpay.s3.amazonaws.com/openpay.v1.min.js"></script>
+    <script src="https://openpay.s3.amazonaws.com/openpay-data.v1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script src="../scripts/base.js"></script>
     <script type="module" src="../components/navbar.js"></script>
     <script src="../components/footer.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
-
-    <script type="module" src="../scripts/checkout.js?v=1.0.0"></script>
+    <script type="module" src="../scripts/checkout.js?v=3.0.2"></script>
 
 </body>
 

@@ -1,0 +1,87 @@
+.checkout-page-title {
+    color: var(--primary);
+}
+
+.checkout-section {
+    background: var(--white);
+    border: 1px solid rgba(89, 60, 35, 0.12);
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.checkout-section-title {
+    color: var(--primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkout-summary {
+    position: sticky;
+    top: 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(89, 60, 35, 0.1);
+}
+
+.checkout-summary .input-group-text {
+    background: var(--gray-light);
+    border-color: #dee2e6;
+    color: var(--primary);
+}
+
+#cardPaymentSection {
+    margin-top: 1.5rem;
+    padding-top: 0.25rem;
+}
+
+.checkout-card-section {
+    padding: 1.5rem 1.75rem;
+    border-color: rgba(50, 89, 75, 0.18);
+}
+
+.checkout-card-form .form-label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.checkout-card-form .input-group {
+    margin-bottom: 0.15rem;
+}
+
+.checkout-card-form .form-control {
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+}
+
+#cardPaymentSection .input-group-text {
+    min-width: 2.85rem;
+    justify-content: center;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+}
+
+.checkout-card-note {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(89, 60, 35, 0.1);
+}
+
+.payment-option .btn-check:checked + .btn {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--white);
+}
+
+.payment-option .btn {
+    border-color: rgba(50, 89, 75, 0.35);
+    color: var(--primary);
+}
+
+#checkoutForm .input-group.is-invalid + .invalid-feedback,
+#openpayCardForm .input-group.is-invalid + .invalid-feedback {
+    display: block;
+}
