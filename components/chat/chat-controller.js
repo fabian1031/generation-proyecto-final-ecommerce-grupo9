@@ -174,7 +174,7 @@ export class CorotoChatController {
             typing.remove();
 
             const { cleanText, cartActions } = parseAssistantReply(rawReply);
-            let displayText = cleanText || stripAssistantFormatting(rawReply);
+            const displayText = stripAssistantFormatting(cleanText || rawReply);
 
             if (cartActions.length > 0) {
                 await this.#completeCartAdd(cartActions, { fastPath: false, fallbackText: displayText });
