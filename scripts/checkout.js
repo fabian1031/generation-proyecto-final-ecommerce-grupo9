@@ -1,74 +1,53 @@
 import { cartService } from '../services/cartSevices.js';
 import { formatPrice } from '../services/utils.service.js';
 import { validateCheckout } from './validations.js';
-
 import { authService } from '../services/auth.service.js';
 import { initLogin } from '../components/login.component.js';
-import { showLoader, updateLoader, hideLoader } from '../components/loader.component.js';
+import { showLoader, hideLoader } from '../components/loader.component.js';
 import { initUbicacion } from '../services/departamentos-ciudades.js';
-import { ordenService } from '../services/orden.service.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const user = authService.getUser();
-
-    initUbicacion();
-    renderCheckout();
-    bindCheckoutEvents();
-
-    if (user) {
-        fillCheckoutForm(user);
-    } else {
-        renderLoginCTA();
-    }
-});
-
-function renderCheckout() {
-    const cart = cartService.getCart();
-
-    if (cart.length === 0) {
-        window.location.href = '../cart.html';
+    if (cartService.getCart().length === 0) {
+        window.location.href = 'cart.html';
         return;
     }
 
-    const itemsContainer = document.getElementById('checkoutItems');
-    itemsContainer.innerHTML = '';
+    initUbicacion();
+    mostrarResumen();
+    iniciarEventos();
+    cargarOpenPay();
 
-    cart.forEach(item => {
-        const el = document.createElement('div');
+    const usuario = authService.getUser();
+    if (usuario) {
+        llenarDatos(usuario);
+    } else {
+        mostrarLogin();
+    }
+});
 
-        el.className = 'd-flex justify-content-between small mb-2';
+function mostrarResumen() {
+    const carrito = cartService.getCart();
+    const { subtotal, iva, total } = calcularTotales();
 
-        el.innerHTML = `
-            <span>${item.name} x${item.quantity}</span>
-            <span>${formatPrice(item.price * item.quantity)}</span>
-        `;
+    campo('checkoutItems').innerHTML = carrito.map((item) => `
+        <div class="d-flex justify-content-between align-items-start small mb-2 gap-2">
+            <span class="text-truncate">${item.name} <span class="text-muted">×${item.quantity}</span></span>
+            <span class="fw-semibold text-nowrap">${formatPrice(item.price * item.quantity)}</span>
+        </div>
+    `).join('');
 
-        itemsContainer.appendChild(el);
-    });
-
-    const total = cartService.getTotalPrice();
-    const iva = total * 0.19;
-
-    document.getElementById('checkoutProducts').textContent =
-        `Productos (${cartService.getTotalItems()})`;
-
-    document.getElementById('checkoutSubtotal').textContent =
-        formatPrice(total);
-
-    document.getElementById('checkoutIva').textContent =
-        formatPrice(iva);
-
-    document.getElementById('checkoutTotal').textContent =
-        formatPrice(total + iva);
+    campo('checkoutProducts').textContent = `Productos (${cartService.getTotalItems()})`;
+    campo('checkoutSubtotal').textContent = formatPrice(subtotal);
+    campo('checkoutIva').textContent = formatPrice(iva);
+    campo('checkoutTotal').textContent = formatPrice(total);
 }
-
 
 function fillCheckoutForm(user) {
     const map = {
-        nombre: user.nombre || '',
-        apellidos: user.apellido || '',
+        nombre: user.username || user.name || '',
+        apellidos: user.lastname || '',
         correo: user.email || '',
-        celular: user.celular || ''
+        celular: user.phone || user.celular || ''
     };
 
     Object.entries(map).forEach(([key, value]) => {
@@ -95,48 +74,37 @@ function renderLoginCTA() {
         </div>
     `;
 
-    mount.appendChild(wrapper);
-
-    document.getElementById('openLogin').addEventListener('click', openLoginModal);
+    campo('openLogin').addEventListener('click', abrirLogin);
 }
 
-function openLoginModal() {
-    const mount = document.createElement('div');
-    mount.id = 'loginModalMount';
-    document.body.appendChild(mount);
-
-    mount.innerHTML = `
+function abrirLogin() {
+    const modal = document.createElement('div');
+    modal.id = 'loginModalMount';
+    document.body.appendChild(modal);
+    modal.innerHTML = `
         <div class="modal-backdrop-custom">
             <div class="modal-box">
-                <button id="closeLogin" class="btn-close float-end"></button>
-                <h5 class="mb-3">Iniciar sesión</h5>
+                <button type="button" id="closeLogin" class="btn-close float-end" aria-label="Cerrar"></button>
+                <h5 class="mb-3"><i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión</h5>
                 <div id="loginFormMount"></div>
             </div>
         </div>
     `;
 
-    const loginMount = document.getElementById('loginFormMount');
-
-    initLogin(loginMount, async (user) => {
-        fillCheckoutForm(user);
-
-        const cta = document.querySelector('.login-cta');
-        if (cta) cta.remove();
-
+    initLogin(campo('loginFormMount'), async (usuario) => {
+        llenarDatos(usuario);
+        document.querySelector('.checkout-container')?.replaceChildren();
         await Swal.fire({
             icon: 'success',
-            title: `Bienvenido ${user.username}`,
-            text: 'Tus datos fueron cargados en el formulario',
+            title: `Bienvenido ${usuario.username}`,
+            text: 'Datos cargados en el formulario',
             timer: 1800,
-            showConfirmButton: false
+            showConfirmButton: false,
         });
-
-        mount.remove();
+        modal.remove();
     });
 
-    document.getElementById('closeLogin').addEventListener('click', () => {
-        mount.remove();
-    });
+    campo('closeLogin').addEventListener('click', () => modal.remove());
 }
 
 function bindCheckoutEvents() {
@@ -174,71 +142,78 @@ function bindCheckoutEvents() {
 
         if (!confirm.isConfirmed) return;
 
-        const user = authService.getUser();
-        if (!user) {
-            await Swal.fire({
-                icon: 'error',
-                title: 'Usuario no autenticado',
-                text: 'Debes iniciar sesión para continuar'
-            });
-            return;
-        }
-
         const subtotal = cartService.getTotalPrice();
         const iva = Math.round(subtotal * 0.19);
         const total = Math.round(subtotal + iva);
+        const idPedido = Date.now();
 
         button.disabled = true;
         showLoader(
-            'Procesando tu pedido...',
-            'Estamos creando tu orden',
+            'Te estamos redirigiendo a la pasarela de pagos...',
+            'Una vez confirmado el pago, procesaremos tu pedido.',
         );
 
         try {
-            // Crear orden
-            const ordenResponse = await ordenService.create({
-                fechaPedido: new Date().toISOString(),
-                estadoPago: 'NO_PAGO',
-                estado: 'PENDIENTE',
-                direccionEnvio: fields.direccion.trim(),
-                ciudadEnvio: fields.ciudad,
-                usuarioId: user.id
-            });
+            const [res] = await Promise.all([
+                fetch('https://coroto.online', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_pedido: idPedido,
+                        nombre: fields.nombre.trim(),
+                        apellido: fields.apellidos.trim(),
+                        email: fields.correo.trim(),
+                        telefono: fields.celular.trim(),
+                        direccion: fields.direccion.trim(),
+                        departamento: fields.departamento,
+                        ciudad: fields.ciudad,
+                        total,
+                        iva,
+                    }),
+                }),
+                wait(1800),
+            ]);
 
-            updateLoader('Agregando productos a tu orden...');
+            updateLoader('Te estamos redirigiendo a la pasarela de pagos...');
 
-            // Crear items de la orden
-            const cart = cartService.getCart();
-            for (const item of cart) {
-                await ordenService.createItem({
-                    ordenId: ordenResponse.id,
-                    productoId: item.id,
-                    cantidad: item.quantity,
-                    precioUnitario: item.price
-                });
+            const payment = await res.json();
+
+            if (payment.status === 'ok' && payment.url_pse) {
+                sessionStorage.setItem('corotoOrder', JSON.stringify({
+                    id_pedido: idPedido,
+                    id_transaccion: payment.id_transaccion,
+                    order_id: payment.order_id,
+                    createdAt: new Date().toISOString(),
+                    items: cartService.getCart(),
+                    subtotal,
+                    iva,
+                    total,
+                    customer: {
+                        nombre: fields.nombre.trim(),
+                        apellido: fields.apellidos.trim(),
+                        email: fields.correo.trim(),
+                        telefono: fields.celular.trim(),
+                        direccion: fields.direccion.trim(),
+                        departamento: fields.departamento,
+                        ciudad: fields.ciudad,
+                    },
+                }));
+
+                await wait(2000);
+                cartService.clear();
+                window.location.href = payment.url_pse;
+                return;
             }
 
-            await wait(1500);
-            cartService.clear();
-
-            await Swal.fire({
-                icon: 'success',
-                title: 'Pedido creado exitosamente',
-                text: `Tu pedido #${ordenResponse.id} ha sido registrado`,
-                confirmButtonText: 'Continuar',
-                allowOutsideClick: false
-            });
-
-            window.location.href = '../pages/success.html';
-
+            throw new Error(payment.mensaje || 'No se pudo iniciar el pago');
         } catch (error) {
             hideLoader();
             button.disabled = false;
 
             await Swal.fire({
                 icon: 'error',
-                title: 'Error al procesar el pedido',
-                text: error.message || 'No se pudo crear el pedido',
+                title: 'Error al procesar el pago',
+                text: error.message || 'No se pudo conectar con la pasarela de pagos',
             });
         }
     });
@@ -250,36 +225,243 @@ function applyValidationErrors(errors) {
     document.querySelectorAll('.form-control, .form-select').forEach(input => {
         input.classList.remove('is-invalid', 'is-valid');
     });
-
-    document.querySelectorAll('.invalid-feedback').forEach(el => {
+    document.querySelectorAll('#checkoutForm .invalid-feedback').forEach((el) => {
         el.textContent = '';
     });
 
-    for (const [field, message] of Object.entries(errors)) {
-        const input = document.getElementById(field);
+    let primero = null;
+    Object.entries(errores).forEach(([id, mensaje]) => {
+        marcarCampoError(campo(id), mensaje);
+        if (!primero) primero = campo(id);
+    });
+    primero?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
-        if (!input) continue;
-
-        input.classList.add('is-invalid');
-
-        const feedback = input.nextElementSibling;
-        if (feedback) {
-            feedback.textContent = message;
+function marcarValidos(datos, errores) {
+    Object.keys(datos).forEach((id) => {
+        if (!errores[id] && campo(id)?.value.trim()) {
+            campo(id).classList.add('is-valid');
         }
+    });
+}
+
+function configurarOpenPay() {
+    if (typeof OpenPay === 'undefined') return;
+    OpenPay.hostname = 'https://api.openpay.co/v1/';
+    OpenPay.sandboxHostname = 'https://sandbox-api.openpay.co/v1/';
+    if (OpenPay.deviceData) {
+        OpenPay.deviceData._hostname = 'https://api.openpay.co/';
+        OpenPay.deviceData._sandboxHostname = 'https://sandbox-api.openpay.co/';
     }
 }
 
-function applyValidStates(fields, errors) {
-    for (const key in fields) {
-        if (!errors[key]) {
-            const input = document.getElementById(key);
-            if (input && input.value.trim()) {
-                input.classList.add('is-valid');
-            }
+async function cargarOpenPay() {
+    if (typeof OpenPay === 'undefined') {
+        mensajeOpenpay = 'No cargó la librería OpenPay';
+        return false;
+    }
+
+    try {
+        const res = await fetch(CONFIG_URL);
+        const config = await res.json();
+
+        if (!res.ok || config.status !== 'ok' || !config.public_key) {
+            mensajeOpenpay = config.mensaje || 'Configuración de pago incompleta';
+            return false;
         }
+
+        configurarOpenPay();
+        OpenPay.setSandboxMode(!!config.sandbox);
+        OpenPay.setId(String(config.merchant_id).trim());
+        OpenPay.setApiKey(String(config.public_key).trim());
+
+        openpayListo = true;
+        mensajeOpenpay = '';
+        return true;
+    } catch (err) {
+        mensajeOpenpay = err.message || 'No se pudo conectar con el servidor de pagos';
+        return false;
     }
 }
 
-function wait(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+function sesionDispositivo() {
+    configurarOpenPay();
+    const input = campo('device_session_id');
+    if (!campo('openpayCardForm') || !input || !OpenPay?.deviceData?.setup) return '';
+
+    try {
+        const id = OpenPay.deviceData.setup('openpayCardForm', 'device_session_id');
+        if (id) {
+            input.value = String(id);
+            return String(id).trim();
+        }
+    } catch {}
+
+    return input.value.trim();
+}
+
+function tokenTarjeta() {
+    const input = campo('cardNumber');
+    const conEspacios = input?.value || '';
+
+    if (input) input.value = conEspacios.replace(/\D/g, '');
+
+    return new Promise((resolve, reject) => {
+        const restaurar = () => {
+            if (input) input.value = formatearTarjeta(conEspacios);
+        };
+
+        OpenPay.token.extractFormAndCreate(
+            'openpayCardForm',
+            (res) => {
+                restaurar();
+                const id = res?.data?.id;
+                id ? resolve(id) : reject(new Error('Token de tarjeta inválido'));
+            },
+            (res) => {
+                restaurar();
+                const tecnico = res?.data?.description || res?.message || 'Tarjeta rechazada';
+                reject(new Error(mensajeParaUsuario(tecnico)));
+            },
+        );
+    });
+}
+
+async function agregarPagoTarjeta(body) {
+    const tarjeta = validarTarjeta();
+    if (!tarjeta.valid) {
+        mostrarErroresTarjeta(tarjeta.errores);
+        throw new Error(Object.values(tarjeta.errores)[0]);
+    }
+
+    campo('cardPaymentSection')?.classList.remove('d-none');
+    configurarOpenPay();
+
+    let sesion = sesionDispositivo();
+    if (!sesion) {
+        await new Promise((r) => setTimeout(r, 400));
+        sesion = sesionDispositivo();
+    }
+
+    body.token_id = await tokenTarjeta();
+    body.device_session_id = sesion || campo('device_session_id')?.value?.trim() || '';
+
+    if (!body.device_session_id) {
+        throw new Error('Espera un momento en Tarjeta e intenta de nuevo.');
+    }
+}
+
+async function confirmarCompra() {
+    const pago = metodoPago();
+    const datos = leerDatos();
+    const validacion = validateCheckout(datos);
+
+    if (!validacion.valid) {
+        mostrarErrores(validacion.errors);
+        marcarValidos(datos, validacion.errors);
+        await avisarErrores(validacion.errors, 'Revisa tus datos');
+        return;
+    }
+
+    if (pago === 'card' && !openpayListo && !(await cargarOpenPay())) {
+        await Swal.fire({ icon: 'error', title: 'Tarjeta no disponible', text: mensajeOpenpay });
+        return;
+    }
+
+    const totales = calcularTotales();
+
+    if (pago === 'card') {
+        const tarjeta = validarTarjeta();
+        if (!tarjeta.valid) {
+            campo('cardPaymentSection')?.classList.remove('d-none');
+            mostrarErroresTarjeta(tarjeta.errores);
+            await avisarErrores(tarjeta.errores, 'Datos de tarjeta');
+            return;
+        }
+    }
+
+    if (pago === 'card' && totales.total > MAX_TARJETA) {
+        await Swal.fire({
+            icon: 'warning',
+            title: 'Monto máximo con tarjeta',
+            html: `Máximo <strong>${formatPrice(MAX_TARJETA)}</strong> con tarjeta.<br>
+                Tu total: <strong>${formatPrice(totales.total)}</strong>.<br>
+                Usa <strong>PSE</strong> para montos mayores.`,
+        });
+        return;
+    }
+
+    const respuesta = await Swal.fire({
+        title: '¿Confirmar compra?',
+        text: pago === 'card' ? 'Se cargará tu tarjeta' : 'Serás redirigido al banco (PSE)',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, comprar',
+    });
+
+    if (!respuesta.isConfirmed) return;
+
+    const boton = campo('confirmPurchase');
+    boton.disabled = true;
+    showLoader('Procesando pago...', 'Espera un momento.');
+
+    try {
+        const idPedido = Date.now();
+        const body = {
+            metodo_pago: pago,
+            id_pedido: idPedido,
+            nombre: datos.nombre.trim(),
+            apellido: datos.apellidos.trim(),
+            email: datos.correo.trim(),
+            telefono: datos.celular.trim(),
+            direccion: datos.direccion.trim(),
+            departamento: datos.departamento,
+            ciudad: datos.ciudad,
+            total: totales.total,
+            iva: totales.iva,
+        };
+
+        if (pago === 'card') await agregarPagoTarjeta(body);
+
+        const res = await fetch(PAGO_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+
+        const resultado = await res.json();
+        if (resultado.status !== 'ok') {
+            throw new Error(mensajeParaUsuario(resultado.mensaje || 'Error en el pago'));
+        }
+
+        sessionStorage.setItem('corotoOrder', JSON.stringify({
+            id_pedido: idPedido,
+            id_transaccion: resultado.id_transaccion,
+            order_id: resultado.order_id,
+            metodo_pago: pago,
+            createdAt: new Date().toISOString(),
+            items: cartService.getCart(),
+            ...totales,
+            customer: {
+                nombre: body.nombre,
+                apellido: body.apellido,
+                email: body.email,
+                telefono: body.telefono,
+                direccion: body.direccion,
+                departamento: body.departamento,
+                ciudad: body.ciudad,
+            },
+        }));
+
+        cartService.clear();
+        window.location.href = resultado.url_pse || resultado.url_3ds || 'success.html';
+    } catch (err) {
+        hideLoader();
+        boton.disabled = false;
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error al procesar el pago',
+            text: mensajeParaUsuario(err.message) || 'Intenta de nuevo',
+        });
+    }
 }

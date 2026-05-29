@@ -1,5 +1,5 @@
 import { registerValidators } from './validations.js';
-import { debounce } from '../services/utils.service.js';
+import { debounce, getPagesPath } from '../services/utils.service.js';
 import { api } from '../services/api.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             inputs.forEach(i => i.classList.remove('is-valid', 'is-invalid'));
 
-            window.location.href = '/pages/login.html';
+            window.location.href = `${getPagesPath()}login.html`;
 
         } catch (error) {
             console.error('Error creando usuario:', error);

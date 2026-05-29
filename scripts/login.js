@@ -1,6 +1,7 @@
 import { validateCorreo, validatePassword } from './validations.js';
 import { authService } from '../services/auth.service.js';
 import { api } from '../services/api.js';
+import { getRootPath } from '../services/utils.service.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -99,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 allowOutsideClick: false
             });
 
-            window.location.href = './index.html';
+            window.location.href = `${getRootPath()}index.html`;
 
         } catch (error) {
             console.error('Error en login:', error);
