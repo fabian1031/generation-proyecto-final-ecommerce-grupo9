@@ -3,6 +3,8 @@ import { sendOrderConfirmation } from '../services/email.service.js';
 
 const ORDER_KEY = 'corotoOrder';
 const EMAIL_SENT_KEY = 'corotoEmailSent';
+const SALES_HISTORY_KEY = 'corotoSalesHistory';
+
 const params = new URLSearchParams(window.location.search);
 const transactionId = params.get('id');
 
@@ -24,6 +26,43 @@ function capitalize(text) {
         .toLowerCase()
         .replace(/(^|\s)\S/g, (letter) => letter.toUpperCase());
 }
+
+// ─── NUEVA FUNCIÓN: guardar venta en historial localStorage ───────────────────
+function saveOrderToSalesHistory(order) {
+    try {
+        const raw = localStorage.getItem(SALES_HISTORY_KEY);
+        const history = raw ? JSON.parse(raw) : [];
+
+        const sale = {
+            id_pedido:       order.id_pedido,
+            id_transaccion:  order.id_transaccion || transactionId || null,
+            order_id:        order.order_id || null,
+            createdAt:       order.createdAt || new Date().toISOString(),
+            subtotal:        order.subtotal,
+            iva:             order.iva,
+            total:           order.total,
+            items:           order.items,
+            customer: {
+                nombre:      order.customer.nombre,
+                apellido:    order.customer.apellido,
+                email:       order.customer.email,
+                telefono:    order.customer.telefono,
+                ciudad:      order.customer.ciudad,
+                departamento: order.customer.departamento,
+            },
+        };
+
+        // Evita duplicados por id_pedido
+        const exists = history.some(s => s.id_pedido === sale.id_pedido);
+        if (!exists) {
+            history.push(sale);
+            localStorage.setItem(SALES_HISTORY_KEY, JSON.stringify(history));
+        }
+    } catch (err) {
+        console.error('[SalesHistory] Error al guardar venta:', err);
+    }
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 function renderOrder(order) {
     document.getElementById('successSubtotal').textContent = formatPrice(order.subtotal);
@@ -56,6 +95,7 @@ function renderOrder(order) {
     `).join('');
 }
 
+// ─── FLUJO PRINCIPAL ──────────────────────────────────────────────────────────
 const savedOrder = sessionStorage.getItem(ORDER_KEY);
 
 if (!savedOrder) {
@@ -69,6 +109,9 @@ if (!savedOrder) {
     }
 
     renderOrder(order);
+
+    // ← GUARDA LA VENTA ANTES de eliminarla del sessionStorage
+    saveOrderToSalesHistory(order);
 
     if (sessionStorage.getItem(EMAIL_SENT_KEY) !== String(order.id_pedido)) {
         sendOrderConfirmation(order)

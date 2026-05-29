@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../styles/base.css">
+
+    <!-- INICIO PARTE DINÁMICA -->
+    <link rel="stylesheet" href="../styles/admin_dashboard.css">
+    <title>Admin — Ventas</title>
+    <!-- FIN PARTE DINÁMICA -->
+</head>
+
+<body>
+    <nav class="nav-container"></nav>
+
+    <div class="dinamic-container">
+        <main class="main-container">
+            <div class="container py-4" style="max-width: 900px;">
+
+                <!-- Encabezado -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0">Ventas</h5>
+                  
+                </div>
+
+                <!-- Filtro por fechas -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <p class="small text-muted mb-2 fw-semibold">Filtrar por rango de fechas</p>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-sm-4">
+                                <label class="form-label small">Desde</label>
+                                <input type="date" id="dateFrom" class="form-control form-control-sm">
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label small">Hasta</label>
+                                <input type="date" id="dateTo" class="form-control form-control-sm">
+                            </div>
+                            <div class="col-sm-4 d-flex gap-2">
+                                <button class="btn btn-dark btn-sm w-100" onclick="applyFilter()">
+                                    <i class="bi bi-funnel me-1"></i> Aplicar
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm w-100" onclick="clearFilter()">
+                                    Limpiar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Accesos rápidos -->
+                        <div class="d-flex gap-2 mt-3 flex-wrap">
+                            <button class="btn btn-outline-dark btn-sm" onclick="setQuickFilter('today')">Hoy</button>
+                            <button class="btn btn-outline-dark btn-sm" onclick="setQuickFilter('week')">Esta semana</button>
+                            <button class="btn btn-outline-dark btn-sm" onclick="setQuickFilter('month')">Este mes</button>
+                            <button class="btn btn-outline-dark btn-sm" onclick="setQuickFilter('all')">Todo</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contadores -->
+                <div class="row g-3 mb-4" id="salesCounters">
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm h-100 text-center py-3">
+                            <div class="text-muted small mb-1">Pedidos</div>
+                            <div class="fs-4 fw-bold" id="counterOrders">0</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm h-100 text-center py-3">
+                            <div class="text-muted small mb-1">Subtotal</div>
+                            <div class="fs-5 fw-bold" id="counterSubtotal">$0</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm h-100 text-center py-3">
+                            <div class="text-muted small mb-1">IVA</div>
+                            <div class="fs-5 fw-bold" id="counterIva">$0</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card border-0 shadow-sm h-100 text-center py-3 bg-dark text-white">
+                            <div class="small mb-1 opacity-75">Total recaudado</div>
+                            <div class="fs-5 fw-bold" id="counterTotal">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <p class="small fw-semibold text-muted mb-3">Ventas por día</p>
+                                <canvas id="chartDay" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <p class="small fw-semibold text-muted mb-3">Ventas por semana</p>
+                                <canvas id="chartWeek" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <p class="small fw-semibold text-muted mb-3">Ventas por mes</p>
+                                <canvas id="chartMonth" height="120"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de pedidos -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+                            <p class="small fw-semibold text-muted mb-0">Detalle de pedidos</p>
+                            <span class="badge bg-dark" id="badgeCount">0 pedidos</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover mb-0 small">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Pedido</th>
+                                        <th>Fecha</th>
+                                        <th>Cliente</th>
+                                        <th>Ciudad</th>
+                                        <th class="text-end">Total</th>
+                                        <th class="text-center">Detalle</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">Sin ventas registradas</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+        <footer class="footer-container"></footer>
+    </div>
+
+    <!-- Offcanvas detalle pedido -->
+    <div class="offcanvas offcanvas-bottom rounded-top-4" style="height: 85vh;" id="offcanvasOrder">
+        <div class="offcanvas-header border-bottom">
+            <h6 class="offcanvas-title" id="offcanvasOrderTitle">Detalle del pedido</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body overflow-auto" id="offcanvasOrderBody">
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="../scripts/base.js"></script>
+    <script type="module" src="../components/navbar.js"></script>
+    <script src="../components/footer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+    <!-- INICIO PARTE DINÁMICA -->
+    <script src="../scripts/admin_ventas.js"></script>
+    <!-- FIN PARTE DINÁMICA -->
+</body>
+
+</html>
