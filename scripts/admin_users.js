@@ -17,16 +17,16 @@ function renderUsersList() {
     let filteredUsers = allUsers;
 
     if(filterStatus === "inactive") {
-        filteredUsers = allUsers.filter(u => !u.isActive);
+        filteredUsers = allUsers.filter(u => !u.activo);
     }
 
     if(filterStatus === "active") {
-        filteredUsers = allUsers.filter(u => u.isActive)
+        filteredUsers = allUsers.filter(u => u.activo)
     }
 
     filteredUsers.forEach(u => {
         const item = document.createElement("button");
-        const isActive = u.isActive !== false;
+        const isActive = u.activo !== false;
 
         item.className =
             "list-group-item list-group-item-action d-flex justify-content-between align-items-start gap-2";
@@ -37,11 +37,11 @@ function renderUsersList() {
                     ID:  ${u.id}
                 </div>
                 <div class="fw-semibold">
-                    ${u.username} ${u.lastname}
+                    ${u.nombre} ${u.apellido}
                 </div>
 
                 <small class="text-muted">
-                    Rol: ${u.role}
+                    Rol: ${u.rol}
                 </small><br>
                 
                 <span class="badge ${isActive ? 'bg-success' : 'bg-danger'}">
@@ -104,28 +104,28 @@ function openEditUser(user) {
 
 
 function fillForm(u) {
-    document.getElementById("u_username").value = u.username || "";
-    document.getElementById("u_lastname").value = u.lastname || "";
-    document.getElementById("u_role").value = u.role || "";
+    document.getElementById("u_username").value = u.nombre || "";
+    document.getElementById("u_lastname").value = u.apellido || "";
+    document.getElementById("u_role").value = u.rol || "";
     document.getElementById("u_id").value = u.id || "";
-    document.getElementById("u_active").value = u.isActive ? "Activo" : "Inactivo";
+    document.getElementById("u_active").value = u.activo ? "Activo" : "Inactivo";
 }
 
 
 function clearForm() {
     fillForm({
-        username: "",
-        lastname: "",
-        role: "",
+        nombre: "",
+        apellido: "",
+        rol: "",
         id: ""
     });
 }
 
 function getFormData() {
     return {
-        username: document.getElementById("u_username").value,
-        lastname: document.getElementById("u_lastname").value,
-        role: document.getElementById("u_role").value
+        nombre: document.getElementById("u_username").value,
+        apellido: document.getElementById("u_lastname").value,
+        rol: document.getElementById("u_role").value
     };
 }
 
@@ -133,7 +133,7 @@ async function saveUser() {
     const data = getFormData();
 
     if (selectedUser) {
-        const updated = await userService.patch(selectedUser.id, data);
+        const updated = await userService.update(selectedUser.id, data);
         Object.assign(selectedUser, updated);
     } else {
         const created = await userService.create(data);
@@ -148,23 +148,23 @@ async function saveUser() {
 }
 
 async function deleteUser(id) {
-    await userService.patch(id, {
-        isActive: false
-    });
-
     const user = allUsers.find(u => u.id === id);
-    user.isActive = false;
+    const updated = await userService.update(id, {
+        ...user,
+        activo: false
+    });
+    Object.assign(user, updated);
 
     renderUsersList();
 }
 
 async function restoreUser(id) {
-    await userService.patch(id, {
-        isActive: true
-    });
-
     const user = allUsers.find(u => u.id === id);
-    user.isActive = true;
+    const updated = await userService.update(id, {
+        ...user,
+        activo: true
+    });
+    Object.assign(user, updated);
 
     renderUsersList();
 }

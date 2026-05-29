@@ -6,6 +6,7 @@ import { authService } from '../services/auth.service.js';
 import { initLogin } from '../components/login.component.js';
 import { showLoader, updateLoader, hideLoader } from '../components/loader.component.js';
 import { initUbicacion } from '../services/departamentos-ciudades.js';
+import { ordenService } from '../services/orden.service.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const user = authService.getUser();
@@ -64,10 +65,10 @@ function renderCheckout() {
 
 function fillCheckoutForm(user) {
     const map = {
-        nombre: user.username || user.name || '',
-        apellidos: user.lastname || '',
+        nombre: user.nombre || '',
+        apellidos: user.apellido || '',
         correo: user.email || '',
-        celular: user.phone || user.celular || ''
+        celular: user.celular || ''
     };
 
     Object.entries(map).forEach(([key, value]) => {
@@ -173,78 +174,71 @@ function bindCheckoutEvents() {
 
         if (!confirm.isConfirmed) return;
 
+        const user = authService.getUser();
+        if (!user) {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Usuario no autenticado',
+                text: 'Debes iniciar sesión para continuar'
+            });
+            return;
+        }
+
         const subtotal = cartService.getTotalPrice();
         const iva = Math.round(subtotal * 0.19);
         const total = Math.round(subtotal + iva);
-        const idPedido = Date.now();
 
         button.disabled = true;
         showLoader(
-            'Te estamos redirigiendo a la pasarela de pagos...',
-            'Una vez confirmado el pago, procesaremos tu pedido.',
+            'Procesando tu pedido...',
+            'Estamos creando tu orden',
         );
 
         try {
-            const [res] = await Promise.all([
-                fetch('https://coroto.online', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id_pedido: idPedido,
-                        nombre: fields.nombre.trim(),
-                        apellido: fields.apellidos.trim(),
-                        email: fields.correo.trim(),
-                        telefono: fields.celular.trim(),
-                        direccion: fields.direccion.trim(),
-                        departamento: fields.departamento,
-                        ciudad: fields.ciudad,
-                        total,
-                        iva,
-                    }),
-                }),
-                wait(1800),
-            ]);
+            // Crear orden
+            const ordenResponse = await ordenService.create({
+                fechaPedido: new Date().toISOString(),
+                estadoPago: 'NO_PAGO',
+                estado: 'PENDIENTE',
+                direccionEnvio: fields.direccion.trim(),
+                ciudadEnvio: fields.ciudad,
+                usuarioId: user.id
+            });
 
-            updateLoader('Te estamos redirigiendo a la pasarela de pagos...');
+            updateLoader('Agregando productos a tu orden...');
 
-            const payment = await res.json();
-
-            if (payment.status === 'ok' && payment.url_pse) {
-                sessionStorage.setItem('corotoOrder', JSON.stringify({
-                    id_pedido: idPedido,
-                    id_transaccion: payment.id_transaccion,
-                    order_id: payment.order_id,
-                    createdAt: new Date().toISOString(),
-                    items: cartService.getCart(),
-                    subtotal,
-                    iva,
-                    total,
-                    customer: {
-                        nombre: fields.nombre.trim(),
-                        apellido: fields.apellidos.trim(),
-                        email: fields.correo.trim(),
-                        telefono: fields.celular.trim(),
-                        direccion: fields.direccion.trim(),
-                        departamento: fields.departamento,
-                        ciudad: fields.ciudad,
-                    },
-                }));
-
-                await wait(2000);
-                cartService.clear();
-                window.location.href = payment.url_pse;
-                return;
+            // Crear items de la orden
+            const cart = cartService.getCart();
+            for (const item of cart) {
+                await ordenService.createItem({
+                    ordenId: ordenResponse.id,
+                    productoId: item.id,
+                    cantidad: item.quantity,
+                    precioUnitario: item.price
+                });
             }
 
-            throw new Error(payment.mensaje || 'No se pudo iniciar el pago');
+            await wait(1500);
+            cartService.clear();
+
+            await Swal.fire({
+                icon: 'success',
+                title: 'Pedido creado exitosamente',
+                text: `Tu pedido #${ordenResponse.id} ha sido registrado`,
+                confirmButtonText: 'Continuar',
+                allowOutsideClick: false
+            });
+
+            window.location.href = '../pages/success.html';
+
         } catch (error) {
             hideLoader();
             button.disabled = false;
 
             await Swal.fire({
                 icon: 'error',
-                title: 'Error al procesar el pago',
-                text: error.message || 'No se pudo conectar con la pasarela de pagos',
+                title: 'Error al procesar el pedido',
+                text: error.message || 'No se pudo crear el pedido',
             });
         }
     });

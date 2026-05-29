@@ -17,14 +17,14 @@ function renderProductsList() {
     let filteredProducts = allProducts;
 
     if (filterStatus === "active") {
-        filteredProducts = allProducts.filter(p => p.isActive !== false)
+        filteredProducts = allProducts.filter(p => p.activo !== false)
     }
     if (filterStatus === "inactive") {
-        filteredProducts = allProducts.filter(p => p.isActive === false);
+        filteredProducts = allProducts.filter(p => p.activo === false);
     }
 
     filteredProducts.forEach(p => {
-        const isActive = p.isActive !== false;
+        const isActive = p.activo !== false;
 
         const item = document.createElement("div");
 
@@ -34,9 +34,9 @@ function renderProductsList() {
         item.innerHTML = `
             <div class="text-start">
                 <small class="text-muted">ID: ${p.id}</small><br>
-                <div class="fw-semibold">${p.name}</div>
-                <small class="text-muted">${p.category}</small><br>
-                <small class="text-muted">${p.description || ""}</small>
+                <div class="fw-semibold">${p.nombre}</div>
+                <small class="text-muted">${p.categoria}</small><br>
+                <small class="text-muted">${p.descripcion || ""}</small>
                 
                 <span class="badge ${isActive ? 'bg-success' : 'bg-danger'}">
                     ${isActive ? 'Activo' : 'Inactivo'}
@@ -44,8 +44,8 @@ function renderProductsList() {
             </div>
 
             <div class="text-end flex-shrink-0">
-                <div class="fw-semibold">$${p.price}</div>
-                <small class="text-muted">Stock: ${p.stock}</small>
+                <div class="fw-semibold">$${p.precio}</div>
+                <small class="text-muted">Stock: ${p.cantidad}</small>
 
                 <div class="mt-2">
                     ${
@@ -103,51 +103,48 @@ function openEditProduct(product) {
 
 function fillForm(p) {
     document.getElementById("p_id").value = p.id || "";
-    document.getElementById("p_name").value = p.name || "";
+    document.getElementById("p_name").value = p.nombre || "";
     document.getElementById("p_brand").value = p.brand || "";
-    document.getElementById("p_description").value = p.description || "";
-    document.getElementById("p_price").value = p.price || 0;
-    document.getElementById("p_stock").value = p.stock || 0;
-    document.getElementById("p_category").value = p.category || "";
-    document.getElementById("p_image").value = p.image || "";
+    document.getElementById("p_description").value = p.descripcion || "";
+    document.getElementById("p_price").value = p.precio || 0;
+    document.getElementById("p_stock").value = p.cantidad || 0;
+    document.getElementById("p_category").value = p.categoria || "";
+    document.getElementById("p_image").value = p.imageUrl || "";
 }
 
 function clearForm() {
     fillForm({
         id: "",
-        name: "",
+        nombre: "",
         brand: "",
-        description: "",
-        price: 0,
-        stock: 0,
-        category: "",
-        image: ""
+        descripcion: "",
+        precio: 0,
+        cantidad: 0,
+        categoria: "",
+        imageUrl: ""
     });
 }
 
 function getFormData() {
     return {
-        name: document.getElementById("p_name").value,
-        brand: document.getElementById("p_brand").value,
-        description: document.getElementById("p_description").value,
-        price: Number(document.getElementById("p_price").value) || 0,
-        stock: Number(document.getElementById("p_stock").value) || 0,
-        category: document.getElementById("p_category").value,
-        image: document.getElementById("p_image").value
+        nombre: document.getElementById("p_name").value,
+        descripcion: document.getElementById("p_description").value,
+        precio: Number(document.getElementById("p_price").value) || 0,
+        cantidad: Number(document.getElementById("p_stock").value) || 0,
+        categoria: document.getElementById("p_category").value,
+        imageUrl: document.getElementById("p_image").value
     };
 }
 
 function buildProduct(data) {
     return {
-        id: generateId(),
-        name: data.name || "",
-        brand: data.brand || "",
-        price: data.price || 0,
-        stock: data.stock || 0,
-        category: data.category || "",
-        description: data.description || "",
-        image: data.image || "",
-        isActive: true
+        nombre: data.nombre || "",
+        precio: data.precio || 0,
+        cantidad: data.cantidad || 0,
+        categoria: data.categoria || "",
+        descripcion: data.descripcion || "",
+        imageUrl: data.imageUrl || "",
+        activo: true
     };
 }
 
@@ -155,20 +152,13 @@ async function saveProduct() {
     const data = getFormData();
 
     if (selectedProduct) {
-        const updated = await productService.patch(selectedProduct.id, data);
+        const updated = await productService.update(selectedProduct.id, {
+            ...selectedProduct,
+            ...data
+        });
         Object.assign(selectedProduct, updated);
     } else {
-        const newProduct = {
-            id: generateId(),
-            name: data.name || "",
-            brand: data.brand || "",
-            price: Number(data.price) || 0,
-            stock: Number(data.stock) || 0,
-            category: data.category || "",
-            description: data.description || "",
-            image: data.image || "",
-            isActive: true
-        };
+        const newProduct = buildProduct(data);
 
         console.log("CREANDO:", newProduct); // 👈 DEBUG
 
@@ -180,19 +170,27 @@ async function saveProduct() {
 }
 
 async function deleteProduct(id) {
-    await productService.patch(id, { isActive: false });
-
     const product = allProducts.find(p => p.id === id);
-    if (product) product.isActive = false;
+    if (product) {
+        const updated = await productService.update(id, {
+            ...product,
+            activo: false
+        });
+        Object.assign(product, updated);
+    }
 
     renderProductsList();
 }
 
 async function restoreProduct(id) {
-    await productService.patch(id, { isActive: true });
-
     const product = allProducts.find(p => p.id === id);
-    if (product) product.isActive = true;
+    if (product) {
+        const updated = await productService.update(id, {
+            ...product,
+            activo: true
+        });
+        Object.assign(product, updated);
+    }
 
     renderProductsList();
 }

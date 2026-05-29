@@ -1,12 +1,11 @@
 import { api } from './api.js';
 
 export const productService = {
-    getAll: () => api.get('/products'),
-    getById: (id) => api.get(`/products/${id}`),
-    getByCategory: (cat) => api.get(`/products?category=${cat}`),
+    getAll: () => api.get('/productos'),
+    getById: (id) => api.get(`/productos/${id}`),
+    getByCategory: (cat) => api.get(`/productos?categoria=${cat}`),
 
-    create: (product) => api.post('/products', product),
-    update: (id, product) => api.put(`/products/${id}`, product),
-    patch: (id, data) => api.patch(`/products/${id}`, data),
-    delete: (id) => api.delete(`/products/${id}`)
+    create: (product) => api.post('/productos', product),
+    update: (id, product) => api.put(`/productos/${id}`, product),
+    delete: (id) => api.delete(`/productos/${id}`)
 };

@@ -1,5 +1,6 @@
 import { validateCorreo, validatePassword } from './validations.js';
-import { userService } from '../services/users.services.js';
+import { authService } from '../services/auth.service.js';
+import { api } from '../services/api.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -74,39 +75,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (submitBtn) submitBtn.disabled = true;
 
         try {
-            const users = await userService.getByEmail(email);
-            const user = users[0];
+            const response = await api.post('/auth/login', {
+                email,
+                password
+            });
 
-            if (!user) {
+            if (!response) {
                 return Swal.fire({
                     icon: 'error',
-                    title: 'Usuario no encontrado',
-                    text: 'Verifica el correo ingresado'
+                    title: 'Error',
+                    text: 'No se recibió respuesta del servidor'
                 });
             }
 
-            if (user.password !== password) {
-                return Swal.fire({
-                    icon: 'error',
-                    title: 'Contraseña incorrecta',
-                    text: 'Intenta nuevamente'
-                });
-            }
-
-            if (!user.isActive) {
-                return Swal.fire({
-                    icon: 'warning',
-                    title: 'Usuario inactivo',
-                    text: 'Contacta al administrador'
-                });
-            }
-
-      
-            localStorage.setItem('authUser', JSON.stringify(user));
+            // Guardar usuario y token
+            authService.setUser(response.usuario || response, response.token);
 
             await Swal.fire({
                 icon: 'success',
-                title: `Bienvenido ${user.username}`,
+                title: `Bienvenido ${response.usuario?.nombre || 'Usuario'}`,
                 text: 'Inicio de sesión exitoso',
                 confirmButtonText: 'Continuar',
                 allowOutsideClick: false
@@ -120,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'No se pudo iniciar sesión'
+                text: error.message || 'No se pudo iniciar sesión'
             });
         } finally {
             if (submitBtn) submitBtn.disabled = false;

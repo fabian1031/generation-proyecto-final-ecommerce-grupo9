@@ -1,6 +1,6 @@
 import { registerValidators } from './validations.js';
 import { debounce } from '../services/utils.service.js';
-import { userService } from '../services/users.services.js';
+import { api } from '../services/api.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -90,19 +90,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = getFormValues();
 
         const newUser = {
-            username: data.nombre,
-            lastname: data.apellidos,
+            nombre: data.nombre,
+            apellido: data.apellidos,
             email: data.correo,
             password: data.password,
-            role: "User",
-            isActive: true,
-            documentType: data.tipoDocumento,
-            documentNumber: data.cedula,
-            phone: data.celular
+            tipoDocumento: data.tipoDocumento,
+            numeroDocumento: data.cedula
         };
 
         try {
-            await userService.create(newUser);
+            const response = await api.post('/auth/register', newUser);
 
             await Swal.fire({
                 icon: 'success',
@@ -125,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
             Swal.fire({
                 icon: 'error',
                 title: 'Error al registrar',
-                text: 'No se pudo crear el usuario'
+                text: error.message || 'No se pudo crear el usuario'
             });
         }
     });

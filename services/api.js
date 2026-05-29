@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3000'; 
+const BASE_URL = 'https://coroto-backend.onrender.com'; 
 
 async function request(endpoint, options = {}) {
     const config = {
@@ -9,6 +9,12 @@ async function request(endpoint, options = {}) {
         },
         ...options,
     };
+
+    // Agregar JWT token si existe
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
 
     const response = await fetch(`${BASE_URL}${endpoint}`, config);
 
