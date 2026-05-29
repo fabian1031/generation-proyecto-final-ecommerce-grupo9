@@ -229,7 +229,7 @@ function setAuthAction(isLoggedIn) {
 }
 
 function setupRoleMenus(user, isLoggedIn) {
-  const isAdmin = isLoggedIn && user?.role === "Admin";
+  const isAdmin = isLoggedIn && String(user?.rol || '').toUpperCase() === "ADMIN";
   const isUser = isLoggedIn && !isAdmin;
 
   document.querySelectorAll(".admin-section").forEach(el => {
@@ -267,9 +267,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const welcomeMobile = document.getElementById("welcome-msg-mobile");
 
     if (user) {
-      usernameEls.forEach(el => el.textContent = user.username || "Usuario");
+      const displayName = [user.nombre, user.apellido].filter(Boolean).join(' ') || user.username || user.email || 'Usuario';
 
-      const msg = `Bienvenido, ${user.username}`;
+      usernameEls.forEach(el => el.textContent = displayName);
+
+      const msg = `Bienvenido, ${displayName}`;
 
       if (welcome) welcome.textContent = msg;
       if (welcomeMobile) welcomeMobile.textContent = msg;

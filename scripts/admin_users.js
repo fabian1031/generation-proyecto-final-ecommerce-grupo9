@@ -1,4 +1,6 @@
 import { userService } from "../services/users.services.js";
+import { User } from "../models/User.js";
+
 let allUsers = [];
 let selectedUser = null;
 let filterStatus = "all";
@@ -6,7 +8,8 @@ let filterStatus = "all";
 loadUsers();
 
 async function loadUsers() {
-    allUsers = await userService.getAll();
+    const data = await userService.getAll();
+    allUsers = data.map(u => new User(u));
     renderUsersList();
 }
 
