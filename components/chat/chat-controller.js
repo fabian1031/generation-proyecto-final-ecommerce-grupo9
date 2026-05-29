@@ -5,8 +5,16 @@ import { Product } from '../../models/Product.js';
 import { sendChatMessage } from './chat-api.service.js';
 import { parseAssistantReply, stripAssistantFormatting } from './chat-parser.js';
 import {
-    findProductIdForCartConfirmation,
+    extractProductIdsFromText,
+    findCartActionsForConfirmation,
     isCartConfirmation,
+    messageOffersCartAdd,
+    parseDirectAddRequest,
+    parseRandomAddRequest,
+    inferOrderQuantity,
+    isShortConfirmation,
+    parseRequestedQuantity,
+    pickDiverseProducts,
 } from './chat-cart-fastpath.js';
 
 /** Solo entre llamadas a Gemini (no aplica al agregar al carrito rápido). */
@@ -16,6 +24,8 @@ export class CorotoChatController {
     #history = [];
     #productsById = new Map();
     #lastRequestAt = 0;
+    /** @type {{ actions: Array<{ id: string, qty: number }>, pickOne?: boolean } | null} */
+    #pendingCart = null;
 
     constructor(rootEl) {
         this.panel = rootEl.querySelector('#coroto-chat-panel');
@@ -35,9 +45,15 @@ export class CorotoChatController {
 
         await this.#loadCatalog();
         this.#bindEvents();
-        this.#appendBotMessage(
-            'Hola, soy CoroTIA el asistente inteligente de Coroto.\n\nCuéntame tu presupuesto o qué pieza buscas (GPU, CPU, laptop…) y te recomiendo opciones del catálogo.\n\nSi te gusta algo, te lo agrego al carrito cuando confirmes.'
-        );
+        if (this.#productsById.size === 0) {
+            this.#appendBotMessage(
+                'Hola, soy CoroTIA el asistente inteligente de Coroto.\n\nAhora mismo no puedo ver el catálogo (revisa que la API de productos esté activa). Cuando vuelva a estar disponible, te ayudo a elegir hardware según tu presupuesto.'
+            );
+        } else {
+            this.#appendBotMessage(
+                'Hola, soy CoroTIA el asistente inteligente de Coroto.\n\nCuéntame tu presupuesto o qué necesitas (oficina, upgrade, gaming…) y te recomiendo opciones del catálogo.\n\nSi te gusta algo, te lo agrego al carrito cuando confirmes.'
+            );
+        }
         this.chipsEl?.classList.add('ai-chat-chips--visible');
     }
 
@@ -152,9 +168,69 @@ export class CorotoChatController {
         this.#history.push({ role: 'user', content: text });
 
         if (isCartConfirmation(text)) {
-            const productId = findProductIdForCartConfirmation(this.#history, this.#productsById);
-            if (productId) {
-                await this.#completeCartAdd([{ id: productId, qty: 1 }], { fastPath: true });
+            const pending = this.#resolvePendingCart(text);
+            if (pending.length > 0) {
+                this.#pendingCart = null;
+                await this.#completeCartAdd(pending, { fastPath: true });
+                return;
+            }
+
+            const cartActions = findCartActionsForConfirmation(this.#history, this.#productsById, text);
+            if (cartActions.length > 0) {
+                await this.#completeCartAdd(cartActions, { fastPath: true });
+                return;
+            }
+
+            this.#appendBotMessage(
+                '¿Cuál producto agrego? Dime el nombre o pídeme una recomendación primero.'
+            );
+            this.#history.push({
+                role: 'assistant',
+                content: '¿Cuál producto agrego? Dime el nombre o pídeme una recomendación primero.',
+            });
+            return;
+        }
+
+        this.#pendingCart = null;
+
+        const directAdd = parseDirectAddRequest(text, this.#productsById);
+        if (directAdd) {
+            if (this.#productsById.size === 0) {
+                this.#appendBotMessage(
+                    'No tengo acceso al catálogo en este momento. Intenta de nuevo cuando la tienda termine de cargar los productos.'
+                );
+                this.#history.push({
+                    role: 'assistant',
+                    content: 'No tengo acceso al catálogo en este momento.',
+                });
+                return;
+            }
+
+            const proposal = this.#proposeProducts(directAdd.productIds, directAdd.qty, {
+                pickOne: directAdd.ambiguous,
+            });
+            this.#appendBotMessage(proposal);
+            this.#history.push({ role: 'assistant', content: proposal });
+            return;
+        }
+
+        const randomCount = parseRandomAddRequest(text);
+        if (randomCount !== null) {
+            if (this.#productsById.size === 0) {
+                this.#appendBotMessage(
+                    'No tengo acceso al catálogo en este momento. Intenta de nuevo cuando la tienda termine de cargar los productos.'
+                );
+                this.#history.push({
+                    role: 'assistant',
+                    content: 'No tengo acceso al catálogo en este momento.',
+                });
+                return;
+            }
+            const productIds = pickDiverseProducts(this.#productsById, randomCount);
+            if (productIds.length > 0) {
+                const proposal = this.#proposeProducts(productIds, 1, { random: true });
+                this.#appendBotMessage(proposal);
+                this.#history.push({ role: 'assistant', content: proposal });
                 return;
             }
         }
@@ -177,13 +253,18 @@ export class CorotoChatController {
             const displayText = stripAssistantFormatting(cleanText || rawReply);
 
             if (cartActions.length > 0) {
-                await this.#completeCartAdd(cartActions, { fastPath: false, fallbackText: displayText });
+                await this.#completeCartAdd(cartActions, {
+                    fastPath: false,
+                    fallbackText: displayText,
+                    fromGemini: true,
+                });
                 return;
             }
 
             if (displayText) {
                 this.#appendBotMessage(displayText);
                 this.#history.push({ role: 'assistant', content: displayText });
+                this.#rememberProductsFromReply(displayText);
             }
         } catch (err) {
             typing.remove();
@@ -191,7 +272,7 @@ export class CorotoChatController {
             const raw = err instanceof Error ? err.message : '';
             const friendly =
                 !raw || /undefined|null|properties/i.test(raw)
-                    ? 'No pude completar la acción. Reinicia PHP (para leer .env) y verifica que json-server esté activo.'
+                    ? 'No pude completar la acción. Intenta de nuevo en unos segundos.'
                     : raw;
             this.#appendBotMessage(friendly);
             this.#history.pop();
@@ -204,22 +285,54 @@ export class CorotoChatController {
     /**
      * Agrega al carrito, muestra mensaje en el chat y luego el modal (sin bloquear el chat).
      */
-    async #completeCartAdd(actions, { fastPath = false, fallbackText = '' } = {}) {
+    async #completeCartAdd(actions, { fastPath = false, fallbackText = '', fromGemini = false } = {}) {
         const typing = fastPath ? this.#showTyping() : null;
         if (fastPath) this.#setLoading(true);
 
         try {
-            const { added, failed } = await this.#processCartActions(actions);
+            let toProcess = actions;
+            let alternativesNotice = '';
+
+            if (fromGemini) {
+                const validated = this.#validateGeminiCartActions(actions);
+                toProcess = validated.validActions;
+                if (validated.alternativeActions.length > 0) {
+                    alternativesNotice = this.#buildAlternativesProposal(validated.alternativeActions);
+                    this.#pendingCart = {
+                        actions: validated.alternativeActions.map(({ id, qty }) => ({
+                            id: String(id),
+                            qty,
+                        })),
+                        pickOne: validated.alternativeActions.length > 1,
+                    };
+                }
+            }
+
+            const { added, failed } = await this.#processCartActions(toProcess);
             typing?.remove();
 
-            let displayText = fallbackText;
-
             if (added.length > 0) {
-                displayText = this.#buildCartConfirmation(added);
+                let displayText = this.#buildCartConfirmation(added);
+                if (alternativesNotice) {
+                    displayText = `${displayText}\n\n${alternativesNotice}`;
+                }
                 this.#appendBotMessage(displayText);
                 this.#history.push({ role: 'assistant', content: displayText });
                 this.#notifyCartAdded(added);
-            } else if (failed.length > 0) {
+                return;
+            }
+
+            if (alternativesNotice) {
+                this.#appendBotMessage(alternativesNotice);
+                this.#history.push({ role: 'assistant', content: alternativesNotice });
+                return;
+            }
+
+            this.#pendingCart = null;
+
+            let displayText = fallbackText;
+
+            if (failed.length > 0) {
                 displayText =
                     displayText ||
                     'No pude agregar ese producto (sin stock o no disponible). ¿Te sugiero otra opción?';
@@ -241,6 +354,140 @@ export class CorotoChatController {
                 this.input.focus();
             }
         }
+    }
+
+    #proposeProducts(productIds, qty = 1, { pickOne = false, random = false } = {}) {
+        const actions = productIds.map((id) => {
+            const product = this.#productsById.get(String(id));
+            const stock = Number(product?.stock) || 1;
+            const offerQty = random ? 1 : Math.min(Math.max(1, qty), stock);
+            return { id: String(id), qty: offerQty };
+        });
+
+        this.#pendingCart = { actions, pickOne };
+
+        return this.#formatProposalMessage(productIds, qty, { pickOne, random });
+    }
+
+    #formatProposalMessage(productIds, qty = 1, { pickOne = false, random = false } = {}) {
+        const lines = productIds
+            .map((id) => {
+                const product = this.#productsById.get(String(id));
+                if (!product) return null;
+                const name = product.name ?? 'Producto';
+                const price = formatPrice(Number(product.price) || 0);
+                const lineQty = random ? 1 : Math.min(qty, Number(product.stock) || qty);
+                const label = lineQty > 1 ? `${name} (x${lineQty})` : name;
+                return `• ${label} — ${price}`;
+            })
+            .filter(Boolean);
+
+        let intro;
+        if (pickOne) {
+            intro = 'Tengo estas opciones:';
+        } else if (random) {
+            intro =
+                lines.length === 1
+                    ? 'Te propongo esto del catálogo:'
+                    : 'Te propongo estas opciones del catálogo:';
+        } else {
+            intro = lines.length === 1 ? 'Te propongo esto:' : 'Te propongo estas opciones:';
+        }
+
+        const confirm = pickOne
+            ? '\n\n¿Cuál quieres? Dime el nombre o confirma una con "sí".'
+            : '\n\n¿Los agrego al carrito? Responde sí, dale o agrégalo.';
+
+        return `${intro}\n${lines.join('\n')}${confirm}`;
+    }
+
+    #resolvePendingCart(userText) {
+        if (!this.#pendingCart?.actions?.length) return [];
+
+        const { actions, pickOne } = this.#pendingCart;
+
+        if (actions.length === 1) {
+            return actions;
+        }
+
+        const ids = extractProductIdsFromText(userText, this.#productsById);
+        const matched = actions.filter((a) => ids.includes(a.id));
+        if (matched.length > 0) {
+            return matched;
+        }
+
+        if (!pickOne && isShortConfirmation(userText)) {
+            return actions;
+        }
+
+        if (isShortConfirmation(userText) && actions.length === 1) {
+            return actions;
+        }
+
+        return [];
+    }
+
+    /** Guarda en memoria lo que Gemini recomendó para que "sí" funcione. */
+    #rememberProductsFromReply(text) {
+        if (!messageOffersCartAdd(text)) return;
+
+        const ids = extractProductIdsFromText(text, this.#productsById);
+        if (ids.length === 0) return;
+
+        const qty = inferOrderQuantity(this.#history, text);
+
+        this.#pendingCart = {
+            actions: ids.map((id) => ({
+                id,
+                qty: ids.length === 1 ? qty : 1,
+            })),
+            pickOne: ids.length > 1,
+        };
+    }
+
+    #validateGeminiCartActions(actions) {
+        const validActions = [];
+        const alternativeActions = [];
+        const exclude = new Set();
+
+        for (const { id, qty } of actions) {
+            const key = String(id).trim();
+            const product = this.#productsById.get(key);
+
+            if (product && this.#isValidProduct(product)) {
+                validActions.push({ id: key, qty });
+                exclude.add(key);
+                continue;
+            }
+
+            const [altId] = pickDiverseProducts(this.#productsById, 1, exclude);
+            if (altId) {
+                exclude.add(altId);
+                alternativeActions.push({ id: altId, qty, replacedId: key });
+            }
+        }
+
+        return { validActions, alternativeActions };
+    }
+
+    #buildAlternativesProposal(alternativeActions) {
+        const lines = alternativeActions
+            .map(({ id, qty }) => {
+                const product = this.#productsById.get(String(id));
+                if (!product) return null;
+                const name = product.name ?? 'Producto';
+                const price = formatPrice(Number(product.price) || 0);
+                const offerQty = Math.min(Math.max(1, qty), Number(product.stock) || qty);
+                const label = offerQty > 1 ? `${name} (x${offerQty})` : name;
+                return `• ${label} — ${price}`;
+            })
+            .filter(Boolean);
+
+        if (lines.length === 0) {
+            return 'Ese producto no está disponible. Pídeme otra opción del catálogo.';
+        }
+
+        return `Ese producto no está disponible. Te sugiero:\n${lines.join('\n')}\n\n¿Los agrego? Responde sí, dale o agrégalo.`;
     }
 
     #isValidProduct(product) {
@@ -286,13 +533,13 @@ export class CorotoChatController {
     }
 
     #notifyCartAdded(added) {
-        const first = added[0]?.product;
-        if (!first?.name || typeof Swal === 'undefined') return;
+        if (added.length === 0 || typeof Swal === 'undefined') return;
 
         const pages = getPagesPath();
+        const multiple = added.length > 1;
         Swal.fire({
             icon: 'success',
-            title: 'Producto en el carrito',
+            title: multiple ? `${added.length} productos en el carrito` : 'Producto en el carrito',
             text: '¿Quieres ir al carrito ahora?',
             showCancelButton: true,
             confirmButtonText: 'Ver carrito',

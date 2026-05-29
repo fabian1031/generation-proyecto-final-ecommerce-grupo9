@@ -33,16 +33,16 @@ export function createChatWidgetMarkup() {
             </header>
             <div id="coroto-chat-messages" class="ai-chat-messages" tabindex="-1" aria-live="polite"></div>
             <div id="coroto-chat-chips" class="ai-chat-chips">
-                <button type="button" class="ai-chip" data-prompt="Tengo un presupuesto de 2.000.000 pesos, ¿qué me recomiendas?">💰 Presupuesto $2M</button>
-                <button type="button" class="ai-chip" data-prompt="Busco una tarjeta gráfica para gaming, ¿qué opciones tienen?">🎮 GPU gaming</button>
+                <button type="button" class="ai-chip" data-prompt="Tengo un presupuesto de 2.000.000 pesos, ¿qué me recomiendas?">💰 Presupuesto</button>
                 <button type="button" class="ai-chip" data-prompt="Quiero armar un PC básico de oficina con poco presupuesto">🖥️ PC oficina</button>
-                <button type="button" class="ai-chip" data-prompt="¿Qué laptops gamer tienen disponibles?">💻 Laptops</button>
+                <button type="button" class="ai-chip" data-prompt="Quiero hacer upgrade a mi PC, ¿por dónde empiezo?">🔧 Upgrade</button>
+                <button type="button" class="ai-chip" data-prompt="Sorpréndeme con 3 productos variados de cualquier categoría">✨ Sorpréndeme</button>
             </div>
             <div class="ai-chat-footer">
                 <form id="coroto-chat-form" class="ai-chat-form">
                     <label class="sr-only" for="coroto-chat-input">Mensaje</label>
                     <input id="coroto-chat-input" type="text" required maxlength="2000"
-                        class="ai-chat-input" placeholder="Ej: tengo 1.500.000 para una GPU..."
+                        class="ai-chat-input" placeholder="Ej: tengo 1.500.000, ¿qué me recomiendas?"
                         autocomplete="off">
                     <button type="submit" class="ai-chat-send" aria-label="Enviar">
                         <i class="bi bi-send-fill" aria-hidden="true"></i>
