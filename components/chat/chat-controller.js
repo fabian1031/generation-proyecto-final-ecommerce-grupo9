@@ -36,7 +36,7 @@ export class CorotoChatController {
         await this.#loadCatalog();
         this.#bindEvents();
         this.#appendBotMessage(
-            'Hola, soy CorTIA el asistente inteligente de Coroto.\n\nCuéntame tu presupuesto o qué pieza buscas (GPU, CPU, laptop…) y te recomiendo opciones del catálogo.\n\nSi te gusta algo, te lo agrego al carrito cuando confirmes.'
+            'Hola, soy CoroTIA el asistente inteligente de Coroto.\n\nCuéntame tu presupuesto o qué pieza buscas (GPU, CPU, laptop…) y te recomiendo opciones del catálogo.\n\nSi te gusta algo, te lo agrego al carrito cuando confirmes.'
         );
         this.chipsEl?.classList.add('ai-chat-chips--visible');
     }
