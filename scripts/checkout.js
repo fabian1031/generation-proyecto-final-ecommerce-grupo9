@@ -25,6 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function calcularTotales() {
+    const subtotal = cartService.getTotalPrice();
+    const iva = Math.round(subtotal * 0.19);
+    const total = subtotal + iva;
+    return { subtotal, iva, total };
+}
+
+function campo(id) {
+    return document.getElementById(id);
+}
+
 function mostrarResumen() {
     const carrito = cartService.getCart();
     const { subtotal, iva, total } = calcularTotales();
@@ -56,8 +67,103 @@ function fillCheckoutForm(user) {
     });
 }
 
+function iniciarEventos() {
+    bindCheckoutEvents();
+}
+
+function mostrarLogin() {
+    const usuario = authService.getUser();
+    if (usuario) {
+        llenarDatos(usuario);
+        return;
+    }
+
+    renderLoginCTA();
+}
+
+function llenarDatos(usuario) {
+    fillCheckoutForm(usuario);
+}
+
+function marcarCampoError(element, mensaje) {
+    if (!element) return;
+
+    element.classList.remove('is-valid');
+    element.classList.add('is-invalid');
+
+    const feedback = element.closest('.col-md-6, .col-md-4, .col-12')
+        ?.querySelector('.invalid-feedback')
+        || element.parentElement?.querySelector('.invalid-feedback');
+
+    if (feedback) {
+        feedback.textContent = mensaje;
+    }
+}
+
+function mostrarErroresTarjeta(errores = {}) {
+    Object.entries(errores).forEach(([id, mensaje]) => {
+        marcarCampoError(campo(id), mensaje);
+    });
+}
+
+function mensajeParaUsuario(value) {
+    if (!value) return 'Ocurrió un error inesperado';
+    return typeof value === 'string'
+        ? value
+        : value.message || value.toString();
+}
+
+function validarTarjeta() {
+    const errors = {};
+    const campos = [
+        { id: 'cardHolder', label: 'Titular' },
+        { id: 'cardNumber', label: 'Número de tarjeta' },
+        { id: 'cardExpMonth', label: 'Mes de expiración' },
+        { id: 'cardExpYear', label: 'Año de expiración' },
+        { id: 'cardCvv', label: 'CVV' }
+    ];
+
+    campos.forEach(({ id, label }) => {
+        if (!campo(id)?.value.trim()) {
+            errors[id] = `${label} es obligatorio`;    
+        }
+    });
+
+    return {
+        valid: Object.keys(errors).length === 0,
+        errores: errors
+    };
+}
+
+function metodoPago() {
+    return document.querySelector('input[name="metodoPago"]:checked')?.value || 'pse';
+}
+
+function leerDatos() {
+    return {
+        nombre: campo('nombre')?.value || '',
+        apellidos: campo('apellidos')?.value || '',
+        celular: campo('celular')?.value || '',
+        correo: campo('correo')?.value || '',
+        direccion: campo('direccion')?.value || '',
+        departamento: campo('departamento')?.value || '',
+        ciudad: campo('ciudad')?.value || ''
+    };
+}
+
+async function avisarErrores(errores, titulo = 'Error') {
+    const mensaje = Object.values(errores)[0] || 'Revisa los campos del formulario';
+    await Swal.fire({
+        icon: 'error',
+        title: titulo,
+        text: mensaje,
+    });
+}
+
 function renderLoginCTA() {
     const mount = document.querySelector('.checkout-container');
+
+    if (!mount) return;
 
     const wrapper = document.createElement('div');
     wrapper.innerHTML = `
@@ -74,7 +180,8 @@ function renderLoginCTA() {
         </div>
     `;
 
-    campo('openLogin').addEventListener('click', abrirLogin);
+    mount.appendChild(wrapper);
+    wrapper.querySelector('#openLogin')?.addEventListener('click', abrirLogin);
 }
 
 function abrirLogin() {
@@ -230,11 +337,24 @@ function applyValidationErrors(errors) {
     });
 
     let primero = null;
-    Object.entries(errores).forEach(([id, mensaje]) => {
+    Object.entries(errors).forEach(([id, mensaje]) => {
         marcarCampoError(campo(id), mensaje);
         if (!primero) primero = campo(id);
     });
     primero?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function applyValidStates(datos, errores) {
+    Object.keys(datos).forEach((id) => {
+        if (!errores[id] && campo(id)?.value.trim()) {
+            campo(id).classList.add('is-valid');
+        }
+    });
+}
+
+function mostrarErrores(errores) {
+    applyValidationErrors(errores);
+    applyValidStates(leerDatos(), errores);
 }
 
 function marcarValidos(datos, errores) {
