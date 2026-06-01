@@ -23,6 +23,17 @@
     max-width: 1400px;
 }
 
+/* Offcanvas crear/editar — por encima del chatbot (1060) */
+.admin-products-page #offcanvasProducto,
+.admin-users-page #offcanvasUser {
+    z-index: 1080 !important;
+}
+
+body.admin-products-page:has(#offcanvasProducto.show) .offcanvas-backdrop,
+body.admin-users-page:has(#offcanvasUser.show) .offcanvas-backdrop {
+    z-index: 1075 !important;
+}
+
 .admin-page-title {
     color: var(--shopify-text);
     font-weight: var(--semibold);
