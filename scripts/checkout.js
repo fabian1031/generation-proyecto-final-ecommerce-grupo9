@@ -1,7 +1,7 @@
 import { cartService } from '../services/cartSevices.js';
 import { formatPrice } from '../services/utils.service.js';
 import { validateCheckout } from './validations.js';
-import { authService } from '../services/auth.service.js';
+import { authService, mapUserToCheckoutFields } from '../services/auth.service.js';
 import { initLogin } from '../components/login.component.js';
 import { showLoader, hideLoader } from '../components/loader.component.js';
 import { initUbicacion } from '../services/departamentos-ciudades.js';
@@ -26,14 +26,20 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarResumen();
     iniciarEventos();
     cargarOpenPay();
+    aplicarDatosUsuario();
+});
 
-    const usuario = authService.getUser();
+async function aplicarDatosUsuario() {
+    if (!authService.isAuthenticated()) {
+        mostrarLogin();
+        return;
+    }
+
+    const usuario = await authService.ensureUserProfile();
     if (usuario) {
         llenarDatos(usuario);
-    } else {
-        mostrarLogin();
     }
-});
+}
 
 function mostrarResumen() {
     const carrito = cartService.getCart();
@@ -90,7 +96,7 @@ function abrirLogin() {
         document.querySelector('.checkout-container')?.replaceChildren();
         await Swal.fire({
             icon: 'success',
-            title: `Bienvenido ${usuario.username}`,
+            title: `Bienvenido ${usuario.nombre || 'Usuario'}`,
             text: 'Datos cargados en el formulario',
             timer: 1800,
             showConfirmButton: false,
@@ -102,15 +108,11 @@ function abrirLogin() {
 }
 
 function llenarDatos(usuario) {
-    const datos = {
-        nombre: usuario.username || usuario.name || '',
-        apellidos: usuario.lastname || '',
-        correo: usuario.email || '',
-        celular: usuario.phone || usuario.celular || '',
-    };
+    const datos = mapUserToCheckoutFields(usuario);
 
     Object.entries(datos).forEach(([id, valor]) => {
-        if (campo(id)) campo(id).value = valor;
+        const input = campo(id);
+        if (input != null) input.value = String(valor ?? "");
     });
 }
 

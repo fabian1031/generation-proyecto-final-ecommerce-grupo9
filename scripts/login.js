@@ -1,5 +1,5 @@
 import { validateCorreo, validatePassword } from './validations.js';
-import { authService } from '../services/auth.service.js';
+import { authService, parseLoginResponse } from '../services/auth.service.js';
 import { api } from '../services/api.js';
 import { getRootPath } from '../services/utils.service.js';
 
@@ -81,7 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 password
             });
 
-            if (!response) {
+            const session = parseLoginResponse(response);
+
+            if (!session?.token) {
                 return Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -89,12 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Guardar usuario y token
-            authService.setUser(response.usuario || response, response.token);
+            authService.setUser(session.user, session.token);
+            await authService.ensureUserProfile({ loginEmail: email, loginResponse: response });
 
             await Swal.fire({
                 icon: 'success',
-                title: `Bienvenido ${response.usuario?.nombre || 'Usuario'}`,
+                title: `Bienvenido ${session.user?.nombre || 'Usuario'}`,
                 text: 'Inicio de sesión exitoso',
                 confirmButtonText: 'Continuar',
                 allowOutsideClick: false

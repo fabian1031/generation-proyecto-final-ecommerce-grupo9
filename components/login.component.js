@@ -1,6 +1,6 @@
 import { validateCorreo, validatePassword } from "../scripts/validations.js";
-import { userService } from "../services/users.services.js";
-import { authService } from "../services/auth.service.js";
+import { authService, parseLoginResponse } from "../services/auth.service.js";
+import { api } from "../services/api.js";
 
 export function initLogin(container, onSuccess) {
   if (!container) return;
@@ -25,42 +25,61 @@ export function initLogin(container, onSuccess) {
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
+    const emailResult = validateCorreo(email);
+    const passResult = validatePassword(password);
+
+    if (!emailResult.valid || !passResult.valid) {
+      await Swal.fire({
+        icon: "error",
+        title: "Credenciales inválidas",
+        text: !emailResult.valid ? emailResult.message : passResult.message,
+      });
+      return;
+    }
+
     const submitBtn = form.querySelector("button[type='submit']");
     if (submitBtn) submitBtn.disabled = true;
 
     try {
-      const users = await userService.getByEmail(email);
-      const user = users[0];
+      const response = await api.post("/auth/login", { email, password });
 
-      if (!user || user.password !== password) {
+      const session = parseLoginResponse(response);
+
+      if (!session?.token) {
         await Swal.fire({
           icon: "error",
-          title: "Credenciales inválidas",
-          text: "Verifica tu correo y contraseña"
+          title: "Error",
+          text: "No se recibió respuesta válida del servidor",
         });
         return;
       }
 
-      if (!user.isActive) {
+      const user = session.user;
+
+      if (user?.activo === false) {
         await Swal.fire({
           icon: "warning",
           title: "Usuario inactivo",
-          text: "Contacta al administrador"
+          text: "Contacta al administrador",
         });
         return;
       }
 
-      authService.login(user);
+      authService.setUser(session.user, session.token);
+
+      const profile =
+        (await authService.ensureUserProfile({ loginEmail: email, loginResponse: response })) ||
+        session.user;
 
       if (onSuccess) {
-        await onSuccess(user);
+        await onSuccess(profile);
       }
     } catch (error) {
       console.error("Error en login:", error);
       await Swal.fire({
         icon: "error",
         title: "Error",
-        text: "No se pudo iniciar sesión"
+        text: error.message || "No se pudo iniciar sesión",
       });
     } finally {
       if (submitBtn) submitBtn.disabled = false;
