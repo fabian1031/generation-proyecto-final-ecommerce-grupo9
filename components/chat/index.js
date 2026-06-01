@@ -5,24 +5,30 @@ import { CorotoChatController } from './chat-controller.js';
 let initialized = false;
 
 function injectChatStyles() {
-    if (document.getElementById('coroto-chat-styles')) return;
+    if (document.getElementById('coroto-chat-styles')) {
+        return Promise.resolve();
+    }
 
-    const link = document.createElement('link');
-    link.id = 'coroto-chat-styles';
-    link.rel = 'stylesheet';
-    link.href = `${getRootPath()}styles/chat.css`;
-    document.head.appendChild(link);
+    return new Promise((resolve) => {
+        const link = document.createElement('link');
+        link.id = 'coroto-chat-styles';
+        link.rel = 'stylesheet';
+        link.href = `${getRootPath()}styles/chat.css`;
+        link.onload = () => resolve();
+        link.onerror = () => resolve();
+        document.head.appendChild(link);
+    });
 }
 
 /**
  * Monta el asistente flotante en cualquier página que cargue el navbar.
  */
-export function initCorotoChat() {
+export async function initCorotoChat() {
     if (initialized || document.getElementById('fab-coroto-chat')) {
         return;
     }
 
-    injectChatStyles();
+    await injectChatStyles();
 
     const host = document.createElement('div');
     host.id = 'coroto-chat-root';
@@ -30,7 +36,7 @@ export function initCorotoChat() {
     document.body.appendChild(host);
 
     const controller = new CorotoChatController(host);
-    controller.init();
+    await controller.init();
 
     initialized = true;
 }

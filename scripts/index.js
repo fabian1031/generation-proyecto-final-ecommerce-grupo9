@@ -1,5 +1,4 @@
-import { Product } from '../models/Product.js';
-import { productService } from '../services/product.service.js';
+import { fetchCatalog } from '../services/catalog.service.js';
 import { formatPrice } from '../services/utils.service.js';
 import { cartService } from '../services/cartSevices.js';
 //import { authGuard } from './base.js';
@@ -106,8 +105,7 @@ function addToCart(product) {
 // ── Carga de productos ────────────────────────────────────────────────────────
 async function loadProducts() {
     try {
-        const data = await productService.getAll();
-        allProducts = data.map(p => new Product(p));
+        allProducts = await fetchCatalog();
  
         buildCategoryFilters(allProducts);
         renderProducts(allProducts);

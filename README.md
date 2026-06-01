@@ -1,38 +1,44 @@
 # generation-proyecto-final-ecommerce-grupo9
 
-## Probar proyecto
+## Backend (Render)
 
-Para testear el proyecto es necesario iniciar json-server. Esto debido a que no esta construído el backend actualmente. La solución propuesta es usar json-server para mockearlo mientras tenemos un backend funcional para conectar.
+La API está desplegada en:
 
-Modo de uso:
+**https://coroto-backend.onrender.com**
 
-```bash
-# usar este comando para iniciar json-server
+El front la consume desde `services/api.js` (productos, auth, usuarios, órdenes, etc.). No hace falta json-server ni backend local.
 
-npm i
-npx json-server ./development/db.json
+> En el plan free de Render el servicio puede tardar unos segundos en despertar; si ves error 403 o timeout, espera y recarga.
 
-```
+## Asistente de compras (CoroTIA)
 
-### Asistente de compras (chatbot)
-
-El asistente flotante usa Gemini vía PHP. Necesitas **dos procesos** en desarrollo:
+El chat usa `api/chat.php` con Gemini. Crea un `.env` a partir de `.env.example`:
 
 ```bash
-# 1) API de productos (json-server)
-npx json-server ./development/db.json
-
-# 2) Api key de Gemini
-.env.example 
+GEMINI_API_KEY=tu_clave_de_google_ai_studio
+API_BASE_URL=https://coroto-backend.onrender.com
 ```
 
+El catálogo del asistente se obtiene de la misma API de Render (`/productos`).
 
-El asistente recomienda productos según presupuesto y, si el usuario confirma, agrega artículos al carrito en `localStorage`.
+### Chat con Live Server (puerto 5500)
 
-### Integrantes
+Live Server **no ejecuta PHP**; el POST a `chat.php` devuelve 405. Los productos sí cargan (van a Render), pero el chat necesita PHP, por ende debe ejecutarse en coroto.online, o que la máquina local que está ejecutando ejecute PHP necesario para el Chat
+
+```bash
+# Terminal aparte (dejar corriendo)
+php -S 127.0.0.1:8080 -t .
+```
+
+Con Live Server en `:5500`, el front envía el chat a `http://127.0.0.1:8080/api/chat.php` automáticamente.
+
+En producción, el hosting del sitio debe soportar PHP, o define la URL en `index.html`:
+
+
+
+## Integrantes
 
 - Camilo Castellanos
 - Hernan Vasquez
 - Cristian Ceballos
 - Fabian Beltran
-- Mario Alberto Buen dia

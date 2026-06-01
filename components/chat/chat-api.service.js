@@ -1,20 +1,33 @@
-import { getRootPath } from '../../services/utils.service.js';
-
-export function getChatApiUrl() {
-    return `${getRootPath()}api/chat.php`;
-}
+import { getChatApiUrl } from '../../services/chat-config.js';
 
 /**
  * @param {Array<{ role: string, content: string }>} messages
  */
 export async function sendChatMessage(messages) {
-    const res = await fetch(getChatApiUrl(), {
+    const url = getChatApiUrl();
+    const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages }),
     });
 
-    const data = await res.json().catch(() => ({}));
+    const raw = await res.text();
+    let data = {};
+    try {
+        data = raw ? JSON.parse(raw) : {};
+    } catch {
+        if (raw.trimStart().startsWith('<?php')) {
+            throw new Error(
+                'El chat necesita un servidor ejecutalo en coroto.online'
+            );
+        }
+    }
+
+    if (res.status === 405) {
+        throw new Error(
+            'El chat necesita un servidor ejecutalo en coroto.online'
+        );
+    }
 
     if (!res.ok) {
         throw new Error(data.error || 'No pude responder en este momento.');

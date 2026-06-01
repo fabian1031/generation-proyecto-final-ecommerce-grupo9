@@ -1,4 +1,5 @@
 import { cartService } from '../../services/cartSevices.js';
+import { fetchCatalog, onCatalogReady } from '../../services/catalog.service.js';
 import { productService } from '../../services/product.service.js';
 import { formatPrice, getPagesPath } from '../../services/utils.service.js';
 import { Product } from '../../models/Product.js';
@@ -26,6 +27,7 @@ export class CorotoChatController {
     #lastRequestAt = 0;
     /** @type {{ actions: Array<{ id: string, qty: number }>, pickOne?: boolean } | null} */
     #pendingCart = null;
+    #unsubscribeCatalog = null;
 
     constructor(rootEl) {
         this.panel = rootEl.querySelector('#coroto-chat-panel');
@@ -43,6 +45,7 @@ export class CorotoChatController {
             return;
         }
 
+        this.#unsubscribeCatalog = onCatalogReady((products) => this.#setCatalog(products));
         await this.#loadCatalog();
         this.#bindEvents();
         if (this.#productsById.size === 0) {
@@ -57,14 +60,22 @@ export class CorotoChatController {
         this.chipsEl?.classList.add('ai-chat-chips--visible');
     }
 
+    #setCatalog(products) {
+        this.#productsById = new Map(products.map((p) => [String(p.id), p]));
+    }
+
     async #loadCatalog() {
-        try {
-            const data = await productService.getAll();
-            const products = data.map((p) => new Product(p)).filter((p) => p.isActive !== false && p.stock > 0);
-            this.#productsById = new Map(products.map((p) => [String(p.id), p]));
-        } catch {
-            this.#productsById = new Map();
+        const products = await fetchCatalog();
+        this.#setCatalog(products);
+    }
+
+    async #ensureCatalog() {
+        if (this.#productsById.size > 0) {
+            return true;
         }
+        const products = await fetchCatalog({ force: true });
+        this.#setCatalog(products);
+        return this.#productsById.size > 0;
     }
 
     #bindEvents() {
@@ -195,7 +206,7 @@ export class CorotoChatController {
 
         const directAdd = parseDirectAddRequest(text, this.#productsById);
         if (directAdd) {
-            if (this.#productsById.size === 0) {
+            if (!(await this.#ensureCatalog())) {
                 this.#appendBotMessage(
                     'No tengo acceso al catálogo en este momento. Intenta de nuevo cuando la tienda termine de cargar los productos.'
                 );
@@ -216,7 +227,7 @@ export class CorotoChatController {
 
         const randomCount = parseRandomAddRequest(text);
         if (randomCount !== null) {
-            if (this.#productsById.size === 0) {
+            if (!(await this.#ensureCatalog())) {
                 this.#appendBotMessage(
                     'No tengo acceso al catálogo en este momento. Intenta de nuevo cuando la tienda termine de cargar los productos.'
                 );
