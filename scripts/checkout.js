@@ -368,7 +368,7 @@ function sesionDispositivo() {
             input.value = String(id);
             return String(id).trim();
         }
-    } catch {}
+    } catch { }
 
     return input.value.trim();
 }
@@ -503,11 +503,19 @@ async function confirmarCompra() {
         });
 
         const resultado = await res.json();
+        console.log('PASO 1 - respuesta recibida');
         if (resultado.status !== 'ok') {
             throw new Error(mensajeParaUsuario(resultado.mensaje || 'Error en el pago'));
+            console.log('PASO 2 - antes de guardar');
         }
 
-        sessionStorage.setItem('corotoOrder', JSON.stringify({
+        console.log('RESPUESTA OPENPAY', resultado);
+    
+        console.log('GUARDANDO ORDER', {
+            id_pedido: idPedido,
+            items: cartService.getCart()
+        });
+        localStorage.setItem('corotoOrder', JSON.stringify({
             id_pedido: idPedido,
             id_transaccion: resultado.id_transaccion,
             order_id: resultado.order_id,
@@ -525,8 +533,15 @@ async function confirmarCompra() {
                 ciudad: body.ciudad,
             },
         }));
+        console.log('PASO 3 - después de guardar');
+
+        console.log(
+        'ORDER GUARDADA',
+        localStorage.getItem('corotoOrder')
+        ); 
 
         cartService.clear();
+        console.log('PASO 4 - antes de redirigir');
         window.location.href = resultado.url_pse || resultado.url_3ds || 'success.html';
     } catch (err) {
         hideLoader();
