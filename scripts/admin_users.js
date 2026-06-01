@@ -1,190 +1,97 @@
-import { userService } from "../services/users.services.js";
-import { User } from "../models/User.js";
+/**
+ * Panel de administración de usuarios — orquestador principal.
+ */
 
-let allUsers = [];
-let selectedUser = null;
-let filterStatus = "all";
+import {
+    initUsersTable,
+    refreshUsersTable,
+    setStatusFilter,
+    setTableActionHandlers,
+    setUserLookup,
+} from "./admin/users-table.js";
+import {
+    initUserForm,
+    openCreateUser,
+    openEditUser,
+    toggleUserActive,
+    fetchAllUsers,
+    setOnUsersChanged,
+} from "./admin/users-form.js";
+import { setLoading, showToast, SLOW_API_HINT } from "./admin/products-feedback.js";
+import {
+    waitForAdminDependencies,
+    showLoadErrorBanner,
+    hideLoadErrorBanner,
+    setAdminActionsDisabled,
+    loadWithSilentRetry,
+} from "./admin/admin-bootstrap.js";
 
-loadUsers();
+const LOAD_ERROR_SLOT = "adminLoadError";
+const ACTION_BUTTONS = ["btnRefreshUsers", "btnCreateUser"];
 
-async function loadUsers() {
-    const data = await userService.getAll();
-    allUsers = data.map(u => new User(u));
-    renderUsersList();
-}
+document.addEventListener("DOMContentLoaded", () => {
+    bootstrapUsersDashboard();
+});
 
-function renderUsersList() {
-    const container = document.getElementById("usersList");
-    container.innerHTML = "";
+async function bootstrapUsersDashboard() {
+    initUserForm();
 
-    let filteredUsers = allUsers;
+    setTableActionHandlers({
+        onEdit: openEditUser,
+        onToggleActive: toggleUserActive,
+    });
 
-    if(filterStatus === "inactive") {
-        filteredUsers = allUsers.filter(u => !u.activo);
-    }
+    setOnUsersChanged(reloadUsers);
 
-    if(filterStatus === "active") {
-        filteredUsers = allUsers.filter(u => u.activo)
-    }
+    document.querySelectorAll(".shopify-filter-pill[data-filter]").forEach((btn) => {
+        btn.addEventListener("click", () => setStatusFilter(btn.dataset.filter));
+    });
 
-    filteredUsers.forEach(u => {
-        const item = document.createElement("button");
-        const isActive = u.activo !== false;
+    document.getElementById("btnRefreshUsers")?.addEventListener("click", () => reloadUsers(true));
+    document.getElementById("btnCreateUser")?.addEventListener("click", openCreateUser);
 
-        item.className =
-            "list-group-item list-group-item-action d-flex justify-content-between align-items-start gap-2";
+    window.openCreateUser = openCreateUser;
+    window.setFilter = setStatusFilter;
 
-        item.innerHTML = `
-        <div class="text-start">
-                <div class="text-muted">
-                    ID:  ${u.id}
-                </div>
-                <div class="fw-semibold">
-                    ${u.nombre} ${u.apellido}
-                </div>
-
-                <small class="text-muted">
-                    Rol: ${u.rol}
-                </small><br>
-                
-                <span class="badge ${isActive ? 'bg-success' : 'bg-danger'}">
-                    ${isActive ? 'Activo' : 'Inactivo'}
-                </span>
-            </div>
-
-            <div class="text-end">
-                ${isActive
-                ? `<button class="btn btn-sm btn-danger">🗑</button>`
-                : `<button class="btn btn-sm btn-success">♻️</button>`
-            }
-            </div>
-        `;
-
-        item.addEventListener("click", () => {
-           if(!isActive) return;
-           openEditUser(u);
+    const depsReady = await waitForAdminDependencies();
+    if (!depsReady) {
+        showLoadErrorBanner(LOAD_ERROR_SLOT, {
+            title: "No se pudo iniciar la tabla",
+            message: "Recarga la página para volver a intentar.",
+            onRetry: () => location.reload(),
         });
-
-        const actionBTN = item.querySelector("button");
-
-        actionBTN.addEventListener("click", (e) => {
-            e.stopPropagation();
-            
-            if(isActive) {
-                deleteUser(u.id);
-            } else {
-                restoreUser(u.id);
-            }
-        });
-
-        container.appendChild(item);
-    });
-}
-
-function openCreateUser() {
-    selectedUser = null;
-    clearForm();
-
-    document.getElementById("offcanvasTitle").textContent = "Crear usuario";
-
-    new bootstrap.Offcanvas(
-        document.getElementById("offcanvasUser")
-    ).show();
-}
-
-
-function openEditUser(user) {
-    selectedUser = user;
-
-    fillForm(user);
-
-    document.getElementById("offcanvasTitle").textContent = "Editar usuario";
-
-    new bootstrap.Offcanvas(
-        document.getElementById("offcanvasUser")
-    ).show();
-}
-
-
-function fillForm(u) {
-    document.getElementById("u_username").value = u.nombre || "";
-    document.getElementById("u_lastname").value = u.apellido || "";
-    document.getElementById("u_role").value = u.rol || "";
-    document.getElementById("u_id").value = u.id || "";
-    document.getElementById("u_active").value = u.activo ? "Activo" : "Inactivo";
-}
-
-
-function clearForm() {
-    fillForm({
-        nombre: "",
-        apellido: "",
-        rol: "",
-        id: ""
-    });
-}
-
-function getFormData() {
-    return {
-        nombre: document.getElementById("u_username").value,
-        apellido: document.getElementById("u_lastname").value,
-        rol: document.getElementById("u_role").value
-    };
-}
-
-async function saveUser() {
-    const data = getFormData();
-
-    if (selectedUser) {
-        const updated = await userService.update(selectedUser.id, data);
-        Object.assign(selectedUser, updated);
-    } else {
-        const created = await userService.create(data);
-        allUsers.push(created);
+        return;
     }
 
-    renderUsersList();
-
-    bootstrap.Offcanvas.getInstance(
-        document.getElementById("offcanvasUser")
-    ).hide();
+    await reloadUsers();
 }
 
-async function deleteUser(id) {
-    const user = allUsers.find(u => u.id === id);
-    const updated = await userService.update(id, {
-        ...user,
-        activo: false
-    });
-    Object.assign(user, updated);
+async function reloadUsers(showUpdatedToast = false) {
+    setAdminActionsDisabled(ACTION_BUTTONS, true);
+    hideLoadErrorBanner(LOAD_ERROR_SLOT);
+    setLoading(true, "Obteniendo listado de usuarios…", SLOW_API_HINT);
 
-    renderUsersList();
+    try {
+        const users = await loadWithSilentRetry(fetchAllUsers);
+        setUserLookup(users);
+
+        if (window.jQuery.fn.DataTable.isDataTable("#usersTable")) {
+            refreshUsersTable(users);
+        } else {
+            initUsersTable(users);
+        }
+
+        if (showUpdatedToast) {
+            showToast("info", "Listado actualizado");
+        }
+    } catch {
+        showLoadErrorBanner(LOAD_ERROR_SLOT, {
+            title: "No se pudo cargar el listado",
+            message: "Comprueba tu conexión e intenta de nuevo.",
+            onRetry: () => reloadUsers(),
+        });
+    } finally {
+        setLoading(false);
+        setAdminActionsDisabled(ACTION_BUTTONS, false);
+    }
 }
-
-async function restoreUser(id) {
-    const user = allUsers.find(u => u.id === id);
-    const updated = await userService.update(id, {
-        ...user,
-        activo: true
-    });
-    Object.assign(user, updated);
-
-    renderUsersList();
-}
-
-function setFilter(type) {
-    filterStatus = type;
-
-    document.querySelectorAll("[data-filter]")
-        .forEach(btn => btn.classList.remove("active"));
-
-    document.querySelector(`[data-filter="${type}"]`)
-        ?.classList.add("active");
-
-    renderUsersList();
-}
-
-window.saveUser = saveUser;
-window.openCreateUser = openCreateUser;
-window.deleteUser = deleteUser;
-window.setFilter = setFilter;
