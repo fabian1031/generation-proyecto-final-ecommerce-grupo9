@@ -17,59 +17,83 @@
 
     <!-- INICIO PARTE DINÁMICA -->
     <link rel="stylesheet" href="../styles/admin_dashboard.css">
-    <title>Admin — Ventas</title>
+    <title>Panel de Administración — Ventas</title>
     <!-- FIN PARTE DINÁMICA -->
 </head>
 
-<body>
+<body class="admin-sales-page admin-loading-active">
     <nav class="nav-container"></nav>
 
     <div class="dinamic-container">
-        <main class="main-container">
-            <div class="container py-4" style="max-width: 900px;">
+        <main class="main-container admin-products-main">
+            <div class="container-fluid py-3 py-md-4 admin-products-container">
 
-                <!-- Encabezado -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="mb-0">Ventas</h5>
-                    <div class="d-flex gap-2">
-                        <button id="btnReloadOrders" class="btn btn-outline-secondary btn-sm" onclick="reloadOrders()">
-                            <i class="bi bi-arrow-repeat me-1"></i> Recargar pedidos
+                <!-- Cabecera -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <div>
+                        <h1 class="h4 mb-1 admin-page-title">
+                            <i class="bi bi-graph-up-arrow me-2"></i>Ventas
+                        </h1>
+                        <p class="text-muted small mb-0">
+                            Resumen de pedidos, totales recaudados y gráficos por período.
+                        </p>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="btnReloadOrders"
+                            onclick="reloadOrders()" title="Recargar pedidos">
+                            <i class="bi bi-arrow-clockwise"></i>
+                            <span class="d-none d-sm-inline">Actualizar</span>
                         </button>
-                        <button class="btn btn-outline-danger btn-sm" onclick="clearSalesHistory()">
-                            <i class="bi bi-trash me-1"></i> Limpiar historial
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearSalesHistory()"
+                            title="Eliminar historial local">
+                            <i class="bi bi-trash"></i>
+                            <span class="d-none d-sm-inline">Limpiar historial</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Filtro por fechas -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body">
-                        <p class="small text-muted mb-2 fw-semibold">Filtrar por rango de fechas</p>
-                        <div class="row g-2 align-items-end">
-                            <div class="col-sm-4">
-                                <label class="form-label small">Desde</label>
-                                <input type="date" id="dateFrom" class="form-control form-control-sm">
+                <!-- Filtros -->
+                <div class="card admin-toolbar-card mb-3">
+                    <div class="card-body py-3">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                            <div class="admin-status-filter-wrap d-flex flex-wrap gap-2 align-items-center" role="group"
+                                aria-label="Filtrar por período">
+                                <span class="admin-status-label">Período</span>
+                                <button type="button" class="shopify-filter-pill sales-period-pill" data-period="today"
+                                    aria-pressed="false" onclick="setQuickFilter('today')">Hoy</button>
+                                <button type="button" class="shopify-filter-pill sales-period-pill" data-period="week"
+                                    aria-pressed="false" onclick="setQuickFilter('week')">Esta semana</button>
+                                <button type="button" class="shopify-filter-pill sales-period-pill" data-period="month"
+                                    aria-pressed="false" onclick="setQuickFilter('month')">Este mes</button>
+                                <button type="button" class="shopify-filter-pill sales-period-pill active"
+                                    data-period="all" aria-pressed="true" onclick="setQuickFilter('all')">Todo</button>
                             </div>
-                            <div class="col-sm-4">
-                                <label class="form-label small">Hasta</label>
-                                <input type="date" id="dateTo" class="form-control form-control-sm">
+                            <p class="text-muted small mb-0 d-none d-md-block admin-toolbar-hint">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Usa un período rápido o define un rango personalizado con fechas.
+                            </p>
+                        </div>
+
+                        <hr class="admin-sales-toolbar-divider my-3">
+
+                        <p class="admin-status-label mb-2">Rango personalizado</p>
+                        <div class="admin-sales-filter-grid">
+                            <div>
+                                <label class="admin-dt-field-label" for="dateFrom">Desde</label>
+                                <input type="date" id="dateFrom" class="shopify-filter-input">
                             </div>
-                            <div class="col-sm-4 d-flex gap-2">
-                                <button class="btn btn-dark btn-sm w-100" onclick="applyFilter()">
-                                    <i class="bi bi-funnel me-1"></i> Aplicar
+                            <div>
+                                <label class="admin-dt-field-label" for="dateTo">Hasta</label>
+                                <input type="date" id="dateTo" class="shopify-filter-input">
+                            </div>
+                            <div class="admin-sales-filter-actions">
+                                <button type="button" class="shopify-btn shopify-btn-primary" onclick="applyFilter()">
+                                    <i class="bi bi-funnel me-1" aria-hidden="true"></i>Aplicar
                                 </button>
-                                <button class="btn btn-outline-secondary btn-sm w-100" onclick="clearFilter()">
+                                <button type="button" class="shopify-btn shopify-btn-secondary" onclick="clearFilter()">
                                     Limpiar
                                 </button>
                             </div>
-                        </div>
-
-                        <!-- Accesos rápidos -->
-                        <div class="d-flex gap-2 mt-3 flex-wrap">
-                            <button class="btn btn-outline-dark btn-sm" onclick="setQuickFilter('today')">Hoy</button>
-                            <button class="btn btn-outline-dark btn-sm" onclick="setQuickFilter('week')">Esta semana</button>
-                            <button class="btn btn-outline-dark btn-sm" onclick="setQuickFilter('month')">Este mes</button>
-                            <button class="btn btn-outline-dark btn-sm" onclick="setQuickFilter('all')">Todo</button>
                         </div>
                     </div>
                 </div>
@@ -77,53 +101,59 @@
                 <!-- Contadores -->
                 <div class="row g-3 mb-4" id="salesCounters">
                     <div class="col-6 col-md-3">
-                        <div class="card border-0 shadow-sm h-100 text-center py-3">
-                            <div class="text-muted small mb-1">Pedidos</div>
-                            <div class="fs-4 fw-bold" id="counterOrders">0</div>
+                        <div class="admin-sales-stat-card h-100">
+                            <div class="admin-sales-stat-label">Pedidos</div>
+                            <div class="admin-sales-stat-value admin-sales-stat-value--lg" id="counterOrders">0</div>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
-                        <div class="card border-0 shadow-sm h-100 text-center py-3">
-                            <div class="text-muted small mb-1">Subtotal</div>
-                            <div class="fs-5 fw-bold" id="counterSubtotal">$0</div>
+                        <div class="admin-sales-stat-card h-100">
+                            <div class="admin-sales-stat-label">Subtotal</div>
+                            <div class="admin-sales-stat-value" id="counterSubtotal">$0</div>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
-                        <div class="card border-0 shadow-sm h-100 text-center py-3">
-                            <div class="text-muted small mb-1">IVA</div>
-                            <div class="fs-5 fw-bold" id="counterIva">$0</div>
+                        <div class="admin-sales-stat-card h-100">
+                            <div class="admin-sales-stat-label">IVA</div>
+                            <div class="admin-sales-stat-value" id="counterIva">$0</div>
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
-                        <div class="card border-0 shadow-sm h-100 text-center py-3 bg-dark text-white">
-                            <div class="small mb-1 opacity-75">Total recaudado</div>
-                            <div class="fs-5 fw-bold" id="counterTotal">$0</div>
+                        <div class="admin-sales-stat-card admin-sales-stat-card--total h-100">
+                            <div class="admin-sales-stat-label">Total recaudado</div>
+                            <div class="admin-sales-stat-value" id="counterTotal">$0</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Charts -->
-                <div class="row g-4 mb-4">
+                <!-- Gráficos -->
+                <div class="row g-3 mb-4">
                     <div class="col-md-6">
-                        <div class="card border-0 shadow-sm">
+                        <div class="card admin-table-card h-100">
+                            <div class="admin-sales-card-header">
+                                <p class="mb-0">Ventas por día</p>
+                            </div>
                             <div class="card-body">
-                                <p class="small fw-semibold text-muted mb-3">Ventas por día</p>
                                 <canvas id="chartDay" height="200"></canvas>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card border-0 shadow-sm">
+                        <div class="card admin-table-card h-100">
+                            <div class="admin-sales-card-header">
+                                <p class="mb-0">Ventas por semana</p>
+                            </div>
                             <div class="card-body">
-                                <p class="small fw-semibold text-muted mb-3">Ventas por semana</p>
                                 <canvas id="chartWeek" height="200"></canvas>
                             </div>
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm">
+                        <div class="card admin-table-card">
+                            <div class="admin-sales-card-header">
+                                <p class="mb-0">Ventas por mes</p>
+                            </div>
                             <div class="card-body">
-                                <p class="small fw-semibold text-muted mb-3">Ventas por mes</p>
                                 <canvas id="chartMonth" height="120"></canvas>
                             </div>
                         </div>
@@ -131,22 +161,22 @@
                 </div>
 
                 <!-- Tabla de pedidos -->
-                <div class="card border-0 shadow-sm">
+                <div class="card admin-table-card">
+                    <div class="admin-sales-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <p class="mb-0">Detalle de pedidos</p>
+                        <span class="badge badge-admin-active" id="badgeCount">0 pedidos</span>
+                    </div>
                     <div class="card-body p-0">
-                        <div class="px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
-                            <p class="small fw-semibold text-muted mb-0">Detalle de pedidos</p>
-                            <span class="badge bg-dark" id="badgeCount">0 pedidos</span>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-sm table-hover mb-0 small">
-                                <thead class="table-light">
+                        <div class="table-responsive admin-table-scroll">
+                            <table class="table table-sm mb-0 admin-shopify-table">
+                                <thead>
                                     <tr>
-                                        <th>Pedido</th>
-                                        <th>Fecha</th>
-                                        <th>Cliente</th>
-                                        <th>Ciudad</th>
-                                        <th class="text-end">Total</th>
-                                        <th class="text-center">Detalle</th>
+                                        <th scope="col">Pedido</th>
+                                        <th scope="col">Fecha</th>
+                                        <th scope="col">Cliente</th>
+                                        <th scope="col">Ciudad</th>
+                                        <th scope="col" class="text-end">Total</th>
+                                        <th scope="col" class="text-center">Detalle</th>
                                     </tr>
                                 </thead>
                                 <tbody id="ordersTableBody">
@@ -164,11 +194,25 @@
         <footer class="footer-container"></footer>
     </div>
 
+    <!-- Preloader -->
+    <div id="salesLoadingOverlay" class="admin-loading-overlay" aria-hidden="false">
+        <div class="admin-loading-card" role="status" aria-live="polite" aria-busy="true">
+            <div class="admin-loading-spinner" aria-hidden="true"></div>
+            <p class="admin-loading-title" id="salesLoadingTitle">Cargando ventas</p>
+            <p class="admin-loading-message" id="salesLoadingMessage">Conectando con el servidor…</p>
+            <p class="admin-loading-hint d-none" id="salesLoadingHint"></p>
+            <div class="admin-loading-progress" aria-hidden="true">
+                <div class="admin-loading-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Offcanvas detalle pedido -->
-    <div class="offcanvas offcanvas-bottom rounded-top-4" style="height: 85vh;" id="offcanvasOrder">
+    <div class="offcanvas offcanvas-bottom rounded-top-4 admin-sales-offcanvas" tabindex="-1" id="offcanvasOrder"
+        aria-labelledby="offcanvasOrderTitle">
         <div class="offcanvas-header border-bottom">
-            <h6 class="offcanvas-title" id="offcanvasOrderTitle">Detalle del pedido</h6>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+            <h2 class="h6 offcanvas-title mb-0" id="offcanvasOrderTitle">Detalle del pedido</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
         </div>
         <div class="offcanvas-body overflow-auto" id="offcanvasOrderBody">
         </div>

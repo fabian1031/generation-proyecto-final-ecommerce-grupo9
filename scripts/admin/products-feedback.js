@@ -10,7 +10,8 @@ let slowHintTimer = null;
 function getLoadingOverlay() {
     return (
         document.getElementById("productsLoadingOverlay") ||
-        document.getElementById("usersLoadingOverlay")
+        document.getElementById("usersLoadingOverlay") ||
+        document.getElementById("salesLoadingOverlay")
     );
 }
 
@@ -45,6 +46,7 @@ export function setLoading(visible, message = "Procesando…", slowMessage = nul
         card?.setAttribute("aria-busy", "true");
         overlay.classList.remove("d-none");
         overlay.setAttribute("aria-hidden", "false");
+        document.body.classList.add("admin-loading-active");
 
         if (slowMessage && hintEl) {
             slowHintTimer = setTimeout(() => {
@@ -58,6 +60,7 @@ export function setLoading(visible, message = "Procesando…", slowMessage = nul
     card?.setAttribute("aria-busy", "false");
     overlay.classList.add("d-none");
     overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("admin-loading-active");
 }
 
 export function showToast(type, title, detail = "") {

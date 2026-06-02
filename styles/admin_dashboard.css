@@ -1,7 +1,8 @@
 /* ─── Admin productos — estilo Shopify + marca Coroto ─────────────────────── */
 
 .admin-products-page,
-.admin-users-page {
+.admin-users-page,
+.admin-sales-page {
     --shopify-bg: #f6f6f7;
     --shopify-surface: #ffffff;
     --shopify-border: #e1e3e5;
@@ -13,10 +14,179 @@
 }
 
 .admin-products-page .admin-products-main,
-.admin-users-page .admin-products-main {
+.admin-users-page .admin-products-main,
+.admin-sales-page .admin-products-main {
     align-items: stretch;
     justify-content: flex-start;
     width: 100%;
+}
+
+.admin-sales-page #offcanvasOrder {
+    z-index: 1080 !important;
+}
+
+body.admin-sales-page:has(#offcanvasOrder.show) .offcanvas-backdrop {
+    z-index: 1075 !important;
+}
+
+/* Pills de período (ventas) */
+.admin-sales-page .shopify-filter-pill[data-period].active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--white);
+}
+
+.admin-sales-page .shopify-filter-pill[data-period].active:hover,
+.admin-sales-page .shopify-filter-pill[data-period].active:focus,
+.admin-sales-page .shopify-filter-pill[data-period].active:focus-visible {
+    color: var(--white);
+    opacity: 0.95;
+}
+
+.admin-sales-page .shopify-filter-pill[data-period].active:focus-visible {
+    box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--primary) !important;
+}
+
+.admin-sales-toolbar-divider {
+    border: none;
+    border-top: 1px solid var(--shopify-border);
+    opacity: 1;
+}
+
+.admin-sales-filter-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    align-items: end;
+}
+
+@media (min-width: 576px) {
+    .admin-sales-filter-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .admin-sales-filter-actions {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 768px) {
+    .admin-sales-filter-grid {
+        grid-template-columns: minmax(140px, 1fr) minmax(140px, 1fr) auto;
+    }
+
+    .admin-sales-filter-actions {
+        grid-column: auto;
+    }
+}
+
+.admin-sales-filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.admin-sales-page input[type="date"].shopify-filter-input {
+    min-height: 2.125rem;
+    padding: 0.4375rem 0.65rem;
+    font-size: 0.8125rem;
+}
+
+.shopify-btn-primary {
+    color: var(--white);
+    background: var(--primary);
+    border: 1px solid var(--primary);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+.shopify-btn-primary:hover {
+    color: var(--white);
+    background: #2a4d41;
+    border-color: #2a4d41;
+}
+
+.shopify-btn-primary:focus,
+.shopify-btn-primary:focus-visible,
+.shopify-btn-primary:active {
+    outline: none !important;
+    color: var(--white) !important;
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    box-shadow: var(--shopify-focus-ring) !important;
+}
+
+.admin-sales-stat-card {
+    padding: 1rem 0.75rem;
+    text-align: center;
+    background: var(--shopify-surface);
+    border: 1px solid var(--shopify-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.admin-sales-stat-card--total {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.admin-sales-stat-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--shopify-text-subdued);
+    margin-bottom: 0.35rem;
+}
+
+.admin-sales-stat-card--total .admin-sales-stat-label {
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.admin-sales-stat-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--shopify-text);
+    line-height: 1.2;
+}
+
+.admin-sales-stat-value--lg {
+    font-size: 1.5rem;
+}
+
+.admin-sales-stat-card--total .admin-sales-stat-value {
+    color: var(--white);
+}
+
+.admin-sales-card-header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--shopify-border);
+    background: var(--shopify-surface);
+}
+
+.admin-sales-card-header p {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--shopify-text-subdued);
+}
+
+.admin-sales-page .admin-shopify-table > thead > tr {
+    background: var(--shopify-hover);
+    border-bottom: 1px solid var(--shopify-border);
+}
+
+.admin-sales-page .admin-shopify-table > thead th {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--shopify-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border: none;
+    white-space: nowrap;
+}
+
+.admin-sales-offcanvas {
+    height: 85vh;
 }
 
 .admin-products-container {
@@ -730,13 +900,17 @@ table.admin-shopify-table > tbody > td {
 .admin-loading-overlay {
     position: fixed;
     inset: 0;
-    z-index: 1055;
+    z-index: 1100;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1rem;
     background: rgba(32, 34, 35, 0.55);
     backdrop-filter: blur(4px);
+}
+
+body.admin-loading-active {
+    overflow: hidden;
 }
 
 .admin-loading-card {

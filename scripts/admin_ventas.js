@@ -4,11 +4,16 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { ordenService } from '../services/orden.service.js';
+import { authService } from '../services/auth.service.js';
+import { getStoredAuthToken } from '../services/api.js';
+import { setLoading, SLOW_API_HINT } from './admin/products-feedback.js';
 
 const SALES_HISTORY_KEY = 'corotoSalesHistory';
 
 // Pedidos cargados desde el backend (si están disponibles)
 let remoteSales = [];
+/** true tras un intento exitoso de GET /pedidos (aunque la lista venga vacía) */
+let remoteSalesLoaded = false;
 
 // Instancias Chart.js activas (para destruirlas antes de redibujar)
 let chartDay   = null;
@@ -19,11 +24,12 @@ let chartMonth = null;
 let activeFrom = null;
 let activeTo   = null;
 
+const PERIOD_PILL_SELECTOR = '.sales-period-pill';
+
 // ─── Utilidades ──────────────────────────────────────────────────────────────
 
 function getSalesHistory() {
-    // Preferir pedidos remotos si ya fueron cargados
-    if (Array.isArray(remoteSales) && remoteSales.length > 0) return remoteSales;
+    if (remoteSalesLoaded) return remoteSales;
 
     try {
         const raw = localStorage.getItem(SALES_HISTORY_KEY);
@@ -33,53 +39,170 @@ function getSalesHistory() {
     }
 }
 
+function pedidoId(pedido) {
+    return pedido?.id ?? pedido?.id_pedido;
+}
+
+function itemMatchesPedido(item, pedido) {
+    const pid = pedidoId(pedido);
+    const itemPedidoId = item?.ordenId ?? item?.id_pedido;
+    return Number(itemPedidoId) === Number(pid);
+}
+
+function extractEmbeddedItems(pedido) {
+    const raw =
+        pedido?.items ??
+        pedido?.detalles ??
+        pedido?.detallePedido ??
+        pedido?.lineas ??
+        [];
+    return Array.isArray(raw) ? raw : [];
+}
+
+/** Normaliza campos del API (camelCase / snake_case) para la vista. */
+function normalizePedido(pedido, detalles = []) {
+    const id = pedidoId(pedido);
+    const embedded = extractEmbeddedItems(pedido);
+    const items =
+        embedded.length > 0
+            ? embedded
+            : detalles.filter((item) => itemMatchesPedido(item, pedido));
+
+    return {
+        ...pedido,
+        id,
+        fechaPedido: pedido.fechaPedido ?? pedido.fecha_pedido,
+        usuarioNombre:
+            pedido.usuarioNombre ??
+            pedido.nombreUsuario ??
+            (([pedido.nombre, pedido.apellido].filter(Boolean).join(' ').trim()) || undefined),
+        total: Number(pedido.total ?? 0),
+        estado: pedido.estado ?? pedido.estado_pedido,
+        estadoPago: pedido.estadoPago ?? pedido.estado_pago,
+        direccionEnvio: pedido.direccionEnvio ?? pedido.direccion_envio,
+        ciudadEnvio: pedido.ciudadEnvio ?? pedido.ciudad_envio,
+        items,
+    };
+}
+
+function asArray(data) {
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.content)) return data.content;
+    return [];
+}
+
+async function fetchOrderDetails(pedidos) {
+    const hasEmbedded = pedidos.some((p) => extractEmbeddedItems(p).length > 0);
+    if (hasEmbedded) return [];
+
+    try {
+        return asArray(await ordenService.getAllItems());
+    } catch (err) {
+        console.warn('No se pudo cargar /detalle_pedido:', err);
+        return [];
+    }
+}
+
+async function ensureAdminSession() {
+    const token = getStoredAuthToken();
+    if (!token) {
+        window.location.replace('./login.html');
+        return false;
+    }
+
+    try {
+        await authService.ensureUserProfile();
+    } catch (err) {
+        console.warn('No se pudo refrescar el perfil:', err);
+    }
+
+    if (!authService.isAdmin()) {
+        await Swal.fire({
+            icon: 'warning',
+            title: 'Sesión sin permisos de administrador',
+            html:
+                'El token está guardado, pero tu usuario no tiene rol <strong>ADMIN</strong>. ' +
+                'Cierra sesión e inicia con una cuenta de administrador.',
+            confirmButtonText: 'Ir a login',
+        });
+        authService.logout();
+        window.location.replace('./login.html');
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * @returns {{ ok: boolean, count: number, itemsLoaded: boolean }}
+ */
 async function loadRemoteSales() {
     try {
-        const [pedidos, detalles] = await Promise.all([
-            ordenService.getAll(),
-            ordenService.getAllItems()
-        ]);
+        const pedidos = asArray(await ordenService.getAll());
+        const detalles = await fetchOrderDetails(pedidos);
 
-        remoteSales = pedidos.map((pedido) => ({
-            ...pedido,
-            items: detalles.filter(
-                (item) => Number(item.ordenId) === Number(pedido.id)
-            )
-        }));
+        remoteSales = pedidos.map((pedido) => normalizePedido(pedido, detalles));
+        remoteSalesLoaded = true;
 
-        console.log('Pedidos cargados:', remoteSales);
+        const itemsLoaded =
+            detalles.length > 0 ||
+            remoteSales.some((p) => (p.items?.length ?? 0) > 0);
 
-        return true;
+        console.log('Pedidos cargados:', remoteSales.length, {
+            token: !!getStoredAuthToken(),
+            itemsLoaded,
+        });
+
+        return {
+            ok: true,
+            count: remoteSales.length,
+            itemsLoaded,
+        };
     } catch (err) {
         console.error('No se pudo obtener pedidos remotos:', err);
         remoteSales = [];
-        return false;
+        remoteSalesLoaded = false;
+        return { ok: false, count: 0, itemsLoaded: false };
     }
 }
 
 // Recargar pedidos manualmente (invocado por el botón en la vista)
 async function reloadOrders() {
     const btn = document.getElementById('btnReloadOrders');
-    if (!btn) return;
+    if (btn) btn.disabled = true;
 
-    const original = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Cargando...';
+    setLoading(true, 'Obteniendo pedidos…', SLOW_API_HINT);
 
     try {
-        const ok = await loadRemoteSales();
+        const { ok, count, itemsLoaded } = await loadRemoteSales();
         render();
 
-        if (ok) {
-            Swal.fire({ icon: 'success', title: 'Pedidos recargados', timer: 1200, showConfirmButton: false });
+        if (!ok) {
+            Swal.fire({
+                icon: 'error',
+                title: 'No se pudieron cargar los pedidos',
+                text: 'Comprueba tu sesión de administrador e intenta de nuevo.',
+                timer: 2800,
+                showConfirmButton: false,
+            });
+        } else if (!itemsLoaded) {
+            Swal.fire({
+                icon: 'info',
+                title: count ? `${count} pedido(s) cargados` : 'Sin pedidos en el servidor',
+                text: count
+                    ? 'El listado se muestra sin ítems de línea (sin permiso en /detalle_pedido).'
+                    : undefined,
+                timer: 2200,
+                showConfirmButton: false,
+            });
         } else {
-            Swal.fire({ icon: 'warning', title: 'No se encontraron pedidos remotos', timer: 1400, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Pedidos recargados', timer: 1200, showConfirmButton: false });
         }
     } catch (err) {
         Swal.fire({ icon: 'error', title: 'Error al recargar pedidos', text: String(err) });
     } finally {
-        btn.disabled = false;
-        btn.innerHTML = original;
+        setLoading(false);
+        if (btn) btn.disabled = false;
     }
 }
 
@@ -147,6 +270,14 @@ function filterSales(sales) {
     });
 }
 
+function syncPeriodPills(period) {
+    document.querySelectorAll(PERIOD_PILL_SELECTOR).forEach((btn) => {
+        const isActive = period != null && btn.dataset.period === period;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', String(isActive));
+    });
+}
+
 // Setea acceso rápido (hoy / semana / mes / todo)
 function setQuickFilter(period) {
     const today = new Date();
@@ -170,6 +301,7 @@ function setQuickFilter(period) {
         activeTo   = null;
     }
 
+    syncPeriodPills(period);
     syncDateInputs();
     render();
 }
@@ -177,14 +309,12 @@ function setQuickFilter(period) {
 function applyFilter() {
     activeFrom = document.getElementById('dateFrom').value || null;
     activeTo   = document.getElementById('dateTo').value   || null;
+    syncPeriodPills(null);
     render();
 }
 
 function clearFilter() {
-    activeFrom = null;
-    activeTo   = null;
-    syncDateInputs();
-    render();
+    setQuickFilter('all');
 }
 
 function syncDateInputs() {
@@ -346,8 +476,10 @@ function renderTable(sales) {
             </td>
             <td class="text-center">
                 <button
-                    class="btn btn-sm btn-outline-dark py-0 px-2"
-                    onclick="openOrderDetail('${s.id}')">
+                    type="button"
+                    class="btn btn-sm btn-admin-action-edit"
+                    onclick="openOrderDetail('${s.id}')"
+                    title="Ver detalle">
                     <i class="bi bi-eye"></i>
                 </button>
             </td>
@@ -517,9 +649,18 @@ window.clearFilter       = clearFilter;
 window.setQuickFilter    = setQuickFilter;
 window.openOrderDetail   = openOrderDetail;
 window.clearSalesHistory = clearSalesHistory;
+window.reloadOrders      = reloadOrders;
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadRemoteSales();
-    setQuickFilter('all');
+    setLoading(true, 'Obteniendo pedidos…', SLOW_API_HINT);
+    try {
+        const allowed = await ensureAdminSession();
+        if (!allowed) return;
+
+        await loadRemoteSales();
+        setQuickFilter('all');
+    } finally {
+        setLoading(false);
+    }
 });

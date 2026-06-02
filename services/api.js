@@ -14,6 +14,22 @@ function isPublicEndpoint(endpoint) {
     return PUBLIC_PATHS.some((p) => path === p || path.endsWith(p));
 }
 
+/** Lee el JWT desde localStorage (mismas claves que usa auth.service). */
+export function getStoredAuthToken() {
+    const raw =
+        localStorage.getItem('authToken') ||
+        localStorage.getItem('token') ||
+        localStorage.getItem('accessToken');
+
+    if (!raw) return null;
+
+    const trimmed = String(raw).trim();
+    if (trimmed.startsWith('Bearer ')) {
+        return trimmed.slice(7).trim();
+    }
+    return trimmed;
+}
+
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -53,7 +69,8 @@ async function request(endpoint, options = {}, attempt = 0) {
         ...fetchOptions,
     };
 
-    const token = localStorage.getItem('authToken');
+    const skipAuth = options.skipAuth === true;
+    const token = skipAuth ? null : getStoredAuthToken();
     if (token && !isPublicEndpoint(endpoint)) {
         config.headers.Authorization = `Bearer ${token}`;
     }
@@ -82,6 +99,14 @@ async function request(endpoint, options = {}, attempt = 0) {
                 throw new Error(message || 'No autorizado. Verifica tus datos.');
             }
             if (response.status === 403) {
+                /* Token expirado o inválido: algunos GET públicos fallan con Bearer y funcionan sin él */
+                if (token && !skipAuth && !options._triedWithoutAuth) {
+                    return request(
+                        endpoint,
+                        { ...options, skipAuth: true, _triedWithoutAuth: true },
+                        attempt
+                    );
+                }
                 throw new Error(message || 'No se pudo completar la solicitud. Revisa los datos enviados.');
             }
 

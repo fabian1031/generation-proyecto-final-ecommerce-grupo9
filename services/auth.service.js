@@ -343,7 +343,7 @@ export const authService = {
 
   isAdmin() {
     const user = this.getUser();
-    return user?.rol === "ADMIN";
+    return String(user?.rol || "").toUpperCase() === "ADMIN";
   },
 
   setUser(user, token) {
