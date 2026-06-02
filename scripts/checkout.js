@@ -498,10 +498,6 @@ async function confirmarCompra() {
         };
         
         if (pago === 'card') await agregarPagoTarjeta(body);
-        const usuario = authService.getUser();
-        if (!usuario?.userId) {
-            throw new Error('Debes iniciar sesión para completar la compra');
-        }
 
         const res = await fetch(PAGO_URL, {
             method: 'POST',
@@ -571,7 +567,7 @@ async function confirmarCompra() {
                 ordenId: orden.id,
                 productoId: item.id,
                 cantidad: item.quantity,
-                precioUnitario: item.price
+                precioUnitario: Number(item.price) 
             });
 
             console.log("DETALLE CREADO", detalle);
