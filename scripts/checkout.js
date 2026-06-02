@@ -5,6 +5,7 @@ import { authService, mapUserToCheckoutFields } from '../services/auth.service.j
 import { initLogin } from '../components/login.component.js';
 import { showLoader, hideLoader } from '../components/loader.component.js';
 import { initUbicacion } from '../services/departamentos-ciudades.js';
+import { ordenService } from '../services/orden.service.js';
 
 const PAGO_URL = 'https://payment.coroto.online/payment.php';
 const CONFIG_URL = 'https://payment.coroto.online/payment-config.php';
@@ -460,7 +461,7 @@ async function confirmarCompra() {
             icon: 'warning',
             title: 'Monto máximo con tarjeta',
             html: `Máximo <strong>${formatPrice(MAX_TARJETA)}</strong> con tarjeta.<br>
-                Tu total: <strong>${formatPrice(totales.total)}</strong>.<br>
+            Tu total: <strong>${formatPrice(totales.total)}</strong>.<br>
                 Usa <strong>PSE</strong> para montos mayores.`,
         });
         return;
@@ -495,8 +496,12 @@ async function confirmarCompra() {
             total: totales.total,
             iva: totales.iva,
         };
-
+        
         if (pago === 'card') await agregarPagoTarjeta(body);
+        const usuario = authService.getUser();
+        if (!usuario?.userId) {
+            throw new Error('Debes iniciar sesión para completar la compra');
+        }
 
         const res = await fetch(PAGO_URL, {
             method: 'POST',
@@ -512,7 +517,7 @@ async function confirmarCompra() {
         }
 
         console.log('RESPUESTA OPENPAY', resultado);
-    
+
         console.log('GUARDANDO ORDER', {
             id_pedido: idPedido,
             items: cartService.getCart()
@@ -538,12 +543,63 @@ async function confirmarCompra() {
         console.log('PASO 3 - después de guardar');
 
         console.log(
-        'ORDER GUARDADA',
-        localStorage.getItem('corotoOrder')
-        ); 
+            'ORDER GUARDADA',
+            localStorage.getItem('corotoOrder')
+        );
 
-        cartService.clear();
+        const carrito = [...cartService.getCart()];
         console.log('PASO 4 - antes de redirigir');
+        const orden = await ordenService.create({
+            estadoPago: "NO_PAGO",
+            estado: "PENDIENTE",
+            direccionEnvio: datos.direccion,
+            ciudadEnvio: datos.ciudad,
+            usuarioId: usuario.userId
+        });
+
+        console.log("ORDEN CREADA", orden);
+        for (const item of carrito) {
+
+            console.log("CREANDO DETALLE", {
+                ordenId: orden.id,
+                productoId: item.id,
+                cantidad: item.quantity,
+                precioUnitario: item.price
+            });
+
+            const detalle = await ordenService.createItem({
+                ordenId: orden.id,
+                productoId: item.id,
+                cantidad: item.quantity,
+                precioUnitario: item.price
+            });
+
+            console.log("DETALLE CREADO", detalle);
+        }
+        localStorage.setItem('corotoOrder', JSON.stringify({
+            id_pedido: idPedido,
+            id_transaccion: resultado.id_transaccion,
+            order_id: resultado.order_id,
+            metodo_pago: pago,
+            createdAt: new Date().toISOString(),
+            items: carrito,
+            ...totales,
+            customer: {
+                nombre: body.nombre,
+                apellido: body.apellido,
+                email: body.email,
+                telefono: body.telefono,
+                direccion: body.direccion,
+                departamento: body.departamento,
+                ciudad: body.ciudad,
+            },
+            backendOrderId: orden.id
+        }));
+        console.log(
+            "ORDER GUARDADA",
+            JSON.parse(localStorage.getItem('corotoOrder'))
+        );
+        cartService.clear();
         window.location.href = resultado.url_pse || resultado.url_3ds || 'success.html';
     } catch (err) {
         hideLoader();
