@@ -14,6 +14,7 @@ const IVA = 0.19;
 
 let openpayListo = false;
 let mensajeOpenpay = '';
+let usuario = null;
 
 const campo = (id) => document.getElementById(id);
 
@@ -36,7 +37,7 @@ async function aplicarDatosUsuario() {
         return;
     }
 
-    const usuario = await authService.ensureUserProfile();
+    usuario = await authService.ensureUserProfile();
     if (usuario) {
         llenarDatos(usuario);
     }
@@ -550,7 +551,7 @@ async function confirmarCompra() {
             estado: "PENDIENTE",
             direccionEnvio: datos.direccion,
             ciudadEnvio: datos.ciudad,
-            usuarioId: usuario.userId
+            usuarioId: usuario?.userId ?? null
         });
 
         console.log("ORDEN CREADA", orden);
