@@ -38,9 +38,7 @@ async function aplicarDatosUsuario() {
     }
 
     usuario = await authService.ensureUserProfile();
-    if (usuario) {
-        llenarDatos(usuario);
-    }
+    llenarDatos(authService.getUser() || usuario);
 }
 
 function mostrarResumen() {
@@ -93,12 +91,13 @@ function abrirLogin() {
         </div>
     `;
 
-    initLogin(campo('loginFormMount'), async (usuario) => {
+    initLogin(campo('loginFormMount'), async () => {
+        usuario = authService.getUser();
         llenarDatos(usuario);
         document.querySelector('.checkout-container')?.replaceChildren();
         await Swal.fire({
             icon: 'success',
-            title: `Bienvenido ${usuario.nombre || 'Usuario'}`,
+            title: `Bienvenido ${usuario?.nombre || 'Usuario'}`,
             text: 'Datos cargados en el formulario',
             timer: 1800,
             showConfirmButton: false,

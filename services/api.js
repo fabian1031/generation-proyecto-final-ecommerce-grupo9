@@ -6,6 +6,14 @@ const RETRY_BASE_DELAY_MS = 2500;
 
 const RETRYABLE_STATUS = new Set([408, 429, 502, 503, 504]);
 
+/** Rutas públicas: no enviar JWT (un token viejo puede provocar 403). */
+const PUBLIC_PATHS = ['/auth/login', '/auth/register'];
+
+function isPublicEndpoint(endpoint) {
+    const path = String(endpoint).split('?')[0];
+    return PUBLIC_PATHS.some((p) => path === p || path.endsWith(p));
+}
+
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -14,11 +22,11 @@ function isNetworkError(error) {
     return error instanceof TypeError || error?.name === 'AbortError';
 }
 
-function shouldRetryStatus(status, attempt, maxRetries) {
+function shouldRetryStatus(status, attempt, maxRetries, endpoint) {
     if (attempt >= maxRetries) return false;
     if (RETRYABLE_STATUS.has(status)) return true;
-    /* Render en frío puede devolver 403/401 antes de estar listo */
-    if (status === 403 || status === 401) return true;
+    /* Render en frío: solo reintentar auth en login, no en registro con datos inválidos */
+    if ((status === 403 || status === 401) && endpoint === '/auth/login') return true;
     return false;
 }
 
@@ -46,7 +54,7 @@ async function request(endpoint, options = {}, attempt = 0) {
     };
 
     const token = localStorage.getItem('authToken');
-    if (token) {
+    if (token && !isPublicEndpoint(endpoint)) {
         config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -59,7 +67,7 @@ async function request(endpoint, options = {}, attempt = 0) {
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            if (shouldRetryStatus(response.status, attempt, maxRetries)) {
+            if (shouldRetryStatus(response.status, attempt, maxRetries, endpoint)) {
                 await sleep(RETRY_BASE_DELAY_MS * (attempt + 1));
                 return request(endpoint, options, attempt + 1);
             }
@@ -71,10 +79,10 @@ async function request(endpoint, options = {}, attempt = 0) {
                 `Error ${response.status}: ${response.statusText}`;
 
             if (response.status === 401) {
-                throw new Error('AUTH');
+                throw new Error(message || 'No autorizado. Verifica tus datos.');
             }
             if (response.status === 403) {
-                throw new Error('FORBIDDEN');
+                throw new Error(message || 'No se pudo completar la solicitud. Revisa los datos enviados.');
             }
 
             throw new Error(message);

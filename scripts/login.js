@@ -92,11 +92,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             authService.setUser(session.user, session.token);
-            await authService.ensureUserProfile({ loginEmail: email, loginResponse: response });
+            const profile = await authService.ensureUserProfile({
+                loginEmail: email,
+                loginResponse: response,
+            });
 
             await Swal.fire({
                 icon: 'success',
-                title: `Bienvenido ${session.user?.nombre || 'Usuario'}`,
+                title: `Bienvenido ${profile?.nombre || session.user?.nombre || 'Usuario'}`,
                 text: 'Inicio de sesión exitoso',
                 confirmButtonText: 'Continuar',
                 allowOutsideClick: false

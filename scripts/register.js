@@ -1,6 +1,7 @@
 import { registerValidators } from './validations.js';
 import { debounce, getPagesPath } from '../services/utils.service.js';
 import { api } from '../services/api.js';
+import { authService } from '../services/auth.service.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -89,17 +90,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = getFormValues();
 
+        const telefono = String(data.celular || '').replace(/\D/g, '');
+
+        if (telefono.length < 10) {
+            return Swal.fire({
+                icon: 'warning',
+                title: 'Celular inválido',
+                text: 'Ingresa un número de celular de al menos 10 dígitos.',
+            });
+        }
+
+        const tipoDocumentoMap = { CC: 'CC', PA: 'PASAPORTE', PASAPORTE: 'PASAPORTE' };
+        const tipoDocumento = tipoDocumentoMap[data.tipoDocumento];
+
+        if (!tipoDocumento) {
+            return Swal.fire({
+                icon: 'warning',
+                title: 'Tipo de documento',
+                text: 'Por ahora solo se acepta Cédula de ciudadanía (CC) o Pasaporte.',
+            });
+        }
+
         const newUser = {
             nombre: data.nombre,
             apellido: data.apellidos,
             email: data.correo,
             password: data.password,
-            tipoDocumento: data.tipoDocumento,
-            numeroDocumento: data.cedula
+            tipoDocumento,
+            numeroDocumento: data.cedula,
+            telefono,
         };
 
         try {
-            const response = await api.post('/auth/register', newUser);
+            await api.post('/auth/register', newUser);
+
+            authService.savePhoneForCheckout(telefono);
 
             await Swal.fire({
                 icon: 'success',
@@ -119,10 +144,16 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error creando usuario:', error);
 
+            const msg = String(error?.message || '');
+            const detail =
+                msg === 'FORBIDDEN' || msg === 'AUTH'
+                    ? 'Revisa que el celular tenga al menos 10 dígitos y que el correo no esté registrado.'
+                    : msg || 'No se pudo crear el usuario';
+
             Swal.fire({
                 icon: 'error',
                 title: 'Error al registrar',
-                text: error.message || 'No se pudo crear el usuario'
+                text: detail,
             });
         }
     });
