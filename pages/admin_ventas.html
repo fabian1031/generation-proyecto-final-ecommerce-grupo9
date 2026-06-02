@@ -31,9 +31,14 @@
                 <!-- Encabezado -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="mb-0">Ventas</h5>
-                    <button class="btn btn-outline-danger btn-sm" onclick="clearSalesHistory()">
-                        <i class="bi bi-trash me-1"></i> Limpiar historial
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button id="btnReloadOrders" class="btn btn-outline-secondary btn-sm" onclick="reloadOrders()">
+                            <i class="bi bi-arrow-repeat me-1"></i> Recargar pedidos
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="clearSalesHistory()">
+                            <i class="bi bi-trash me-1"></i> Limpiar historial
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Filtro por fechas -->
@@ -179,7 +184,7 @@
         crossorigin="anonymous"></script>
 
     <!-- INICIO PARTE DINÁMICA -->
-    <script src="../scripts/admin_ventas.js"></script>
+    <script type="module" src="../scripts/admin_ventas.js"></script>
     <!-- FIN PARTE DINÁMICA -->
 </body>
 

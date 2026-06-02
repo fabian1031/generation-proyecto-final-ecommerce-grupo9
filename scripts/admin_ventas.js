@@ -3,7 +3,12 @@
 // Escrito por: success.js cuando una compra se confirma exitosamente
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { ordenService } from '../services/orden.service.js';
+
 const SALES_HISTORY_KEY = 'corotoSalesHistory';
+
+// Pedidos cargados desde el backend (si están disponibles)
+let remoteSales = [];
 
 // Instancias Chart.js activas (para destruirlas antes de redibujar)
 let chartDay   = null;
@@ -17,6 +22,9 @@ let activeTo   = null;
 // ─── Utilidades ──────────────────────────────────────────────────────────────
 
 function getSalesHistory() {
+    // Preferir pedidos remotos si ya fueron cargados
+    if (Array.isArray(remoteSales) && remoteSales.length > 0) return remoteSales;
+
     try {
         const raw = localStorage.getItem(SALES_HISTORY_KEY);
         return raw ? JSON.parse(raw) : [];
@@ -24,6 +32,52 @@ function getSalesHistory() {
         return [];
     }
 }
+
+async function loadRemoteSales() {
+    try {
+        const data = await ordenService.getAll();
+        // API puede devolver un array directamente o un objeto con clave
+        if (Array.isArray(data)) {
+            remoteSales = data;
+        } else if (data && Array.isArray(data.pedidos)) {
+            remoteSales = data.pedidos;
+        } else {
+            remoteSales = [];
+        }
+        return true;
+    } catch (err) {
+        console.error('No se pudo obtener pedidos remotos:', err);
+        remoteSales = [];
+        return false;
+    }
+}
+
+// Recargar pedidos manualmente (invocado por el botón en la vista)
+async function reloadOrders() {
+    const btn = document.getElementById('btnReloadOrders');
+    if (!btn) return;
+
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Cargando...';
+
+    try {
+        const ok = await loadRemoteSales();
+        render();
+
+        if (ok) {
+            Swal.fire({ icon: 'success', title: 'Pedidos recargados', timer: 1200, showConfirmButton: false });
+        } else {
+            Swal.fire({ icon: 'warning', title: 'No se encontraron pedidos remotos', timer: 1400, showConfirmButton: false });
+        }
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Error al recargar pedidos', text: String(err) });
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = original;
+    }
+}
+
 
 function formatPrice(value) {
     return new Intl.NumberFormat('es-CO', {
@@ -387,6 +441,7 @@ window.openOrderDetail   = openOrderDetail;
 window.clearSalesHistory = clearSalesHistory;
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadRemoteSales();
     setQuickFilter('all');
 });

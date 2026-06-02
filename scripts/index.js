@@ -92,7 +92,6 @@ function buildCategoryFilters(products) {
     });
 }
  
-// ── Carrito ( conectar con cartService cuando exista) ─────────────────
 function addToCart(product) {
     cartService.add(product);
 
@@ -101,8 +100,7 @@ function addToCart(product) {
         message: `"${product.name}" agregado al carrito.`
     });
 }
- 
-// ── Carga de productos ────────────────────────────────────────────────────────
+
 async function loadProducts() {
     try {
         allProducts = await fetchCatalog();
