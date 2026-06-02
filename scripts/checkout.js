@@ -551,7 +551,7 @@ async function confirmarCompra() {
             estado: "PENDIENTE",
             direccionEnvio: datos.direccion,
             ciudadEnvio: datos.ciudad,
-            usuarioId: usuario?.userId ?? null
+            usuarioId: usuario?.id ?? null
         });
 
         console.log("ORDEN CREADA", orden);
