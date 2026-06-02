@@ -35,15 +35,20 @@ function getSalesHistory() {
 
 async function loadRemoteSales() {
     try {
-        const data = await ordenService.getAll();
-        // API puede devolver un array directamente o un objeto con clave
-        if (Array.isArray(data)) {
-            remoteSales = data;
-        } else if (data && Array.isArray(data.pedidos)) {
-            remoteSales = data.pedidos;
-        } else {
-            remoteSales = [];
-        }
+        const [pedidos, detalles] = await Promise.all([
+            ordenService.getAll(),
+            ordenService.getAllItems()
+        ]);
+
+        remoteSales = pedidos.map((pedido) => ({
+            ...pedido,
+            items: detalles.filter(
+                (item) => Number(item.ordenId) === Number(pedido.id)
+            )
+        }));
+
+        console.log('Pedidos cargados:', remoteSales);
+
         return true;
     } catch (err) {
         console.error('No se pudo obtener pedidos remotos:', err);
@@ -135,7 +140,7 @@ function filterSales(sales) {
     if (!activeFrom && !activeTo) return sales;
 
     return sales.filter((s) => {
-        const d = toDateStr(s.createdAt);
+        const d = toDateStr(s.fechaPedido);
         if (activeFrom && d < activeFrom) return false;
         if (activeTo   && d > activeTo)   return false;
         return true;
@@ -190,16 +195,30 @@ function syncDateInputs() {
 // ─── Contadores ───────────────────────────────────────────────────────────────
 
 function renderCounters(sales) {
-    const orders   = sales.length;
-    const subtotal = sales.reduce((a, s) => a + (s.subtotal || 0), 0);
-    const iva      = sales.reduce((a, s) => a + (s.iva      || 0), 0);
-    const total    = sales.reduce((a, s) => a + (s.total    || 0), 0);
+    const orders = sales.length;
 
-    document.getElementById('counterOrders').textContent   = orders;
-    document.getElementById('counterSubtotal').textContent = formatPrice(subtotal);
-    document.getElementById('counterIva').textContent      = formatPrice(iva);
-    document.getElementById('counterTotal').textContent    = formatPrice(total);
-    document.getElementById('badgeCount').textContent      = `${orders} pedido${orders !== 1 ? 's' : ''}`;
+    const total = sales.reduce(
+        (sum, s) => sum + Number(s.total || 0),
+        0
+    );
+
+    const subtotal = total / 1.19;
+    const iva = total - subtotal;
+
+    document.getElementById('counterOrders').textContent =
+        orders;
+
+    document.getElementById('counterSubtotal').textContent =
+        formatPrice(subtotal);
+
+    document.getElementById('counterIva').textContent =
+        formatPrice(iva);
+
+    document.getElementById('counterTotal').textContent =
+        formatPrice(total);
+
+    document.getElementById('badgeCount').textContent =
+        `${orders} pedido${orders !== 1 ? 's' : ''}`;
 }
 
 // ─── Charts ───────────────────────────────────────────────────────────────────
@@ -212,7 +231,7 @@ const CHART_COLORS = {
 function buildGrouped(sales, keyFn) {
     const map = {};
     sales.forEach((s) => {
-        const key = keyFn(s.createdAt);
+        const key = keyFn(s.fechaPedido)
         map[key] = (map[key] || 0) + (s.total || 0);
     });
     return map;
@@ -301,30 +320,34 @@ function renderCharts(sales) {
 function renderTable(sales) {
     const tbody = document.getElementById('ordersTableBody');
 
-    if (sales.length === 0) {
+    if (!sales || sales.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="6" class="text-center text-muted py-4">Sin ventas en el rango seleccionado</td>
+                <td colspan="6" class="text-center text-muted py-4">
+                    Sin pedidos registrados
+                </td>
             </tr>
         `;
         return;
     }
 
-    // Más reciente primero
-    const sorted = [...sales].sort((a, b) =>
-        new Date(b.createdAt) - new Date(a.createdAt)
+    const sorted = [...sales].sort(
+        (a, b) => new Date(b.fechaPedido) - new Date(a.fechaPedido)
     );
 
     tbody.innerHTML = sorted.map((s) => `
         <tr>
-            <td class="text-muted">${s.order_id || '#' + s.id_pedido}</td>
-            <td>${formatDate(s.createdAt)}</td>
-            <td>${capitalize(s.customer.nombre + ' ' + s.customer.apellido)}</td>
-            <td>${capitalize(s.customer.ciudad)}</td>
-            <td class="text-end fw-semibold">${formatPrice(s.total)}</td>
+            <td>#${s.id}</td>
+            <td>${formatDate(s.fechaPedido)}</td>
+            <td>${s.usuarioNombre ?? 'Sin nombre'}</td>
+            <td>${s.ciudadEnvio ?? 'N/A'}</td>
+            <td class="text-end fw-semibold">
+                ${formatPrice(s.total)}
+            </td>
             <td class="text-center">
-                <button class="btn btn-sm btn-outline-dark py-0 px-2"
-                    onclick="openOrderDetail('${s.id_pedido}')">
+                <button
+                    class="btn btn-sm btn-outline-dark py-0 px-2"
+                    onclick="openOrderDetail('${s.id}')">
                     <i class="bi bi-eye"></i>
                 </button>
             </td>
@@ -333,68 +356,123 @@ function renderTable(sales) {
 }
 
 // ─── Offcanvas detalle ────────────────────────────────────────────────────────
-
 function openOrderDetail(idPedido) {
     const history = getSalesHistory();
-    const order   = history.find((s) => String(s.id_pedido) === String(idPedido));
+
+    const order = history.find(
+        (s) => String(s.id) === String(idPedido)
+    );
 
     if (!order) return;
 
+    const subtotal = Number(order.total) / 1.19;
+    const iva = Number(order.total) - subtotal;
+
     document.getElementById('offcanvasOrderTitle').textContent =
-        `Pedido ${order.order_id || '#' + order.id_pedido}`;
+        `Pedido #${order.id}`;
 
     document.getElementById('offcanvasOrderBody').innerHTML = `
         <div class="mb-3">
             <p class="text-muted small mb-1">Cliente</p>
-            <p class="fw-semibold mb-0">${capitalize(order.customer.nombre + ' ' + order.customer.apellido)}</p>
-            <p class="small text-muted mb-0">${order.customer.email}</p>
-            <p class="small text-muted mb-0">${order.customer.telefono}</p>
-            <p class="small text-muted">${capitalize(order.customer.ciudad)}, ${capitalize(order.customer.departamento)}</p>
+            <p class="fw-semibold mb-0">
+                ${order.usuarioNombre}
+            </p>
         </div>
 
         <div class="mb-3">
             <p class="text-muted small mb-1">Fecha</p>
-            <p class="mb-0">${formatDate(order.createdAt)}</p>
+            <p class="mb-0">
+                ${formatDate(order.fechaPedido)}
+            </p>
         </div>
 
         <div class="mb-3">
-            <p class="text-muted small mb-1">Transacción</p>
-            <p class="mb-0 font-monospace small">${order.id_transaccion || '—'}</p>
+            <p class="text-muted small mb-1">Dirección</p>
+            <p class="mb-0">
+                ${order.direccionEnvio}
+            </p>
+            <p class="small text-muted mb-0">
+                ${order.ciudadEnvio}
+            </p>
+        </div>
+
+        <div class="mb-3">
+            <p class="text-muted small mb-1">Estado</p>
+            <p class="mb-0">
+                ${order.estado}
+            </p>
+            <p class="small text-muted">
+                Pago: ${order.estadoPago}
+            </p>
         </div>
 
         <hr>
 
-        <p class="text-muted small mb-2">Productos</p>
-        ${order.items.map((item) => `
-            <div class="d-flex justify-content-between align-items-start small mb-2">
-                <div>
-                    <span class="fw-semibold d-block">${item.name}</span>
-                    <span class="text-muted">Cantidad: ${item.quantity}</span>
-                </div>
-                <span>${formatPrice(item.price * item.quantity)}</span>
-            </div>
-        `).join('')}
+        <p class="text-muted small mb-2">
+            Productos
+        </p>
+
+        ${
+            order.items?.length
+                ? order.items.map(item => `
+                    <div class="d-flex justify-content-between align-items-start small mb-2">
+                        <div>
+                            <span class="fw-semibold d-block">
+                                ${item.productoNombre}
+                            </span>
+
+                            <span class="text-muted">
+                                Cantidad: ${item.cantidad}
+                            </span>
+                        </div>
+
+                        <span>
+                            ${formatPrice(
+                                item.precioUnitario * item.cantidad
+                            )}
+                        </span>
+                    </div>
+                `).join('')
+                : '<p class="text-muted">Sin productos</p>'
+        }
 
         <hr>
 
         <div class="d-flex justify-content-between small mb-1">
-            <span class="text-muted">Subtotal</span>
-            <span>${formatPrice(order.subtotal)}</span>
+            <span class="text-muted">
+                Subtotal
+            </span>
+
+            <span>
+                ${formatPrice(subtotal)}
+            </span>
         </div>
+
         <div class="d-flex justify-content-between small mb-1">
-            <span class="text-muted">IVA (19%)</span>
-            <span>${formatPrice(order.iva)}</span>
+            <span class="text-muted">
+                IVA
+            </span>
+
+            <span>
+                ${formatPrice(iva)}
+            </span>
         </div>
+
         <div class="d-flex justify-content-between fw-bold mt-2">
             <span>Total</span>
-            <span>${formatPrice(order.total)}</span>
+
+            <span>
+                ${formatPrice(order.total)}
+            </span>
         </div>
     `;
 
-    const offcanvas = new bootstrap.Offcanvas(document.getElementById('offcanvasOrder'));
+    const offcanvas = new bootstrap.Offcanvas(
+        document.getElementById('offcanvasOrder')
+    );
+
     offcanvas.show();
 }
-
 // ─── Limpiar historial ────────────────────────────────────────────────────────
 
 async function clearSalesHistory() {
