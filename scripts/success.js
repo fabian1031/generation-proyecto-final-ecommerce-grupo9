@@ -146,11 +146,6 @@ async function init() {
             );
         }
 
-        // IMPORTANTE:
-        // Por ahora NO Eliminar el OBJETO
-        // La necesitarás cuando integremos pedidos/detalle_pedido.
-        // localStorage.removeItem(ORDER_KEY);
-
     } catch (error) {
         console.error('[SUCCESS PAGE]', error);
         showError();

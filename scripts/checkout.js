@@ -507,18 +507,12 @@ async function confirmarCompra() {
         });
 
         const resultado = await res.json();
-        console.log('PASO 1 - respuesta recibida');
+  
         if (resultado.status !== 'ok') {
             throw new Error(mensajeParaUsuario(resultado.mensaje || 'Error en el pago'));
             console.log('PASO 2 - antes de guardar');
         }
 
-        console.log('RESPUESTA OPENPAY', resultado);
-
-        console.log('GUARDANDO ORDER', {
-            id_pedido: idPedido,
-            items: cartService.getCart()
-        });
         localStorage.setItem('corotoOrder', JSON.stringify({
             id_pedido: idPedido,
             id_transaccion: resultado.id_transaccion,
@@ -537,15 +531,7 @@ async function confirmarCompra() {
                 ciudad: body.ciudad,
             },
         }));
-        console.log('PASO 3 - después de guardar');
-
-        console.log(
-            'ORDER GUARDADA',
-            localStorage.getItem('corotoOrder')
-        );
-
         const carrito = [...cartService.getCart()];
-        console.log('PASO 4 - antes de redirigir');
         const orden = await ordenService.create({
             fechaPedido: new Date().toISOString(),
             estadoPago: "NO_PAGO",
@@ -557,22 +543,12 @@ async function confirmarCompra() {
 
         console.log("ORDEN CREADA", orden);
         for (const item of carrito) {
-
-            console.log("CREANDO DETALLE", {
-                ordenId: orden.id,
-                productoId: item.id,
-                cantidad: item.quantity,
-                precioUnitario: item.price
-            });
-
             const detalle = await ordenService.createItem({
                 ordenId: orden.id,
                 productoId: item.id,
                 cantidad: item.quantity,
                 precioUnitario: Number(item.price) 
             });
-
-            console.log("DETALLE CREADO", detalle);
         }
         localStorage.setItem('corotoOrder', JSON.stringify({
             id_pedido: idPedido,
@@ -593,10 +569,6 @@ async function confirmarCompra() {
             },
             backendOrderId: orden.id
         }));
-        console.log(
-            "ORDER GUARDADA",
-            JSON.parse(localStorage.getItem('corotoOrder'))
-        );
         cartService.clear();
         window.location.href = resultado.url_pse || resultado.url_3ds || 'success.html';
     } catch (err) {

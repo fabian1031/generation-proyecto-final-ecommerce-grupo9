@@ -1,4 +1,4 @@
-const BASE_URL = 'https://coroto-backend.onrender.com';
+const BASE_URL = 'https://coroto-backend.onrender.com' || 'http://localhost:8080';
 
 const DEFAULT_TIMEOUT_MS = 45000;
 const DEFAULT_RETRIES = 4;
