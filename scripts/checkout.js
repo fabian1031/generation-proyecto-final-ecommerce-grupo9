@@ -547,6 +547,7 @@ async function confirmarCompra() {
         const carrito = [...cartService.getCart()];
         console.log('PASO 4 - antes de redirigir');
         const orden = await ordenService.create({
+            fechaPedido: new Date().toISOString(),
             estadoPago: "NO_PAGO",
             estado: "PENDIENTE",
             direccionEnvio: datos.direccion,
