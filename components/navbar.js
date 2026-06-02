@@ -89,7 +89,7 @@ const navbar = `
             </li>
 
             <li class="admin-section">
-              <a class="dropdown-item nav-dropdown-item" href="${pages}gestion_pedidos.html">
+              <a class="dropdown-item nav-dropdown-item" href="${pages}admin_ventas.html">
                 <i class="bi bi-clipboard-check"></i> Gestión Pedidos
               </a>
             </li>

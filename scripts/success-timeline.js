@@ -2,7 +2,8 @@
  * 3 pasos (~1–2 s c/u). Al terminar el paso 3 → onComplete (ocultar timeline, mostrar resumen).
  */
 
-const STEP_MS = 1800;
+/** Duración de cada paso (ms). Total ≈ 3 × STEP_MS (~7,5 s) */
+const STEP_MS = 2500;
 
 const STEPS = [
     {
