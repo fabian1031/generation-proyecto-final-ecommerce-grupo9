@@ -167,7 +167,7 @@ const navbar = `
           </a>
         </li>
         <li>
-          <a class="offcanvas-nav-link d-flex align-items-center gap-2" href="${pages}gestion_pedidos.html">
+          <a class="offcanvas-nav-link d-flex align-items-center gap-2" href="${pages}admin_ventas.html">
             <i class="bi bi-clipboard-check"></i> Gestión Pedidos
           </a>
         </li>
